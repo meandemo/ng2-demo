@@ -1,8 +1,8 @@
 Demo & Tutorial: Angular2 with Typescript
 =============
 
-   ![Angular2](mdassets/AngularJS_logo.svg)   ![TS](mdassets/TypeScript_logo.svg)
-![HTML5](mdassets/HTML5_Badge.svg)
+   ![Angular2](./mdassets/AngularJS_logo.svg)   ![TS](./mdassets/TypeScript_logo.svg)
+![HTML5](./mdassets/HTML5_Badge.svg)
 
 # Intro
 
