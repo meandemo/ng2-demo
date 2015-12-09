@@ -1,0 +1,13 @@
+<!-- 
+  Logo adapted from
+  https://commons.wikimedia.org/wiki/File:AngularJS_logo.svg
+-->
+<svg height="100" preserveAspectRatio="xMinYMin meet" version="1.1" id="AngularJS-typescript" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 185 185">
+  <polygon fill="#B3B3B3" points="83.243,0.875 0.554,29.975 13.621,138.311 83.331,176.625 153.4,137.792 166.462,29.46   "/>
+  <polygon fill="#A6120D" points="158.214,35.721 83.05,10.089 83.05,167.471 146.041,132.609   "/>
+  <polygon fill="#DD1B16" points="9.833,36.183 21.03,133.072 83.049,167.471 83.049,10.086   "/>
+  <path fill="#F2F2F2" d="M103.74,93.871l-20.69,9.675H61.243l-10.251,25.64l-19.067,0.353L83.05,15.804L103.74,93.871z M101.74,89
+      L83.187,52.271L67.969,88.368h15.08L101.74,89z"/>
+  <polygon fill="#B3B3B3" points="83.049,15.804 83.186,52.271 100.454,88.396 83.088,88.396 83.049,103.523 107.062,103.546 
+      118.285,129.543 136.529,129.881   "/>
+</svg>

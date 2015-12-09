@@ -1,0 +1,56 @@
+<!--
+++ header-start
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++
+++ \file      src/index.html
+++
+++ \brief     This file belongs to the ng2 tutorial project
+++
+++ \author    Bernard
+++
+++ \copyright Copyright ng2goodies 2015
+++            Distributed under the MIT License
+++            See http://opensource.org/licenses/MIT
+++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++ header-log
+++
+++ $Author$
+++ $Date$
+++ $Revision$
+++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++ header-end
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <base href="/">
+    <title>Angular2 Sticky Div Demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="Keywords" content="Angular2,Typescript">
+    <meta name="Description" content="Angular2 tutorial and demo written in typescript">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+    <script src="lib/system.src.js"></script>
+    <script src="lib/angular2.dev.js"></script>
+    <script src="lib/router.dev.js"></script>
+
+
+    <link rel="stylesheet" type="text/css" href="http://www.w3schools.com/lib/w3.css">
+    <link rel="stylesheet" type="text/css" href="http://www.w3schools.com/lib/w3-theme-dark-grey.css">
+    <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.css">
+    <link rel="stylesheet" type="text/css" href="css/styles.css"/>
+  </head>
+
+  <body>
+    <main-cmp>Loading...please wait<main-cmp>
+    <script>
+      System.config({
+        packages: {'app': {defaultExtension: 'js'}}
+      });
+      System.import('app/main').catch(console.log.bind(console));
+    </script>
+  </body>
+</html>
