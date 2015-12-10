@@ -34,3 +34,16 @@ html, body {
   margin: 0;
   padding:0;
 }
+
+pre.snippet  {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 5%;
+  margin-right: 15%;
+  padding: 10px;
+  padding-left: 3%;
+  padding-bottom: 0px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.15);
+  font-family: Consolas, monospace, sans-serif;
+  white-space: pre-line;

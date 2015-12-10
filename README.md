@@ -30,7 +30,7 @@ I ran into trouble with nodemon when launching from patty.
 
 # Features
 
-A live demo is available [rfu].
+A live demo is available here: http://meandemo.github.io.
 
 ## A sticky div
 

@@ -131,11 +131,11 @@
       <p>
         This div is fixed at the top of the viewport. 
         The code for this fixed div is:<br>
-        <code>
-          &lt;sticky-div  maxscroll&gt;<br>
-          ...<br>
-          &lt;&sol;sticky-div&gt;
-          </code><br>
+        <pre class="snippet">
+&lt;sticky-div  maxscroll&gt;
+...
+&lt;&sol;sticky-div&gt;
+        </pre>
         The presence of the property <code>maxscroll</code> without argument
         forces a fixed div at that location: all scrollable content pass under this div.
         You could use <code>maxscroll=0</code> as an alternative syntax.
@@ -144,11 +144,11 @@
       <h3>Section B</h3>
       <p>
         This div is fully scrollable, but we didn't use <code>div</code>, instead we used<br>
-        <code>
-          &lt;sticky-div #_inst0&gt;<br>
-          ...<br>
-          &lt;&sol;sticky-div&gt;
-        </code><br>
+        <pre class="snippet">
+&lt;sticky-div #_inst0&gt;
+...
+&lt;&sol;sticky-div&gt;
+        </pre><br>
         Without maxscroll property, this component behaves like a normal div.<br>
         Note the local variable <code>&num;_inst0</code>,
         please read-on to see how it is used.
@@ -157,50 +157,50 @@
       <h3>Section C</h3>
       <p>
         This navbar has a sticky behavior, we used the following code<br>
-        <code>
-          &lt;sticky-div &lsqb;maxscroll&rsqb;="_inst0.height()"&gt;<br>
-          ...<br>
-          &lt;&sol;sticky-div&gt;
-        </code><br>
+        <pre class="snippet">
+&lt;sticky-div &lsqb;maxscroll&rsqb;="_inst0.height()"&gt;
+...
+&lt;&sol;sticky-div&gt;
+        </pre>
         We have use the local variable to obtain the height of the scrollable div just above.
         This height gives the scrollable amount for our sticky navbar using the one-way
         property binding syntax <code>&lsqb;maxscroll&rsqb;</code>. 
       </p>  
       <p>
-        An alternate way, it to use a normal div for section B: 
-        <code>
-          &lt;div #_inst0&gt;<br>
-          ...<br>
-          &lt;&sol;div&gt;
-        </code><br>
-        and use the <code>getBoundingClientRect()</code> function to get the height.
+        An alternate way, it to use a normal div for section B:<br> 
+        <pre class="snippet">
+&lt;div #_inst0&gt;
+...
+&lt;&sol;div&gt;
+        </pre>
+        and use the <code>clientHeight</code> property to get the height of the div.
         So the code for section C could also be written:
-        <code>
-          &lt;sticky-div &lsqb;maxscroll&rsqb;="_inst0.getBoundingClientRect().height"&gt;<br>
-          ...<br>
-          &lt;&sol;sticky-div&gt;
-        </code><br>
+        <pre class="snippet">
+&lt;sticky-div &lsqb;maxscroll&rsqb;="_inst0.clientHeight"&gt;
+...
+&lt;&sol;sticky-div&gt;
+        </pre>
       </p>  
 
       <h3>Section D</h3>
       <p>
         Same as Section B, this div is fully scrollable<br>
-        <code>
-          &lt;sticky-div #_inst1&gt;<br>
-          ...<br>
-          &lt;&sol;sticky-div&gt;
-        </code><br>
+        <pre class="snippet">
+&lt;sticky-div #_inst1&gt;
+...
+&lt;&sol;sticky-div&gt;
+        </pre>
         We have introduced a second local variable: <code>&num;_inst1</code>.
       </p>  
 
       <h3>Section E</h3>
       <p>
         This navbar has a sticky behavior, we used the following code<br>
-        <code>
-          &lt;sticky-div &lsqb;maxscroll&rsqb;="_inst0.height() + _inst1.height()"&gt;<br>
-          ...<br>
-          &lt;&sol;sticky-div&gt;
-        </code><br>
+        <pre class="snippet">
+&lt;sticky-div &lsqb;maxscroll&rsqb;="_inst0.height() + _inst1.height()"&gt;
+...
+&lt;&sol;sticky-div&gt;
+        </pre>
         Two local variables are needed to compute the maxscroll property. It's the
         height of all the scrollable div above the current one: i.e. section (B) & (D).
       </p>  
@@ -301,13 +301,16 @@
   </div>   <!-- end class w3-col m6 l8 -->
   <div class="w3-col m3 l2">
     <div #_inst4 class="w3-container w3-theme-l2">
-      (F) The div below shows an incorrect use of a sticky-div 
+      (F) The div below shows an incorrect use of a sticky-div
+      The correct height for a sticky must be the sum of all the heights
+      of the scrollable div above. We have used {{_inst4.clientHeight}} for
+      the <code>maxscroll</code> value instead of {{_inst4.clientHeight + _inst0.height()}}.
     </div>
-    <sticky-div id="sticky-navbar" [maxscroll]="_inst4.getBoundingClientRect().height">
+    <sticky-div id="sticky-navbar" [maxscroll]="_inst4.clientHeight">
       <div class="w3-container w3-theme-l3">
         (G) The maxscroll parameter for this div has been incorrectly specified.
         As the viewport scrolls, it reveals what is placed under this div.
-        Be ready to see some red!
+        Be ready to see some red! 
       </div>
     </sticky-div>
     <div class="w3-container w3-theme-l4">
