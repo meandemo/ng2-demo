@@ -43,4 +43,11 @@ import {StickyDivCmp}          from '../stickydiv/stickydiv';
   directives: [StickyDivCmp]
 })
 export class StickyDivDemoCmp {
+
+  onClick() {
+    let w = window.open();
+    w.document.open();
+    w.document.write("<h1>Hello World!</h1><p>To be removed in dist. version</p>");
+    w.document.close();
+  }
 }

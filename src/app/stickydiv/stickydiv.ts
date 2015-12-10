@@ -51,9 +51,9 @@ import {Component, Directive, View, OnInit, AfterViewChecked,
     of the the navbar. The first div is doing just this
   -->     
 
-  <!-- div #1 -->
+  <!-- div 1 -->
 
-    <div *ng-if="is_fixed_ && is_enabled_" 
+    <div *ngIf="is_fixed_ && is_enabled_" 
       [style.height.px]="div_height_"
       [style.width.px]="div_width_"
       style="padding: 0; font-size: 12px; color: black; background-color: red">
@@ -63,12 +63,11 @@ import {Component, Directive, View, OnInit, AfterViewChecked,
       increase it.
     </div>
 
-  <!-- div #2 -->
+  <!-- div 2 -->
 
-    <div [id]="instance_id_" [ng-style]="setStyles(is_fixed_ && is_enabled_)"
+    <div [id]="instance_id_" [ngStyle]="setStyles(is_fixed_ && is_enabled_)"
       (window:scroll)="onScroll()">
-      <ng-content>
-      </ng-content>
+      <ng-content></ng-content>
     </div>
   `,
       
@@ -104,11 +103,11 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
   }
 
   // 
-  // At the onInit() stage, we can't do much
+  // At the ngOnInit() stage, we can't do much
   // The @Input is not yet injected if the maxscroll value
   // is not known at this stage.
   //
-  onInit() {
+  ngOnInit() {
     if ('maxscroll' in this) {
       this.is_enabled_ = true;
     }
@@ -128,7 +127,7 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
   // Note: @Input may not be injected yet.
 
   //
-  afterViewInit() {
+  ngAfterViewInit() {
     const obj = document.getElementById(this.instance_id_);
     const bbox = obj.getBoundingClientRect();
 
@@ -151,7 +150,7 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
   // @Input is injected, so we can finally obtain the numerical
   // value associated with this maxscroll property 
   //
-  afterViewChecked() {
+  ngAfterViewChecked() {
     if (!('maxscroll' in this)) {
       this.is_enabled_ = false;
       return;
