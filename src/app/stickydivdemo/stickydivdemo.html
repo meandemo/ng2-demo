@@ -71,7 +71,7 @@
 
 <!-- (C) sticky horizontal navbar -->
 
-<sticky-div id="sticky-navbar" [maxscroll]="_inst0.height()">
+<sticky-div id="sticky-navbar" [maxscroll]="_inst0.clientHeight">
   <div class="w3-topnav w3-large w3-theme-l4">
     <a href="#">(C)</a>
     <a href="#"><i class="fa fa-home w3-large"></i></a>
@@ -101,7 +101,7 @@
 
     <!-- (E) sticky side navigation bar  -->
 
-    <sticky-div id="sticky-sidebar" [maxscroll]="_inst0.height() + _inst1.height()">
+    <sticky-div id="sticky-sidebar" [maxscroll]="_inst0.clientHeight + _inst1.clientHeight">
       <div class="w3-container w3-theme-d2">
          <ul style="list-style-type: none;">
             <li>(E)</li>
@@ -167,7 +167,7 @@
         This navbar has a sticky behavior, we used the following code
       </p>  
         <pre class="snippet">
-          &lt;sticky-div &#x5B;maxscroll&#x5D;="_inst0.height()"&gt;
+          &lt;sticky-div &#x5B;maxscroll&#x5D;="_inst0.clientHeight"&gt;
           ...
           &lt;&#x2F;sticky-div&gt;
         </pre>
@@ -212,7 +212,7 @@
         This navbar has a sticky behavior, we used the following code:
       </p>  
         <pre class="snippet">
-          &lt;sticky-div &#x5B;maxscroll&#x5D;="_inst0.height() + _inst1.height()"&gt;
+          &lt;sticky-div &#x5B;maxscroll&#x5D;="_inst0.clientHeight + _inst1.clientHeight"&gt;
           ...
           &lt;&#x2F;sticky-div&gt;
         </pre>
@@ -320,7 +320,7 @@
       (F) The div below shows an incorrect use of a sticky-div
       The correct height for a sticky must be the sum of all the heights
       of the scrollable div above. We have used {{_inst4.clientHeight}} for
-      the <code>maxscroll</code> value instead of {{_inst4.clientHeight + _inst0.height()}}.
+      the <code>maxscroll</code> value instead of {{_inst4.clientHeight + _inst0.clientHeight}}.
     </div>
     <sticky-div id="sticky-navbar" [maxscroll]="_inst4.clientHeight">
       <div class="w3-container w3-theme-l3">
