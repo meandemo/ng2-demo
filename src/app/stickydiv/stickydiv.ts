@@ -49,9 +49,9 @@ import {Component, Directive, View, OnInit, AfterViewChecked,
     When the second div position is changed to 'fixed', it is removed from the
     scrollable content, so we must add a content of the same height in place
     of the the navbar. The first div is doing just this
-    <div [id]="id_div_top_"  (window:resize)="onResize()">
   -->
 
+    <div [id]="id_div_top_"  (window:resize)="onResize()">
 
     <!-- div 1 -->
 
@@ -71,6 +71,7 @@ import {Component, Directive, View, OnInit, AfterViewChecked,
       (window:scroll)="onScroll()">
       <ng-content></ng-content>
     </div>
+  </div>
   `,
   styles: [`
   `],
@@ -233,11 +234,17 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
 
 
   //
-  // Using a non-optiminal page reload feature
+  // Using a non-optiminal reset viewport 
+  // to the top position.
   //
   onResize() {
+    window.scroll(0, 0);
     if (this.is_sticky_) {
       this.do_resize_ = true;
+    } else {
+      // update the div_height_ of fully scrollable sticky-div
+      const bbox = this.div2_elm_.getBoundingClientRect();
+      this.div_height_      = bbox.height;
     }
   }
 }
