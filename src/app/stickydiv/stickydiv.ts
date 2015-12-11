@@ -49,24 +49,25 @@ import {Component, Directive, View, OnInit, AfterViewChecked,
     When the second div position is changed to 'fixed', it is removed from the
     scrollable content, so we must add a content of the same height in place
     of the the navbar. The first div is doing just this
+    <div [id]="id_div_top_"  (window:resize)="onResize()">
   -->
 
-  <!-- div 1 -->
+
+    <!-- div 1 -->
 
     <div *ngIf="is_div2_fixed_"
       [style.height.px]="div_height_"
       [style.width.px]="div_width_"
-      (window:resize)="onResize()"
       style="padding: 0; font-size: 12px; color: black; background-color: red">
       Ouch! If you see this text on the browser, you have a problem with
-      stick div id: {{instance_id_}}. It is likely that
+      stick div id: {{id_div2_}}. It is likely that
       the maxscroll value is not large enough, please
       increase it.
     </div>
 
-  <!-- div 2 -->
+    <!-- div 2 -->
 
-    <div [id]="div2_id_" [ngStyle]="setStyles(is_div2_fixed_)"
+    <div [id]="id_div2_" [ngStyle]="setStyles(is_div2_fixed_)"
       (window:scroll)="onScroll()">
       <ng-content></ng-content>
     </div>
@@ -79,9 +80,6 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
   static instance_cnt_ = 0;
   @Input() maxscroll: any;
 
-  public clientHeight: number;
-
-
   private is_sticky_ = false;
 
   private y_offset_ = 0;
@@ -90,10 +88,10 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
   private div_top_ = 0;
   private div_initial_top_ = 0;
   private div_left_ = 0;
-  private menu_items_: any[];
 
-  private div2_id_: string;
-  private do_check_ = false;
+  private id_div_top_: string;
+  private id_div2_: string;
+  private do_resize_ = false;
 
   private is_div2_fixed_ = false;
   private div2_elm_: any;
@@ -101,11 +99,12 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
   //
   // We use the constructor to register a unique id
   // needed for the div#2 above
-  //  <div [id]="div2_id_" ...>
+  //  <div [id]="id_div2_" ...>
   // and used by getElementById()
   //
   constructor() {
-    this.div2_id_ = `sticky-div2-magic-${StickyDivCmp.instance_cnt_}`;
+    this.id_div_top_ = `sticky-top-magic-${StickyDivCmp.instance_cnt_}`;
+    this.id_div2_ = `sticky-div2-magic-${StickyDivCmp.instance_cnt_}`;
     ++StickyDivCmp.instance_cnt_;
   }
 
@@ -117,6 +116,9 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
   ngOnInit() {
   }
 
+  height() {
+    return this.div_height_;
+  }
   //
   // At the afterViewInit() stage,
   // we can extract the div#2 size and position using getElementById.  
@@ -129,14 +131,22 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
 
   //
   ngAfterViewInit() {
-    this.div2_elm_ = document.getElementById(this.div2_id_);
-    this.clientHeight = this.div2_elm_.clientHeight;
+    this.div2_elm_ = document.getElementById(this.id_div2_);
     const bbox = this.div2_elm_.getBoundingClientRect();
     this.div_height_      = bbox.height;
     this.div_width_       = bbox.width;
     this.div_initial_top_ = bbox.top;
     this.div_left_        = bbox.left;
 
+      console.log('-----------------------+------------------------');
+      console.log('[Trace] afterViewInit  id       ' + this.id_div2_);
+      console.log('[Trace] afterViewInit  divtop   ' + this.div_initial_top_);
+      console.log('[Trace] afterViewInit  top      ' + bbox.top);
+      console.log('[Trace] afterViewInit  bottom   ' + bbox.bottom);
+      console.log('[Trace] afterViewInit  left     ' + bbox.left);
+      console.log('[Trace] afterViewInit  right    ' + bbox.right);
+      console.log('[Trace] afterViewInit  height   ' + bbox.height);
+      console.log('[Trace] afterViewInit  clientH  ' + this.div2_elm_.clientHeight);
 
   }
 
@@ -150,6 +160,26 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
       this.is_sticky_ = true;
       this.y_offset_ = 0 + this.maxscroll;
       this.div_top_  = this.div_initial_top_ - this.y_offset_;
+
+      if (this.do_resize_) {
+        this.is_div2_fixed_ = false;
+        const bbox = this.div2_elm_.getBoundingClientRect();
+        this.div_height_      = bbox.height;
+        this.div_width_       = bbox.width;
+        this.div_initial_top_ = bbox.top;
+        this.div_left_        = bbox.left;
+        this.div_top_         = this.div_initial_top_ - this.y_offset_;
+        this.do_resize_       = false;
+
+      console.log('------------------------------------------------');
+      console.log('[Trace] do_resize()    id       ' + this.id_div2_);
+      console.log('[Trace] do_resize()    offset   ' + this.y_offset_);
+      console.log('[Trace] do_resize()    divtop   ' + this.div_top_);
+      console.log('[Trace] do_resize()    top      ' + bbox.top);
+      console.log('[Trace] do_resize()    bottom   ' + bbox.bottom);
+      console.log('[Trace] do_resize()    left     ' + bbox.left);
+      console.log('[Trace] do_resize()    right    ' + bbox.right);
+      }
     }
   }
 
@@ -207,15 +237,13 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
   //
   onResize() {
     if (this.is_sticky_) {
-      window.location.reload();
-      is_div2_fixed_ = false;
-      this.is_sticky_ = false;
+      this.do_resize_ = true;
     }
   }
 }
 
 
-//  const obj = document.getElementById(this.div2_id_);
+//  const obj = document.getElementById(this.id_div2_);
 //   const bbox = obj.getBoundingClientRect();
 //   this.div_height_      = bbox.height;
 //   this.div_width_       = bbox.width;
