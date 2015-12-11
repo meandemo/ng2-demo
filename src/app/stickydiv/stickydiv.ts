@@ -138,17 +138,6 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
     this.div_width_       = bbox.width;
     this.div_initial_top_ = bbox.top;
     this.div_left_        = bbox.left;
-
-      console.log('-----------------------+------------------------');
-      console.log('[Trace] afterViewInit  id       ' + this.id_div2_);
-      console.log('[Trace] afterViewInit  divtop   ' + this.div_initial_top_);
-      console.log('[Trace] afterViewInit  top      ' + bbox.top);
-      console.log('[Trace] afterViewInit  bottom   ' + bbox.bottom);
-      console.log('[Trace] afterViewInit  left     ' + bbox.left);
-      console.log('[Trace] afterViewInit  right    ' + bbox.right);
-      console.log('[Trace] afterViewInit  height   ' + bbox.height);
-      console.log('[Trace] afterViewInit  clientH  ' + this.div2_elm_.clientHeight);
-
   }
 
   // At the afterViewChecked() stage,
@@ -171,15 +160,6 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
         this.div_left_        = bbox.left;
         this.div_top_         = this.div_initial_top_ - this.y_offset_;
         this.do_resize_       = false;
-
-      console.log('------------------------------------------------');
-      console.log('[Trace] do_resize()    id       ' + this.id_div2_);
-      console.log('[Trace] do_resize()    offset   ' + this.y_offset_);
-      console.log('[Trace] do_resize()    divtop   ' + this.div_top_);
-      console.log('[Trace] do_resize()    top      ' + bbox.top);
-      console.log('[Trace] do_resize()    bottom   ' + bbox.bottom);
-      console.log('[Trace] do_resize()    left     ' + bbox.left);
-      console.log('[Trace] do_resize()    right    ' + bbox.right);
       }
     }
   }
@@ -211,27 +191,6 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
       this.is_div2_fixed_ = (window.pageYOffset >= this.y_offset_);
     }
   }
-  /*
-      this.div_left_        = bbox.left;
-      this.is_div2_fixed_   = false;
-
-      console.log('[Trace] onScroll()          id     ' + this.instance_id_);
-      console.log('[Trace] onScroll()          offset ' + this.y_offset_);
-      console.log('[Trace] onScroll()          divtop ' + this.div_top_);
-      console.log('[Trace] onScroll()          top    ' + bbox.top);
-      console.log('[Trace] onScroll()          bottom ' + bbox.bottom);
-      console.log('[Trace] onScroll()          left   ' + bbox.left);
-      console.log('[Trace] onScroll()          right  ' + bbox.right);
-
-
-    } else if (window.pageYOffset > this.y_offset_) {
-      this.is_div2_fixed_ = true;
-    } else {
-      this.is_div2_fixed_ = false;
-    }
-  }
-  */
-
 
   //
   // Using a non-optiminal reset viewport 
@@ -248,16 +207,3 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
     }
   }
 }
-
-
-//  const obj = document.getElementById(this.id_div2_);
-//   const bbox = obj.getBoundingClientRect();
-//   this.div_height_      = bbox.height;
-//   this.div_width_       = bbox.width;
-//   this.div_initial_top_ = bbox.top;
-//   this.div_left_        = bbox.left;
-//     this.y_offset_ = 0 + this.maxscroll;
-//     this.div_top_  = this.div_initial_top_ - this.y_offset_;
-//    this.clientHeight = this.div_height_;
-//   }
-
