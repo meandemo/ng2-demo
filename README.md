@@ -9,17 +9,24 @@ This repository introduces useful angular2 components which mimic behaviors foun
 
 Our first demo shows how a sticky div or sticky navbar behavior can be achieved with a simple angular2 component.
 
+# Latest News
+
+
+
+
 # Getting Started
 
 1. clone this repository
 
 2. `npm install`
 
-3. `gulp init`
+3. `tsd reinstall --save --overwrite`
 
-4. `gulp demo`
+4. `gulp init`
 
-5. open web page on http://localhost:8080, don't forget to activate the livereload button
+5. `gulp demo`
+
+6. open web page on http://localhost:8080, don't forget to activate the livereload button
 
 ## Beware
 
