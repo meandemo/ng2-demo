@@ -23,7 +23,7 @@
 ++ header-end
 -->
 
-<!-- demo page for the sticky-div
+<!-- demo page for the gg-sticky-div
 
      ++++++++++++++++++++++++++++++++++++++++++++++++++
      |  fixed header with title                       |  (A)
@@ -46,7 +46,7 @@
 
 <!-- (A) fixed header with title -->
 
-<sticky-div maxscroll>
+<gg-sticky-div maxscroll>
   <div class="w3-container w3-large w3-padding-12 w3-theme-l2">
     <div class="w3-left w3-xxlarge">
       <b>(A) Sticky Div Demo</b>
@@ -55,11 +55,11 @@
       An angular2 demo and tutorial 
     </div>  
   </div>
-</sticky-div>
+</gg-sticky-div>
 
 <!-- (B) scrollable header with additional titles -->
 
-<sticky-div #_inst0>
+<gg-sticky-div #_inst0>
   <div class="w3-container w3-large w3-theme-l3 w3-padding-4">
     <div class="w3-left w3-small">Navigation: host &gt; stickydivdemo
     </div><br>
@@ -68,11 +68,11 @@
     <div class="w3-left w3-xlarge">(B) This Large Title Scrolls freely
     </div>
   </div>
-</sticky-div>
+</gg-sticky-div>
 
 <!-- (C) sticky horizontal navbar -->
 
-<sticky-div [maxscroll]="_inst0.height()">
+<gg-sticky-div [maxscroll]="_inst0.height()">
   <div class="w3-topnav w3-large w3-theme-l4">
     <a href="#">(C)</a>
     <a href="#"><i class="fa fa-home w3-large"></i></a>
@@ -80,7 +80,7 @@
     <a href="#">RFU 2</a>
     <a href="#">RFU 3</a>
   </div>
-</sticky-div>
+</gg-sticky-div>
 
 <!-- main panel using the w3-row / w3-col system -->
 
@@ -92,7 +92,7 @@
 
     <!-- (D) scrollable side text  -->
 
-    <sticky-div #_inst1>
+    <gg-sticky-div #_inst1>
       <div class="w3-container w3-theme-d1">
         <p>
           (D) This header scrolls normally, the side menu below
@@ -101,11 +101,11 @@
         <div class="w3-right w3-tiny">Section height = {{_inst1.height()}}px
         </div>  
       </div>  
-    </sticky-div>
+    </gg-sticky-div>
 
     <!-- (E) sticky side navigation bar  -->
 
-    <sticky-div [maxscroll]="_inst0.height() + _inst1.height()">
+    <gg-sticky-div [maxscroll]="_inst0.height() + _inst1.height()">
       <div class="w3-container w3-theme-d2">
          <ul style="list-style-type: none; padding: 0;">
             <li>(E)</li>
@@ -126,7 +126,7 @@
             <li><a href="">NgSwitchWhen</a></li>
           </ul>  
       </div>
-    </sticky-div>
+    </gg-sticky-div>
   </div>
 
   <!-- scrollable main section  -->
@@ -141,9 +141,9 @@
         The code for this fixed div is:
       </p>
         <pre class="snippet">
-          &lt;sticky-div  maxscroll&gt;
+          &lt;gg-sticky-div  maxscroll&gt;
           ...
-          &lt;&#x2F;sticky-div&gt;
+          &lt;&#x2F;gg-sticky-div&gt;
         </pre>
       <p>
         The presence of the property <code>maxscroll</code> without argument
@@ -156,9 +156,9 @@
         This div is fully scrollable, but we didn't use <code>div</code>, instead we used
       </p>  
         <pre class="snippet">
-          &lt;sticky-div &#x23;_inst0&gt;
+          &lt;gg-sticky-div &#x23;_inst0&gt;
           ...
-          &lt;&#x2F;sticky-div&gt;
+          &lt;&#x2F;gg-sticky-div&gt;
         </pre>
       <p>
         Without maxscroll property, this component behaves like a normal div.
@@ -171,9 +171,9 @@
         This navbar has a sticky behavior, we used the following code
       </p>  
         <pre class="snippet">
-          &lt;sticky-div &#x5B;maxscroll&#x5D;="_inst0.height()"&gt;
+          &lt;gg-sticky-div &#x5B;maxscroll&#x5D;="_inst0.height()"&gt;
           ...
-          &lt;&#x2F;sticky-div&gt;
+          &lt;&#x2F;gg-sticky-div&gt;
         </pre>
       <p>
         We used the local variable <code>_inst0</code> to obtain the height of the 
@@ -195,9 +195,9 @@
         two sticky divs. 
       </p>  
         <pre class="snippet">
-          &lt;sticky-div &#x5B;maxscroll&#x5D;="_inst0.getBoundingClientRect().height"&gt;
+          &lt;gg-sticky-div &#x5B;maxscroll&#x5D;="_inst0.getBoundingClientRect().height"&gt;
           ...
-          &lt;&#x2F;sticky-div&gt;
+          &lt;&#x2F;gg-sticky-div&gt;
         </pre>
 
       <h3>Section D</h3>
@@ -205,9 +205,9 @@
         Same as Section B, this div is fully scrollable:
       </p>  
         <pre class="snippet">
-          &lt;sticky-div &#x23;_inst1&gt;
+          &lt;gg-sticky-div &#x23;_inst1&gt;
           ...
-          &lt;&#x2F;sticky-div&gt;
+          &lt;&#x2F;gg-sticky-div&gt;
         </pre>
       <p>
         We have introduced a second local variable: <code>&#x23;_inst1</code>.
@@ -218,9 +218,9 @@
         This navbar has a sticky behavior, we used the following code:
       </p>  
         <pre class="snippet">
-          &lt;sticky-div &#x5B;maxscroll&#x5D;="_inst0.height() + _inst1.height()"&gt;
+          &lt;gg-sticky-div &#x5B;maxscroll&#x5D;="_inst0.height() + _inst1.height()"&gt;
           ...
-          &lt;&#x2F;sticky-div&gt;
+          &lt;&#x2F;gg-sticky-div&gt;
         </pre>
       <p>
         Two local variables are needed to compute the maxscroll property. It's the
@@ -229,7 +229,7 @@
  
       <h3>Section F, G and H</h3>
       <p>
-        These sections illustrate a common error with sticky-div. The maxscroll value
+        These sections illustrate a common error with <code>gg-sticky-div</code>. The maxscroll value
         of section G is incorrect.
       </p>  
 
@@ -329,7 +329,7 @@
     <!-- a scrollable text div -->
 
     <div #_inst4 class="w3-container w3-theme-l2">
-      (F) The div below shows an incorrect use of a sticky-div
+      (F) The div below shows an incorrect use of a <code>gg-sticky-div</code> component.
       The correct height for a sticky must be the sum of all the heights
       of the scrollable divs above, i.e. Section (B) and Section (F).
       The height must be the exact height, 
@@ -344,13 +344,13 @@
       2) we use only height of section (F) instead of (B)+(F)
      -->
 
-    <sticky-div [maxscroll]="_inst4.clientHeight">
+    <gg-sticky-div [maxscroll]="_inst4.clientHeight">
       <div class="w3-container w3-theme-l3">
         (G) The maxscroll parameter for this div has been incorrectly specified.
         As the viewport scrolls, it reveals what is placed under this div.
         Be ready to see some red! 
       </div>
-    </sticky-div>
+    </gg-sticky-div>
     <div class="w3-container w3-theme-l4">
       (H) Additional Lipsum content
       <p>

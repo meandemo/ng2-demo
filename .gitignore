@@ -1,4 +1,4 @@
 node_modules
-typings/*/
 *.sublime-workspace
 dist
+junk

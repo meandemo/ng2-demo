@@ -22,21 +22,21 @@
 //////////////////////////////////////////////////////////////////////////////////
 // header-end
 //
-import { bootstrap, Component, Directive,
-         View,
-       } from 'angular2/angular2';
-import {
-       } from 'angular2/router';
 
+import {Component,
+        Directive,
+        View           }    from 'angular2/core';
 
-import {StickyDivDemoCmp}      from './stickydivdemo/stickydivdemo';
+import {bootstrap}           from 'angular2/platform/browser';
+import {StickyDivDemoCmp}   from './stickydivdemo/stickydivdemo';
+
 
 @Component({
   selector: 'main-cmp'
 })
 @View({
   template: `
-    <sticky-div-demo></sticky-div-demo>
+    <gg-sticky-div-demo></gg-sticky-div-demo>
     `,
   directives: [StickyDivDemoCmp]
 })

@@ -22,10 +22,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 // header-end
 //
-import {Component, Directive, View, OnInit, AfterViewChecked,
-        Input, AfterViewInit, NgIf, NgClass
-        } from 'angular2/angular2';
-
+import {Component, Directive, ViewChild,
+        AfterViewInit, Query, QueryList, ElementRef,
+        OnChanges, Input, SimpleChange, Output, EventEmitter, OnInit,
+        View} from 'angular2/core';
+import {NgFor, NgIf, NgModel, NgClass } from  'angular2/common';
+import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
+        ROUTER_PROVIDERS,
+        RouterOutlet, RouterLink, APP_BASE_HREF, ROUTER_BINDINGS} from 'angular2/router';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -35,7 +39,7 @@ import {Component, Directive, View, OnInit, AfterViewChecked,
 
 
 @Component({
-  selector: 'sticky-div',
+  selector: 'gg-sticky-div',
   template: `
   <!--
     The 2 div below make the sticky div magic
@@ -67,7 +71,7 @@ import {Component, Directive, View, OnInit, AfterViewChecked,
 
     <!-- div 2 -->
 
-    <div [id]="id_div2_" [ngStyle]="setStyles(is_div2_fixed_)"
+    <div [id]="id_div2_" [ngStyle]="setStyles()"
       (window:scroll)="onScroll()">
       <ng-content></ng-content>
     </div>
@@ -117,7 +121,7 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
   ngOnInit() {
   }
 
-  height() {
+  height(): number {
     return this.div_height_;
   }
   //
@@ -132,6 +136,10 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
 
   //
   ngAfterViewInit() {
+    //console.log('-----------------------+------------------------');
+    //console.log('[Trace] ngAfterViewInit()  id       ' + this.id_div2_);
+    //console.log('[Trace] ngAfterViewInit()  is_fixed ' + this.is_div2_fixed_);
+
     this.div2_elm_ = document.getElementById(this.id_div2_);
     const bbox = this.div2_elm_.getBoundingClientRect();
     this.div_height_      = bbox.height;
@@ -145,6 +153,10 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
   // value associated with this maxscroll property
   //
   ngAfterViewChecked() {
+    //console.log('-----------------------+------------------------');
+    //console.log('[Trace] ngAfterViewCheck() id       ' + this.id_div2_);
+    //console.log('[Trace] ngAfterViewCheck() is_fixed ' + this.is_div2_fixed_);
+
     if ('maxscroll' in this) {
 
       this.is_sticky_ = true;
@@ -165,8 +177,8 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
   }
 
 
-  setStyles(is_fixed: boolean): any {
-    if (is_fixed) {
+  setStyles(): any {
+    if (this.is_div2_fixed_) {
       return {
         'position': 'fixed',
         'padding': '0px',
@@ -187,6 +199,10 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
   // max amount, it becomes fixed.
   //
   onScroll() {
+    //console.log('-----------------------+------------------------');
+    //console.log('[Trace] onScroll()     id       ' + this.id_div2_);
+    //console.log('[Trace] onScroll()     is_fixed ' + this.is_div2_fixed_);
+
     if (this.is_sticky_) {
       this.is_div2_fixed_ = (window.pageYOffset >= this.y_offset_);
     }
@@ -197,6 +213,10 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
   // to the top position.
   //
   onResize() {
+    //console.log('-----------------------+------------------------');
+    //console.log('[Trace] onResize()     id       ' + this.id_div2_);
+    //console.log('[Trace] onResize()     is_fixed ' + this.is_div2_fixed_);
+
     window.scroll(0, 0);
     if (this.is_sticky_) {
       this.do_resize_ = true;

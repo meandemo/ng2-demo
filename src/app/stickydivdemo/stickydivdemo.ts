@@ -22,15 +22,20 @@
 //////////////////////////////////////////////////////////////////////////////////
 // header-end
 //
-
-import {bootstrap, bind, Component, Directive
-       } from 'angular2/angular2';
+import {Component, Directive, ViewChild,
+        AfterViewInit, Query, QueryList, ElementRef,
+        OnChanges, Input, SimpleChange, Output, EventEmitter, OnInit,
+        View} from 'angular2/core';
+import {NgFor, NgIf, NgModel } from  'angular2/common';
+import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
+        ROUTER_PROVIDERS,
+        RouterOutlet, RouterLink, APP_BASE_HREF, ROUTER_BINDINGS} from 'angular2/router';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// StickyDivDemo Component  
-// 
-// route displayed as: http://localhost:3000/stickydivdemo 
+// StickyDivDemo Component
+//
+// route displayed as: http://localhost:3000/stickydivdemo
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -38,16 +43,9 @@ import {StickyDivCmp}          from '../stickydiv/stickydiv';
 
 
 @Component({
-  selector: 'sticky-div-demo',
+  selector: 'gg-sticky-div-demo',
   templateUrl: 'app/stickydivdemo/stickydivdemo.html',
-  directives: [StickyDivCmp]
+  directives: [StickyDivCmp, RouterLink]
 })
 export class StickyDivDemoCmp {
-
-  onClick() {
-    let w = window.open();
-    w.document.open();
-    w.document.write("<h1>Hello World!</h1><p>To be removed in dist. version</p>");
-    w.document.close();
-  }
 }

@@ -22,19 +22,17 @@
 //////////////////////////////////////////////////////////////////////////////////
 // header-end
 //
-import * as express       from 'express';
-import * as morgan        from 'morgan';
-import * as path          from 'path';
-import * as fs            from 'fs';
-
+const express = require('express');
+const morgan  = require('morgan');
+const gpath   = require('path');
 
 const base_dir = process.cwd();
-const static_dir = path.resolve(base_dir, 'dist/client');
-const index_file = path.resolve(static_dir, 'index.html');
+const static_dir = gpath.resolve(base_dir, 'dist/client');
+const index_file = gpath.resolve(static_dir, 'index.html');
 
 
-let PORT  = 8080;
-let URL   = 'http://localhost';
+const GPORT  = 8080;
+const GURL   = 'http://localhost';
 
 let app = express();
 app.use(morgan('dev'));
@@ -47,11 +45,11 @@ app.use(express.static(static_dir));
 //
 // 404 catch
 // 
-app.all('*', (req, res) => {
+app.all('*', (req: any, res: any) => {
   res.status(200).sendFile(index_file);
 });
 
 
-app.listen(PORT);
-console.log(`[INFO] Server started at: ${URL}:${PORT}`);
+app.listen(GPORT);
+console.log(`[INFO] Server started at: ${GURL}:${GPORT}`);
 console.log(`[INFO] Static directory is: ${static_dir}`);

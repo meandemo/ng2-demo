@@ -15,8 +15,6 @@ Our first demo shows how a sticky div or sticky navbar behavior can be achieved 
 
 2. `npm install`
 
-3. `tsd reinstall --save --overwrite`
-
 3. `gulp init`
 
 4. `gulp demo`
