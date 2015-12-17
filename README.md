@@ -14,6 +14,7 @@ Our first demo shows how a sticky div or sticky navbar behavior can be achieved 
 If you see this message, you are on branch beta
 
 This branch is targetting the NG2 version 2.0.0-beta.
+
 1.  17-dec-2015, version 2.0.0-beta.0.
     You can install, gulp and run but the result is not ok:
     In the console, you will see message such as
@@ -21,6 +22,9 @@ This branch is targetting the NG2 version 2.0.0-beta.
       EXCEPTION: Expression 'setStyles() in StickyDivCmp@31:25' has changed
       after it was checked. Previous value: '[object Object]'. 
       Current value: '[object Object]' in [setStyles() in StickyDivCmp@31:25]
+
+    Moving to production mode hides/solves the issue.
+
 
 
 # Getting Started

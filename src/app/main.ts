@@ -29,6 +29,7 @@ import {Component,
 
 import {bootstrap}           from 'angular2/platform/browser';
 import {StickyDivDemoCmp}   from './stickydivdemo/stickydivdemo';
+import {enableProdMode}     from 'angular2/core';
 
 
 @Component({
@@ -42,4 +43,5 @@ import {StickyDivDemoCmp}   from './stickydivdemo/stickydivdemo';
 })
 class MainCmp { }
 
+enableProdMode();
 bootstrap(MainCmp, []);
