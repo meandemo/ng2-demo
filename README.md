@@ -9,17 +9,33 @@ This repository introduces useful angular2 components which mimic behaviors foun
 
 Our first demo shows how a sticky div or sticky navbar behavior can be achieved with a simple angular2 component.
 
+# Latest News
+
+If you see this message, you are on branch beta
+
+This branch is targetting the NG2 version 2.0.0-beta.
+1.  17-dec-2015, version 2.0.0-beta.0.
+    You can install, gulp and run but the result is not ok:
+    In the console, you will see message such as
+
+      EXCEPTION: Expression 'setStyles() in StickyDivCmp@31:25' has changed
+      after it was checked. Previous value: '[object Object]'. 
+      Current value: '[object Object]' in [setStyles() in StickyDivCmp@31:25]
+
+
 # Getting Started
 
 1. clone this repository
 
 2. `npm install`
 
-3. `gulp init`
+4. `tsd reinstall --save --overwrite`
 
-4. `gulp demo`
+5. `gulp init`
 
-5. open web page on http://localhost:8080, don't forget to activate the livereload button
+6. `gulp demo`
+
+7. open web page on http://localhost:8080, don't forget to activate the livereload button
 
 ## Beware
 

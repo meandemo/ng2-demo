@@ -1,42 +1,19 @@
-//
-// header-start
-//////////////////////////////////////////////////////////////////////////////////
-//
-// \file      gulpfile.ts
-//
-// \brief     This file belongs to the ng2 tutorial project
-//
-// \author    Bernard
-//
-// \copyright Copyright ng2goodies 2015
-//            Distributed under the MIT License
-//            See http://opensource.org/licenses/MIT
-//
-//////////////////////////////////////////////////////////////////////////////////
-// header-log
-//
-// $Author$
-// $Date$
-// $Revision$
-//
-//////////////////////////////////////////////////////////////////////////////////
-// header-end
-//
-
-const fs            = require('fs');
-const cp            = require('child_process');
-const gulp          = require('gulp');
-const nodemon       = require('gulp-nodemon');
-const livereload    = require('livereload');
 const gasync        = require('async');            // from nodejs.org/api/async.html
-const wget          = require('wgetjs');
-const rename        = require('gulp-rename');
-const sass          = require('gulp-sass');
-const sourcemaps    = require('gulp-sourcemaps');
-const gprint        = require('gulp-print');
+const gulp          = require('gulp');
+const livereload    = require('livereload');
+const nodemon       = require('gulp-nodemon');
 const ts            = require('gulp-typescript');
 const tslint        = require('gulp-tslint');
 const tslintStylish = require('gulp-tslint-stylish');
+
+//const fs            = require('fs');
+//const cp            = require('child_process');
+//const wget          = require('wgetjs');
+const rename        = require('gulp-rename');
+const sass          = require('gulp-sass');
+const sourcemaps    = require('gulp-sourcemaps');
+
+const gprint        = require('gulp-print');
 const yargs         = require('yargs');
 
 const argv = yargs
