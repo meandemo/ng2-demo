@@ -44,12 +44,250 @@ pre.snippet  {
   padding-left: 3%;
   padding-bottom: 10px;
   border-radius: 10px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.15);
   background-color: rgba(255, 255, 255, 0.15);
   font-family: Consolas, monospace, sans-serif;
   white-space: pre-line;
 }
 
+//  a {
+//    text-decoration: none;
+//  }
+//  a.router-link-active {
+//    background-color: rgba(0, 0, 0, 0.15);
+//  }
+//  #leftmenu h2 {
+//  font-size:21px;
+//  padding-left:16px;
+//  margin:0 0 2px 0;
+//}
+
+.gg-left-menu a {
+  display:block;
+  text-decoration:none;
+  padding:2px 2px 2px 16px;
+  font-size:15px;
+}
+.gg-left-menu a:hover {
+  background-color:#dddddd;
+  color:#000000;
+}
+
+.gg-left-menu a:selected {
+  background-color:#dddddd;
+  color:#000000;
+}
+
+.gg-left-menu a.gg-link-active {
+  background-color:#777777;
+  color:#ffffff;  
+}
+
+//
+//  a.router-link-active {
+//
+//    background-color: rgba(0, 0, 0, 0.15);
+//  }
+
 div.gg-motto {
   padding-top: 10px;
   text-transform: uppercase;
 }
+
+/* Slider */
+
+
+form {
+  margin-: 20px 0;
+//  padding: 3em 20px;
+  border: 2px solid #aaa;
+  background: #fafafa;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  width: 50%;
+}
+
+fieldset {
+  border: 0;
+  margin: 1em 0 0;
+  border-top: 1px dotted #aaa;
+}
+
+legend {
+  font-size: 2em;
+  padding: 0;
+  margin: 0;
+  color: #222;
+}
+
+legend span {
+  position: relative;
+  top: -.1em;
+  left: -10px;
+  background: #fafafa;
+  padding-right: 10px;
+}
+
+label {
+  font-size: 1.6em;
+  margin-right: 15px;
+  float: left;
+  clear: left;
+  width: 130px;
+  text-align: right;
+}
+
+.question {
+  overflow: auto;
+  padding: 1.4em 0;
+}
+
+.slider-status {
+  float: left;
+  font-weight: bold;
+  font-size: 1.5em;
+  color: #444;
+}
+
+input#price,
+input#bedrooms,
+input#baths {
+  float: left;
+  font-size: 1.3em;
+  font-weight: bold;
+  width: 55px;
+  border: 1px solid #ccc;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  padding: .2em;
+}
+
+input#search {
+  background: #666; // url(../images/bg-button.png) 50% repeat-x;
+  color: #fff;
+  padding: .4em 1.3em;
+  border: 2px solid #444;
+  font-size: 1.7em;
+  font-weight: bold;
+  -moz-border-radius: 1.3em;
+  -webkit-border-radius: 1.3em;
+  border-radius: 1.3em;
+  cursor: pointer;
+  margin: 1em 0 0 150px;
+  width: 200px;
+}
+
+/*
+input#search:hover {
+  background-image: url(../images/bg-button-hover.png);
+}
+*/
+
+#subway,
+#water,
+#walking {
+  display: none;
+}
+
+
+/* slider styles */
+
+.ui-slider {
+  position: relative;
+  top: .8em;
+  width: 293px;
+  float: left;
+  margin-right: 15px;
+  text-align: left;
+  height: 1em;
+  background: #ebebec url(../images/bg-slider.png) top repeat-x;
+  border: 1px solid #aaa;
+  -moz-border-radius: .5em;
+  -webkit-border-radius: .5em;
+  border-radius: .5em;
+}
+
+.ui-slider .ui-slider-handle {
+  position: absolute;
+  z-index: 2;
+  width: 1.6em;
+  height: 1.6em;
+  top: -.5em;
+  margin-left: -.8em;
+  cursor: pointer;
+  border: 2px solid #444;
+  background: #fff url(../images/bg-slider-handle.png) 50% repeat-x;
+  -moz-border-radius: .9em;
+  -webkit-border-radius: .9em;
+  border-radius: .9em;
+}
+
+.ui-slider .ui-slider-handle:hover,
+.ui-slider .ui-slider-handle:focus {
+  background-image: url(../images/bg-slider-handle-hover.png);
+}
+
+.ui-slider .ui-slider-handle:active {
+  background-image: none;
+}
+
+.ui-slider .ui-slider-range {
+  position: absolute;
+  z-index: 1;
+  font-size: .7em;
+  display: block;
+  border: 0;
+  top: 0;
+  height: 100%;
+  background: #999 url(../images/bg-slider-range.png) 50% repeat-x;
+  left: 0;
+}
+
+
+/*slider label key*/
+
+.sliders-labels {
+  height: 2em;
+  margin-left: 145px;
+  width: 293px;
+  background: url(../images/bg-continuum.png) bottom left no-repeat;
+  padding-top: 1em;
+}
+
+.sliders-labels span.label-first {
+  float: left;
+}
+
+.sliders-labels span.label-last {
+  float: right;
+}
+
+//svg {
+//  position:absolute; top:5%; left:5%; width:90%; height:90%;
+//  background:#fff; border:1px solid #ccc
+//}
+div #slider #rail {
+  opacity:0.6;
+  stroke: black;
+  fill: red;
+}
+
+div #slider  #runner {
+  opacity:0.6;
+  stroke: black;
+  fill: yellow;
+}
+
+div #slider  #runner:hover {
+  opacity:0.8;
+}
+
+div #slider  #rail:hover {
+  opacity:0.8;
+}
+
+//svg .drag { cursor: move }
+//svg .sizer { opacity:0.7; fill:#ff0; stroke:#630; }

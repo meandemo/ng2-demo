@@ -1,0 +1,129 @@
+<div class="w3-row">
+  <div class="w3-container w3-padding w3-col w3-text-theme" style="width:60%">
+    <h2>SVG Based Slider V2</h2>
+
+    <p>
+      The slider shown just below a custom slider implemented with the angular2
+      framework. We have a new html tag <code>&lt;gg-svg-slider&gt;</code> which can be used  
+      like the standard <code>&lt;input&gt;</code> slider.
+    </p>  
+
+    <gg-svg-slider #_inst_v2 
+        [min]="svg_slider_.min"
+        [max]="svg_slider_.max"
+        [initial]="25"
+        [(runner)]="svg_slider_.value"
+        [width]="svg_slider_.rail"></gg-svg-slider>
+
+    <p>              
+      Svg Slider Control Panel
+    </p>
+    <form [ngFormModel]="svg_ctrl_">
+      <table class="w3-table">
+        <tr>
+          <td>Rail length:
+          </td>
+          <td>
+            <input type="text" name="rail"  size="5" [(ngModel)]="svg_slider_.rail" ngControl="rail">
+          </td>  
+        </tr>  
+        <tr>
+          <td>Min:
+          </td>
+          <td>
+            <input type="text" name="vmin"  size="5"  [(ngModel)]="svg_slider_.min" ngControl="min">
+          </td>  
+        </tr>  
+        <tr>
+          <td>Max:
+          </td>
+          <td>
+            <input type="text"  name="vmax" size="5" [(ngModel)]="svg_slider_.max" ngControl="max">
+          </td>  
+        </tr>  
+        <tr>
+          <td>Value:
+          </td>
+          <td>
+            <input type="number" name="val" [(ngModel)]="svg_slider_.value" 
+                   [min]="svg_slider_.min" 
+                   [max]="svg_slider_.max"  ngControl="value">
+          </td>  
+        </tr>  
+      </table>  
+    </form>
+
+    <h2>Standard Slider</h2>
+    <p>
+      The slider below is a standard slider done with a standard 
+      <code>&lt;input type="range" ... &gt;</code> html tag.  
+    </p>
+      <input type="range" [(ngModel)]="std_slider_.value" 
+             [min]="std_slider_.min" [max]="std_slider_.max" style="width: 300px;"><br>
+
+    <form [ngFormModel]="std_ctrl_">
+      <table class="w3-table">
+        <tr>
+          <td>Min:
+          </td>
+          <td>
+            <input type="text" name="vmin"  size="5"  [(ngModel)]="svg_slider_.min" ngControl="min">
+          </td>  
+        </tr>  
+        <tr>
+          <td>Max:
+          </td>
+          <td>
+            <input type="text"  name="vmax" size="5" [(ngModel)]="svg_slider_.max" ngControl="max">
+          </td>  
+        </tr>  
+        <tr>
+          <td>Value:
+          </td>
+          <td>
+            <input type="number" name="val" [(ngModel)]="std_slider_.value" 
+                   [min]="std_slider_.min" 
+                   [max]="std_slider_.max"  ngControl="value">
+          </td>  
+        </tr>  
+      </table>  
+    </form>
+    <!--
+    <input type="number" name="price" id="price" value="2000" [min]="slider0_.min" [max]="slider0_.max" ="5000" size="4" data-units="dollars"><br>
+      <p>
+        An alternative way, it to use a normal div for section B: 
+      </p>  
+        <pre class="snippet">
+          &lt;div &#x23;_inst0&gt;
+          ...
+          &lt;&#x2F;div&gt;
+        </pre>
+      <p>
+      -->
+
+    <h2>Improved Slider</h2>
+    <form class="question">
+      <label for="price" id="price-label">Max Rent ($):</label>
+      <div class="ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all">
+        <div class="ui-slider-range ui-slider-range-min ui-widget-header" style="width: 58.82%;">
+        </div>
+        <a href="#" class="ui-slider-handle ui-state-default ui-corner-all" 
+                    role="slider" 
+                    aria-valuemin="0" aria-valuemax="5000" aria-valuenow="2941" 
+                    aria-valuetext="2941 dollars" title="2941 dollars" 
+                    aria-labelledby="price-label" style="left: 58.82%;">
+        </a>
+      </div>
+    </form>
+
+
+
+    <h2>Lipsum Text Below</h2>
+    <gg-lipsum></gg-lipsum>
+  </div>
+
+
+  <div class="w3-container w3-padding w3-col w3-text-theme" style="width:40%">
+    <h2>Reserved for Demo Effect</h2>
+  </div>
+</div>
