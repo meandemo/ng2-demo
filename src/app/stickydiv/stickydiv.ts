@@ -113,6 +113,7 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
     ++StickyDivCmp.instance_cnt_;
   }
 
+
   //
   // At the ngOnInit() stage, we can't do much
   // The @Input is not yet injected as the maxscroll value
@@ -136,7 +137,7 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
 
   //
   ngAfterViewInit() {
-    //console.log('---------------------------+------------------------');
+    //console.log('-----------------------+------------------------');
     //console.log('[Trace] ngAfterViewInit()  id       ' + this.id_div2_);
     //console.log('[Trace] ngAfterViewInit()  is_fixed ' + this.is_div2_fixed_);
 
@@ -153,7 +154,7 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
   // value associated with this maxscroll property
   //
   ngAfterViewChecked() {
-    //console.log('---------------------------+------------------------');
+    //console.log('-----------------------+------------------------');
     //console.log('[Trace] ngAfterViewCheck() id       ' + this.id_div2_);
     //console.log('[Trace] ngAfterViewCheck() is_fixed ' + this.is_div2_fixed_);
 
@@ -179,8 +180,6 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
 
   setStyles(): any {
     if (this.is_div2_fixed_) {
-      //console.log('---------------------------+------------------------');
-      //console.log('[Trace] setStyles()        id       ' + this.is_div2_fixed_);
       return {
         'position': 'fixed',
         'padding': '0px',
@@ -191,8 +190,6 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
         'left': `${this.div_left_}px`
       };
     } else {
-      //console.log('---------------------------+------------------------');
-      //console.log('[Trace] setStyles()        id       ' + this.is_div2_fixed_);
       return {};
     }
   }
@@ -203,9 +200,9 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
   // max amount, it becomes fixed.
   //
   onScroll() {
-    //console.log('---------------------------+------------------------');
-    //console.log('[Trace] onScroll()         id       ' + this.id_div2_);
-    //console.log('[Trace] onScroll()         is_fixed ' + this.is_div2_fixed_);
+    //console.log('-----------------------+------------------------');
+    //console.log('[Trace] onScroll()     id       ' + this.id_div2_);
+    //console.log('[Trace] onScroll()     is_fixed ' + this.is_div2_fixed_);
 
     if (this.is_sticky_) {
       this.is_div2_fixed_ = (window.pageYOffset >= this.y_offset_);
@@ -217,9 +214,9 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
   // to the top position.
   //
   onResize() {
-    //console.log('---------------------------+------------------------');
-    //console.log('[Trace] onResize()         id       ' + this.id_div2_);
-    //console.log('[Trace] onResize()         is_fixed ' + this.is_div2_fixed_);
+    //console.log('-----------------------+------------------------');
+    //console.log('[Trace] onResize()     id       ' + this.id_div2_);
+    //console.log('[Trace] onResize()     is_fixed ' + this.is_div2_fixed_);
 
     window.scroll(0, 0);
     if (this.is_sticky_) {

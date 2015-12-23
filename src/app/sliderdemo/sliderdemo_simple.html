@@ -1,129 +1,179 @@
 <div class="w3-row">
+  <div class="w3-container w3-padding w3-col w3-text-theme" style="width:10%">
+    <div hidden>Reserved for future use</div>
+  </div>
   <div class="w3-container w3-padding w3-col w3-text-theme" style="width:60%">
-    <h2>SVG Based Slider V2</h2>
+
+    <h2>Standard Slider</h2>
+    <p>
+      The slider below is a standard html5 slider using the 
+      <code>&lt;input type="range" ... &gt;</code> html tag. It's a good
+      example of bi-directional binding with the special angular
+      syntax: <code>[(ngModel)]</code>: the slider and value input field are linked.
+      The three input items: value, min and max are grouped in a html 
+      <code>&lt;form&gt;</code> tag which allows the activation of powerfull
+      check functions. In our case, we check that the min value is always less than max 
+      and that the value is changed when either min or max are updated.
+    </p>  
+    <p>  
+      To illustrate these checkers, you can try to change the min value to be greater
+      than the current value. This change is rejected and the min value remains unchanged.
+      This is done with the special attribute <code>ngFormModel</code>         
+      and used with the <code>form</code> tag as follows:
+      <code>&lt;form [ngFormModel]="my_ctrl"&gt;</code>.
+      The variable <code>my_ctrl</code> has type <code>ControlGroup</code> and it must
+      be a member variable of your component class.
+    </p>
+    <h4 #_id_std_ctrl_panel>Standard Slider Control Panel</h4>
+    <input type="range" [(ngModel)]="std_slider_.value_" 
+             [min]="std_slider_.min_" [max]="std_slider_.max_" style="width: 300px;">
+    <br>
+    <br>
+    <form [ngFormModel]="std_ctrl_">
+      <table class="w3-table">
+        <tr>
+          <td>Value: </td>
+          <td>
+            <input type="number" name="val" size="5" [(ngModel)]="std_slider_.value_" 
+                   [min]="std_slider_.min_" 
+                   [max]="std_slider_.max_"  ngControl="value">
+          </td>  
+        </tr>  
+        <tr>
+          <td>Min: </td>
+          <td>
+            <input type="number" name="vmin"  size="5"  [(ngModel)]="std_slider_.min_"
+              min="0" max="9999" ngControl="min">
+
+          </td>  
+        </tr>  
+        <tr>
+          <td>Max: </td>
+          <td>
+            <input type="number"  name="vmax" size="5" [(ngModel)]="std_slider_.max_"
+              min="1" max="9999" ngControl="max">
+          </td>  
+        </tr>  
+      </table>  
+    </form>
+    <br>
+    <br>
+    <h2>SVG Based Slider</h2>
+    <p>
+      We propose to use svg to implement a fully custom slider
+      without the clever css tricks commonly found to customize the html default slider.
+
+      The figure below describes an svg slider with its bounding box, the rail and the runner.
+    </p>
+    <img src="/images/svg_slider.png" width="50%">
 
     <p>
-      The slider shown just below a custom slider implemented with the angular2
+      The slider shown just below is a custom slider implemented with the angular2
       framework. We have a new html tag <code>&lt;gg-svg-slider&gt;</code> which can be used  
       like the standard <code>&lt;input&gt;</code> slider.
     </p>  
 
-    <gg-svg-slider #_inst_v2 
-        [min]="svg_slider_.min"
-        [max]="svg_slider_.max"
-        [initial]="25"
-        [(runner)]="svg_slider_.value"
-        [width]="svg_slider_.rail"></gg-svg-slider>
+    <gg-svg-slider 
+        [(min)]="svg_slider_.min_"
+        [(max)]="svg_slider_.max_"
+        [(value)]="svg_slider_.value_"
+        [shape]="svg_slider_.runner_shape_"
+        [length]="svg_slider_.length_"></gg-svg-slider>
 
-    <p>              
-      Svg Slider Control Panel
-    </p>
-    <form [ngFormModel]="svg_ctrl_">
+    <h4 #_id_svg_ctrl_panel>SVG Slider Control Panel</h4>
+    <form> 
       <table class="w3-table">
         <tr>
-          <td>Rail length:
-          </td>
+          <td>Value:</td>
           <td>
-            <input type="text" name="rail"  size="5" [(ngModel)]="svg_slider_.rail" ngControl="rail">
+            <input type="number" name="val" [(ngModel)]="svg_slider_.value_" 
+                   [min]="svg_slider_.min_" 
+                   [max]="svg_slider_.max_"  ngControl="value">
           </td>  
         </tr>  
         <tr>
-          <td>Min:
-          </td>
+          <td>Min:</td>
           <td>
-            <input type="text" name="vmin"  size="5"  [(ngModel)]="svg_slider_.min" ngControl="min">
+            <input type="number" name="vmin"  size="5"  [(ngModel)]="svg_slider_.min_"
+              min="0" max="9999" ngControl="min">
           </td>  
         </tr>  
         <tr>
-          <td>Max:
-          </td>
+          <td>Max:</td>
           <td>
-            <input type="text"  name="vmax" size="5" [(ngModel)]="svg_slider_.max" ngControl="max">
+            <input type="number"  name="vmax" size="5" [(ngModel)]="svg_slider_.max_"
+              min="0" max="9999" ngControl="max">
           </td>  
         </tr>  
         <tr>
-          <td>Value:
-          </td>
+          <td>Rail length:</td>
           <td>
-            <input type="number" name="val" [(ngModel)]="svg_slider_.value" 
-                   [min]="svg_slider_.min" 
-                   [max]="svg_slider_.max"  ngControl="value">
+            <input type="number" name="length"  size="5" [(ngModel)]="svg_slider_.length_" min="15" max="300">
+          </td>  
+        </tr>  
+        <tr>
+          <td>Runner Type</td>
+          <td>
+            <input type="radio" name="runner_shape"
+                  (click)="svg_slider_.runner_shape_ = 'circle';" value="circle" checked>Circle
+            <input type="radio" name="runner_shape"
+                  (click)="svg_slider_.runner_shape_ = 'label';"  value="label">Label
           </td>  
         </tr>  
       </table>  
     </form>
 
-    <h2>Standard Slider</h2>
     <p>
-      The slider below is a standard slider done with a standard 
-      <code>&lt;input type="range" ... &gt;</code> html tag.  
-    </p>
-      <input type="range" [(ngModel)]="std_slider_.value" 
-             [min]="std_slider_.min" [max]="std_slider_.max" style="width: 300px;"><br>
+      Additional information coming soon...<br>
+      In the meanwhile, try to understand why we have used bi-directional binding
+      for min and max.
+    </p>  
 
-    <form [ngFormModel]="std_ctrl_">
-      <table class="w3-table">
-        <tr>
-          <td>Min:
-          </td>
-          <td>
-            <input type="text" name="vmin"  size="5"  [(ngModel)]="svg_slider_.min" ngControl="min">
-          </td>  
-        </tr>  
-        <tr>
-          <td>Max:
-          </td>
-          <td>
-            <input type="text"  name="vmax" size="5" [(ngModel)]="svg_slider_.max" ngControl="max">
-          </td>  
-        </tr>  
-        <tr>
-          <td>Value:
-          </td>
-          <td>
-            <input type="number" name="val" [(ngModel)]="std_slider_.value" 
-                   [min]="std_slider_.min" 
-                   [max]="std_slider_.max"  ngControl="value">
-          </td>  
-        </tr>  
-      </table>  
-    </form>
-    <!--
-    <input type="number" name="price" id="price" value="2000" [min]="slider0_.min" [max]="slider0_.max" ="5000" size="4" data-units="dollars"><br>
-      <p>
-        An alternative way, it to use a normal div for section B: 
-      </p>  
-        <pre class="snippet">
-          &lt;div &#x23;_inst0&gt;
-          ...
-          &lt;&#x2F;div&gt;
-        </pre>
-      <p>
-      -->
-
+    <br>
+    <br>
     <h2>Improved Slider</h2>
-    <form class="question">
-      <label for="price" id="price-label">Max Rent ($):</label>
-      <div class="ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all">
-        <div class="ui-slider-range ui-slider-range-min ui-widget-header" style="width: 58.82%;">
-        </div>
-        <a href="#" class="ui-slider-handle ui-state-default ui-corner-all" 
-                    role="slider" 
-                    aria-valuemin="0" aria-valuemax="5000" aria-valuenow="2941" 
-                    aria-valuetext="2941 dollars" title="2941 dollars" 
-                    aria-labelledby="price-label" style="left: 58.82%;">
-        </a>
-      </div>
-    </form>
-
-
+      To be completed<br>
+      vertical slider<br>
+      multi runner slider<br>
+      colored slider<br>
+      multiple sliders<br>
+      on/off sliders<br>
+      integer value sliders<br>
 
     <h2>Lipsum Text Below</h2>
     <gg-lipsum></gg-lipsum>
   </div>
 
 
-  <div class="w3-container w3-padding w3-col w3-text-theme" style="width:40%">
-    <h2>Reserved for Demo Effect</h2>
+  <div class="w3-container w3-padding w3-col w3-text-theme" style="width:30%">
+    <!--
+    <div hidden style="position:relative w3-tiny">
+    std {{_id_std_ctrl_panel.getBoundingClientRect().top}}<br>
+    svg {{_id_svg_ctrl_panel.getBoundingClientRect().top}}<br>
+    </div>
+    -->
+    <div [ngStyle]="{'position':'absolute', 'top':'472px' }"> <!-- ">  -->
+      <h4>HTML Code</h4>
+      <pre class="side-snippet">
+        &lt;input type="range"
+        &nbsp;&nbsp;[&#x28;ngModel&#x29;]="my_value"
+        &nbsp;&nbsp;[min]="my_min"
+        &nbsp;&nbsp;[max]="my_max"
+        &nbsp;&nbsp;style="width: 300px;&gt;
+      </pre>
+    </div>
+    <div [ngStyle]="{'position':'absolute', 'top':'1227px' }"> <!-- ">  -->
+    <div>
+      <h4>HTML Code</h4>
+      <pre class="side-snippet">
+        &lt;gg-svg-slider 
+        &nbsp;&nbsp;[(value)]="my_value"
+        &nbsp;&nbsp;[(min)]="my_min"
+        &nbsp;&nbsp;[(max)]="my_max"
+        &nbsp;&nbsp;[shape]="my_runner_shape"
+        &nbsp;&nbsp;[length]="my_rail_length"&gt;
+        &lt;/gg-svg-slider&gt; 
+      </pre>
+    </div>  
   </div>
 </div>

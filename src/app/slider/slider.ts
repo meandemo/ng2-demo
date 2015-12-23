@@ -22,16 +22,42 @@ import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
 @Component ({
   selector: 'gg-svg-slider',
   template: `
-    <div #topslider id="slider" style="margin:5px"> <!-- style="position:relative;width:220px;height:40px" > -->
+    <div #topslider id="slider" style="margin:5px">
+
+      <!-- special div which disable mousemove and mouseup event -->
+
       <div *ngIf="button_is_down_" style="position:relative"
            (window:mousemove)="onMousemove($event)"
            (window:mouseup)="onMouseup($event)" >
       </div>
-      <svg  height="50" preserveAspectRatio="xMinYMin meet" xmlns="http://www.w3.org/2000/svg" viewBox="-25 -25 230 50" version="1.1" >
-        <path id="rail" (mousedown)="onMousedown(topslider, $event, false)"
-              d="M 0 -10 v 20 h 180 v -20 z" />
-        <circle  id="runner" (mousedown)="onMousedown(topslider, $event, true)"
-                class="drag sizer" [attr.cx]="pos_" cy="0" r="20" />
+      <svg  height="90" preserveAspectRatio="xMinYMin meet"
+            xmlns="http://www.w3.org/2000/svg" viewBox="-60 -50 350 90" version="1.1" >
+
+        <!-- rail group -->
+
+        <g id="rail" (mousedown)="onMousedown(topslider, $event, false)">
+          <rect id="default-rail" x="0" y="-10" [attr.width]="rail_length_" height="20" />
+          <!--
+          <rect id="default-rail" x="0" y="-10" width="180" height="20" />
+          <path id="default-rail" d="M 0 -10 v 20 h 180 v -20 z" />
+          -->
+        </g>
+
+        <!-- runner group -->
+
+        <g  id="runner" [attr.transform]="trans_pos_"
+                        (mousedown)="onMousedown(topslider, $event, true)" >
+
+          <g *ngIf="runner_style_is_circle_" id="circle">
+            <circle cx="0" cy="0" r="20" />
+          </g>
+
+          <g  *ngIf="runner_style_is_label_" id="label">
+            <path id="panel" d="M 0 0 L 10 -10 L 30 -10 L 30 -35 L -30 -35 L -30 -10 L -10 -10 z"
+                style="color:black;fill:black" />
+            <text id="text" x="-17" y="-17" font-family="Verdana" font-size="15" fill="white">{{ value_ | number:'1.1-1' }}</text>
+          </g>
+        </g>
       </svg>
     </div>
   `,
@@ -39,28 +65,46 @@ import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
 })
 export class SvgSliderCmp implements OnInit, AfterViewInit, OnChanges {
   @Input() min: any;
+  @Output() minChange:  EventEmitter<number> = new EventEmitter<number>();
+
   @Input() max: any;
-  @Input() initial: any;
-  @Input() width: any;
+  @Output() maxChange:  EventEmitter<number> = new EventEmitter<number>();
 
-  @Input('runner') value: any;
-  @Output('runnerChange') emit_value_: EventEmitter<number> = new EventEmitter<number>();
+  @Input() length: any;
+  @Output() lengthChange:  EventEmitter<number> = new EventEmitter<number>();
 
+  @Input() shape: any;
+
+  @Input('value') value: any;
+  @Output('valueChange') emit_value_: EventEmitter<number> = new EventEmitter<number>();
+
+  private min_: number;
   private max_: number;
   private value_: number;
-  private width_: number;
+  private rounded_value_: number;
+  private rail_length_: number;
+  private min_rail_length_: number;
+  private max_rail_length_: number;
+
   private pos_: number;
 
   private delta_: number;
   private base_: number;
   private button_is_down_: boolean = false;
 
+  private trans_pos_: string;
+  private label_offset_: number = 0;
+
+  private runner_style_is_circle_: boolean = true;
+  private runner_style_is_label_:  boolean = false;
 
   constructor() {
-    //this.min_ = 0;
+    this.min_ = 0;
     this.max_ = 100;
-    //this.value = this.value_;
-    this.width_ = 180;
+    this.value_ = 50;
+    this.rail_length_ = 180;
+    this.min_rail_length_ = 10;
+    this.max_rail_length_ = 4096;
   }
 
   clip3(v: number, min: number, max: number): number {
@@ -71,81 +115,182 @@ export class SvgSliderCmp implements OnInit, AfterViewInit, OnChanges {
   }
 
   value2pos(v: number) {
-    const pos = (this.width_ * (v - this.min)) / (this.max_ - this.min);
-    return this.clip3(pos, 0, this.width_);
+    const pos = (this.rail_length_ * (v - this.min_)) / (this.max_ - this.min_);
+    return this.clip3(pos, 0, this.rail_length_);
   }
 
   pos2value(p: number) {
-    const v =  this.min + (p * (this.max_ - this.min) / this.width_);
-    return this.clip3(v, this.min, this.max_);
+    const v =  this.min_ + (p * (this.max_ - this.min_) / this.rail_length_);
+    return this.clip3(v, this.min_, this.max_);
+  }
+
+
+  emit() {
+    if ('emit_value_' in this) {
+      this.emit_value_.emit(this.rounded_value_);
+    }
   }
 
   ngOnInit() {
     // not much is done here
   }
 
+  values_changed(v: number) {
+    this.value_ = this.clip3(v, this.min_, this.max_);
+    this.rounded_value_ =   Math.round(v * 10) / 10;
+    this.pos_ = this.value2pos(v);
+    this.trans_pos_ = `translate(${this.pos_},${this.label_offset_})`;
+  }
+
+  position_changed(pos: number) {
+    this.pos_ = this.clip3(pos, 0, this.rail_length_);
+    this.trans_pos_ = `translate(${this.pos_},${this.label_offset_})`;
+    this.value_ = this.pos2value(this.pos_);
+    this.rounded_value_ = Math.round(this.value_ * 10) / 10;
+    this.emit();
+  }
+
+  //
+  // detecting changes and emit value
+  // value, min, max, shape type
+  // when the button is down, the changes
+  // to the runner position are emitted with mousemove
+
   ngOnChanges(changes: {[propName: string]: SimpleChange}) {
-    console.log('[DEBUG] slider ngOnChanges, changeNotifier = ', changes);
-    if ('value' in this && changes && !this.button_is_down_) {
-      let value = Number(changes['value'].currentValue);
-      console.log('[DEBUG] slider ngOnChanges, changeNotifier = ', value);
-      this.value_ = this.clip3(value, this.min, this.max_);
-      this.pos_ = this.value2pos(this.value_);
-      this.emit_value_.emit(this.value_);
+    if (this.button_is_down_) {
+      return;
+    }
+
+    if (changes['value']) {
+      let v = Number(changes['value'].currentValue);
+      if ((Number.isNaN(v)) || (v < this.min_) || (v > this.max_)) {
+        // submitted value is invalid, emit the current value
+        this.emit();
+      } else {
+        // it's a valid value => update runner position
+        // but no need to emit the value in this case
+        // as it is a valid external change.
+        this.values_changed(v);
+      }
+
+    } else if (changes['min']) {
+      let v = Number(changes['min'].currentValue);
+      if ((Number.isNaN(v)) || (v > this.value_)) {
+        // invalid change
+        if ('minChange' in this) {
+          this.minChange.emit(this.min_);
+        }
+      } else {
+        // valid change, update runner position
+        this.min_ = v;
+        this.values_changed(this.value_);
+      }
+
+
+    } else if (changes['max']) {
+      let v = Number(changes['max'].currentValue);
+      if ((Number.isNaN(v)) || (v < this.value_)) {
+        // invalid change
+        if ('maxChange' in this) {
+          this.maxChange.emit(this.max_);
+        }
+      } else {
+        // valid change, update runner position
+        this.max_ = v;
+        this.values_changed(this.value_);
+      }
+
+    } else if (changes['shape']) {
+      if (changes['shape'].currentValue === 'label') {
+        this.runner_style_is_circle_ = false;
+        this.runner_style_is_label_ = true;
+        this.label_offset_ = -10;
+      } else {
+        this.runner_style_is_circle_ = true;
+        this.runner_style_is_label_ = false;
+        this.label_offset_ = 0;
+      }
+      this.trans_pos_ = `translate(${this.pos_},${this.label_offset_})`;
+
+    } else if (changes['length']) {
+      let v = Number(changes['length'].currentValue);
+      if ((Number.isNaN(v)) || (v < this.min_rail_length_)
+                            || (v > this.max_rail_length_)) {
+        // invalid change
+        if ('lengthChange' in this) {
+          this.lengthChange.emit(this.rail_length_);
+        }
+      } else {
+        // valid change, update runner position
+        this.rail_length_ = v;
+        this.values_changed(this.value_);
+      }
     }
   }
+
 
   ngAfterViewInit() {
+    if ('shape' in this) {
+      if (this.shape === 'label') {
+        this.runner_style_is_circle_ = false;
+        this.runner_style_is_label_ = true;
+        this.label_offset_ = -10;
+      } else {
+        this.runner_style_is_circle_ = true;
+        this.runner_style_is_label_ = false;
+        this.label_offset_ = 0;
+      }
+    }
+
     if ('min' in this) {
-      this.min = 0 + this.min;
-    } else {
-      this.min = 0;
+      this.min_ = Number(this.min);
     }
+
     if ('max' in this) {
-      this.max_ = 0 + this.max;
+      this.max_ = Number(this.max);
     }
-    if (this.max_ === this.min) {
-      this.max_ = this.min + 1;
-    } else if (this.max_ < this.min) {
+
+    if (this.max_ === this.min_) {
+      this.max_ = this.min_ + 1;
+    } else if (this.max_ < this.min_) {
       const tmp = this.max_;
-      this.max_ = this.min;
-      this.min = tmp;
+      this.max_ = this.min_;
+      this.min_ = tmp;
     }
 
-    if ('initial' in this) {
-      this.value_ = 0 + this.initial;
+    if ('length' in this) {
+      this.rail_length_ = Number(this.length);
     } else {
-      this.value_ = this.min;
+      this.rail_length_ = 250;
+    }
+    this.rail_length_ = this.clip3(this.rail_length_, this.min_rail_length_, this.max_rail_length_);
+
+
+    let v = (this.min_ + this.max_) / 2;
+    if ('value' in this) {
+      v = Number(this.value);
     }
 
-    //if ('value' in this) {
-    //  this.value_ = 0 + this.value;
-    //}
-    this.value_ = this.clip3(this.value_, this.min, this.max_);
-    //this.value = this.value_;
-    this.pos_ = this.value2pos(this.value_);
-    this.emit_value_.emit(this.value_);
-
-
-    if ('width' in this) {
-      this.width_ = 0 + this.width;
-    }
-
-    this.width = (this.width_ < 10) ? 10 : this.width_;
+    this.values_changed(v);
+    this.emit();
 
   }
 
+  //
+  // Details on the position calculation
+  //
   //                    initial            final
   //
   //  |---------->            (= base_  given by elm.getBoundingClientRect().left)
-  //             @       +====+            +====+
-  //             +-------|    |------------|    |---+
-  //             +-------|  x |------------|  x |---+
-  //                     +====+            +====+
-  //             |----- >     (= npos_)
-  //                     <--> (= delta_)
-  //  [1]------------------ > (= evt.clientX)
-  //  [2]------------------------------------ > (= evt.clientX)
+  //             @       +=======+            +=======+
+  //             +-------|       |------------|       |---+
+  //             +-------|   o   |------------|   o   |---+
+  //             +-------|     x |------------|     x |---+
+  //                     +=======+            +=======+
+  //             |---------->     (= pos_)
+  //                        <->   (= delta_)
+  //  [1]--------------------->   (= evt.clientX)
+  //  [2]-----------------------------------------> (= evt.clientX)
   //
   //  On initial mouse down, we can compute delta as we have:
   //  evt.clientX = base_ + npos_ + delta_   [1]
@@ -166,39 +311,26 @@ export class SvgSliderCmp implements OnInit, AfterViewInit, OnChanges {
       // and not on the slider button
       this.delta_ = 20;
       const pos = evt.clientX - (this.base_ + this.delta_);
-      this.pos_ = this.clip3(pos, 0, this.width_);
-
-      this.value_ = this.pos2value(this.pos_);
-      this.emit_value_.emit(this.value_);
-      //this.value = this.value_;
+      this.position_changed(pos);
     }
   }
 
   //
   // this function can only be called when button_is_down_ is true
-  // has we have used a special div with *ngIf
+  // as we have used a special div with *ngIf
   // <div *ngIf="button_is_down_"  (window:mousemove)="onMousemove($event)" ..
   //
   onMousemove(evt: any) {
-    //console.log("DEBUG: mouse move event ", evt.clientX);
-    //this.mouse_x = evt.clientX;
     const pos = evt.clientX - (this.base_ + this.delta_);
-    this.pos_ = this.clip3(pos, 0, this.width_);
-    this.value_ = this.pos2value(this.pos_);
-    this.emit_value_.emit(this.value_);
-    //this.value = this.value_;
+    this.position_changed(pos);
   }
 
   //
-  // same as onMousemouse()
-  // the release of the mouse button removes the div with the (window:mousemove) events
+  // the release of the mouse button
+  // removes the div with the (window:mousemove) events
   //
 
   onMouseup(evt: any) {
     this.button_is_down_ = false;
-  //  const pos = evt.clientX - (this.base_ + this.delta_);
-  //  this.pos_ = this.clip3(pos, 0, this.width_);
-  //  this.value_ = this.pos2value(this.pos_);
-    //this.value = this.value_;
   }
 }
