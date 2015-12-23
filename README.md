@@ -9,6 +9,9 @@ This repository introduces useful angular2 components which mimic behaviors foun
 
 Our first demo shows how a sticky div or sticky navbar behavior can be achieved with a simple angular2 component.
 
+A Second demo demonstrate a slider angular component implemented using SVG which can be easily customized
+
+
 # Latest News
 
 If you see this message, you are on branch beta
@@ -50,11 +53,18 @@ I ran into trouble with nodemon when launching from patty.
 
 A live demo is available here: http://meandemo.github.io.
 
-## A sticky div
+## A Sticky div
 
 Our first angular2 component is a sticky div, found on many web sites ( http://www.w3schools.com/w3css).
 This implementation relies on angular2 framework exclusively.
 
 The web page has all the information, enjoy! 
+
+## An SVG Slider
+
+Using the power of angular2, we demonstrate an SVG based slider which can be easily customized to fit
+your needs.
+
+## Misc Info
 
 Tested ok on Chrome 47.0.2526.80 m & win7 

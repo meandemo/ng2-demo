@@ -53,8 +53,9 @@ import {enableProdMode}      from 'angular2/core';
         <br>
       </div>
       <div class="w3-container w3-tiny">
-        Page last updated 21-Dec-2015<br>
-        (c) ng2goodies<br>
+        Page last updated 23-Dec-2015<br>
+        Log log all bugs <a href="https://github.com/meandemo/ng2-demo/issues">here</a><br>
+        (c) <a href="http://www.ng2goodies.com">ng2goodies</a><br>
       </div>
     </div>
    `,
