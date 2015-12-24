@@ -22,7 +22,7 @@ import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
 @Component ({
   selector: 'gg-svg-slider',
   template: `
-    <div #topslider id="slider" style="margin:5px">
+    <div  id="slider" style="margin:5px">
 
       <!-- special div which disable mousemove and mouseup event -->
 
@@ -33,9 +33,13 @@ import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
       <svg  height="90" preserveAspectRatio="xMinYMin meet"
             xmlns="http://www.w3.org/2000/svg" viewBox="-60 -50 350 90" version="1.1" >
 
+        <!-- reference (0,0), no fill, no stroke -->
+
+        <rect #railref  x="0" y="0" width="1" height="1" style="fill:none;stroke:none"  />
+
         <!-- rail group -->
 
-        <g id="rail" (mousedown)="onMousedown(topslider, $event, false)">
+        <g id="rail" (mousedown)="onMousedown(railref, $event, false)">
           <rect id="default-rail" x="0" y="-10" [attr.width]="rail_length_" height="20" />
           <!--
           <rect id="default-rail" x="0" y="-10" width="180" height="20" />
@@ -46,7 +50,7 @@ import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
         <!-- runner group -->
 
         <g  id="runner" [attr.transform]="trans_pos_"
-                        (mousedown)="onMousedown(topslider, $event, true)" >
+                        (mousedown)="onMousedown(railref, $event, true)" >
 
           <g *ngIf="runner_style_is_circle_" id="circle">
             <circle cx="0" cy="0" r="20" />
@@ -279,38 +283,44 @@ export class SvgSliderCmp implements OnInit, AfterViewInit, OnChanges {
   //
   // Details on the position calculation
   //
-  //                    initial            final
+  //                    initial               final          !onbutton       
+  //  [3]---------------------------------------------------------> (= evt.clientX)
   //
-  //  |---------->            (= base_  given by elm.getBoundingClientRect().left)
+  //  |--------->@              (= base_  given by elm.getBoundingClientRect().left)
   //             @       +=======+            +=======+
-  //             +-------|       |------------|       |---+
-  //             +-------|   o   |------------|   o   |---+
-  //             +-------|     x |------------|     x |---+
+  //             +-------|       |------------|       |---------------------+
+  //             +-------|   o   |------------|   o   |-----------o---------+
+  //             +-------|     x |------------|     x |---------------------+
   //                     +=======+            +=======+
-  //             |---------->     (= pos_)
-  //                        <->   (= delta_)
+  //             |---------->     (= pos)
+  //                        <->   (= offset)
   //  [1]--------------------->   (= evt.clientX)
   //  [2]-----------------------------------------> (= evt.clientX)
   //
   //  On initial mouse down, we can compute delta as we have:
-  //  evt.clientX = base_ + npos_ + delta_   [1]
+  //  evt.clientX[1] = base + pos + offset   
   //
-  //  On mouse up, we can compute npos_ given by
-  //  evt.clientX = base_ + npos_ + delta_   [1]
+  //  On mouse move/up, we can compute npos_ given by
+  //  evt.clientX[2] = base + npos + offset   
+  //  => npos = evt.clientX[2] - (evt.clientX[1] - pos)
+  // 
+  //  Special case when rail is clicked [3], we assume a virtual [1], so we have: 
+  //  evt.clientX[3] = base + npos  
+  //  evt.clientX[1] = base + pos 
+  //  => npos = evt.clientX[3] - (evt.clientX[1]  - pos)
 
   // Note the preventDefault to ensure that the future mouse events
   // are not propagated to other elements
 
   onMousedown(elm: any, evt: any, on_button: boolean) {
-    this.base_ = elm.getBoundingClientRect().left;
     evt.preventDefault();
     this.button_is_down_ = true;
-    this.delta_ = evt.clientX - (this.base_ + this.pos_);
+    this.delta_ = evt.clientX - this.pos_;
     if (!on_button) {
       // special case when the mouse down occur on the slide zone
       // and not on the slider button
-      this.delta_ = 20;
-      const pos = evt.clientX - (this.base_ + this.delta_);
+      this.delta_ = elm.getBoundingClientRect().left;
+      const pos = evt.clientX - this.delta_;
       this.position_changed(pos);
     }
   }
@@ -321,7 +331,7 @@ export class SvgSliderCmp implements OnInit, AfterViewInit, OnChanges {
   // <div *ngIf="button_is_down_"  (window:mousemove)="onMousemove($event)" ..
   //
   onMousemove(evt: any) {
-    const pos = evt.clientX - (this.base_ + this.delta_);
+    const pos = evt.clientX - this.delta_;
     this.position_changed(pos);
   }
 

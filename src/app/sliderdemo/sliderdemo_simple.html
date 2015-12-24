@@ -4,58 +4,63 @@
   </div>
   <div class="w3-container w3-padding w3-col w3-text-theme" style="width:60%">
 
-    <h2>Standard Slider</h2>
-    <p>
-      The slider below is a standard html5 slider using the 
-      <code>&lt;input type="range" ... &gt;</code> html tag. It's a good
-      example of bi-directional binding with the special angular
-      syntax: <code>[(ngModel)]</code>: the slider and value input field are linked.
-      The three input items: value, min and max are grouped in a html 
-      <code>&lt;form&gt;</code> tag which allows the activation of powerfull
-      check functions. In our case, we check that the min value is always less than max 
-      and that the value is changed when either min or max are updated.
-    </p>  
-    <p>  
-      To illustrate these checkers, you can try to change the min value to be greater
-      than the current value. This change is rejected and the min value remains unchanged.
-      This is done with the special attribute <code>ngFormModel</code>         
-      and used with the <code>form</code> tag as follows:
-      <code>&lt;form [ngFormModel]="my_ctrl"&gt;</code>.
-      The variable <code>my_ctrl</code> has type <code>ControlGroup</code> and it must
-      be a member variable of your component class.
-    </p>
-    <h4 #_id_std_ctrl_panel>Standard Slider Control Panel</h4>
-    <input type="range" [(ngModel)]="std_slider_.value_" 
-             [min]="std_slider_.min_" [max]="std_slider_.max_" style="width: 300px;">
-    <br>
-    <br>
-    <form [ngFormModel]="std_ctrl_">
-      <table class="w3-table">
-        <tr>
-          <td>Value: </td>
-          <td>
-            <input type="number" name="val" size="5" [(ngModel)]="std_slider_.value_" 
-                   [min]="std_slider_.min_" 
-                   [max]="std_slider_.max_"  ngControl="value">
-          </td>  
-        </tr>  
-        <tr>
-          <td>Min: </td>
-          <td>
-            <input type="number" name="vmin"  size="5"  [(ngModel)]="std_slider_.min_"
-              min="0" max="9999" ngControl="min">
+    <div id="section_std_slider">
+      <br>
+      <br>
+      <h2 >Standard Slider</h2>
+      <p>
+        The slider below is a standard html5 slider using the 
+        <code>&lt;input type="range" ... &gt;</code> html tag. It's a good
+        example of bi-directional binding with the special angular
+        syntax: <code>[(ngModel)]</code>: the slider and value input field are linked.
+        The three input items: value, min and max are grouped in a html 
+        <code>&lt;form&gt;</code> tag which allows the activation of powerful
+        check functions. In our case, we check that the min value is always less than max 
+        and that the value is changed when either min or max are updated.
+      </p>  
+      <p>  
+        To illustrate these checkers, you can try to change the min value to be greater
+        than the current value. This change is rejected and the min value remains unchanged.
+        This is done with the special attribute <code>ngFormModel</code>         
+        and used with the <code>form</code> tag as follows:
+        <code>&lt;form [ngFormModel]="my_ctrl"&gt;</code>.
+        The variable <code>my_ctrl</code> has type <code>ControlGroup</code> and it must
+        be a member variable of your component class.
+      </p>
+      <h4 #_id_std_ctrl_panel>Standard Slider Control Panel</h4>
+      <input type="range" [(ngModel)]="std_slider_.value_" 
+               [min]="std_slider_.min_" [max]="std_slider_.max_" style="width: 300px;">
+      <br>
+      <br>
+      <form [ngFormModel]="std_ctrl_">
+        <table class="w3-table">
+          <tr>
+            <td>Value: </td>
+            <td>
+              <input type="number" name="val" size="5" [(ngModel)]="std_slider_.value_" 
+                     [min]="std_slider_.min_" 
+                     [max]="std_slider_.max_"  ngControl="value">
+            </td>  
+          </tr>  
+          <tr>
+            <td>Min: </td>
+            <td>
+              <input type="number" name="vmin"  size="5"  [(ngModel)]="std_slider_.min_"
+                min="0" max="9999" ngControl="min">
+            </td>  
+          </tr>  
+          <tr>
+            <td>Max: </td>
+            <td>
+              <input type="number"  name="vmax" size="5" [(ngModel)]="std_slider_.max_"
+                min="1" max="9999" ngControl="max">
+            </td>  
+          </tr>  
+        </table>  
+      </form>
+    </div> <!-- end of section -->
 
-          </td>  
-        </tr>  
-        <tr>
-          <td>Max: </td>
-          <td>
-            <input type="number"  name="vmax" size="5" [(ngModel)]="std_slider_.max_"
-              min="1" max="9999" ngControl="max">
-          </td>  
-        </tr>  
-      </table>  
-    </form>
+    <div id="section_svg_slider">
     <br>
     <br>
     <h2>SVG Based Slider</h2>
@@ -128,10 +133,12 @@
       In the meanwhile, try to understand why we have used bi-directional binding
       for min and max.
     </p>  
+    </div> <!-- end of section -->
 
-    <br>
-    <br>
-    <h2>Improved Slider</h2>
+    <div id="section_improved_slider">
+      <br>
+      <br>
+      <h2>Improved Slider</h2>
       To be completed<br>
       vertical slider<br>
       multi runner slider<br>
@@ -140,8 +147,15 @@
       on/off sliders<br>
       integer value sliders<br>
 
-    <h2>Lipsum Text Below</h2>
-    <gg-lipsum></gg-lipsum>
+    </div> <!-- end of section -->
+
+    <div id="section_lipsum">
+      <br>
+      <br>
+      <h2>Lipsum Text Below</h2>
+     <gg-lipsum></gg-lipsum>
+    </div> <!-- end of section -->
+
   </div>
 
 
