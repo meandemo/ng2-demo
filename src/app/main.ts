@@ -34,6 +34,7 @@ import {RouterLink, RouterOutlet, RouteConfig, ROUTER_PROVIDERS }    from 'angul
 import {bootstrap}           from 'angular2/platform/browser';
 import {StickyDivDemoCmp}    from './stickydivdemo/stickydivdemo';
 import {SliderDemoSimpleCmp} from './sliderdemo/sliderdemo_simple';
+import {SliderDemoService}   from './sliderdemo/sliderdemo_service';
 import {enableProdMode}      from 'angular2/core';
 
 @Component({
@@ -82,4 +83,4 @@ class MainCmp { }
 //
 
 enableProdMode();
-bootstrap(MainCmp, [ROUTER_PROVIDERS]);
+bootstrap(MainCmp, [ROUTER_PROVIDERS, SliderDemoService]);
