@@ -32,28 +32,32 @@
                [min]="std_slider_.min_" [max]="std_slider_.max_" style="width: 300px;">
       <br>
       <br>
-      <form [ngFormModel]="std_ctrl_">
+      <!-- note: with ng2 in dev mode, we have to remove the ngFormModel
+           otherwise we have the changed after checked error 
+
+      -->     
+      <form> <!-- [ngFormModel]="std_ctrl_" -->
         <table class="w3-table">
           <tr>
             <td>Value: </td>
             <td>
               <input type="number" name="val" size="5" [(ngModel)]="std_slider_.value_" 
                      [min]="std_slider_.min_" 
-                     [max]="std_slider_.max_"  ngControl="value">
+                     [max]="std_slider_.max_" ngControl="value">
             </td>  
           </tr>  
           <tr>
             <td>Min: </td>
             <td>
               <input type="number" name="vmin"  size="5"  [(ngModel)]="std_slider_.min_"
-                min="0" max="9999" ngControl="min">
+                min="0" max="9999"> <!-- ngControl="min"> -->
             </td>  
           </tr>  
           <tr>
             <td>Max: </td>
             <td>
               <input type="number"  name="vmax" size="5" [(ngModel)]="std_slider_.max_"
-                min="1" max="9999" ngControl="max">
+                min="1" max="9999"> <!-- ngControl="max"> -->
             </td>  
           </tr>  
         </table>  
@@ -93,21 +97,21 @@
           <td>
             <input type="number" name="val" [(ngModel)]="svg_slider_.value_" 
                    [min]="svg_slider_.min_" 
-                   [max]="svg_slider_.max_"  ngControl="value">
+                   [max]="svg_slider_.max_" > <!-- ngControl="value"> -->
           </td>  
         </tr>  
         <tr>
           <td>Min:</td>
           <td>
             <input type="number" name="vmin"  size="5"  [(ngModel)]="svg_slider_.min_"
-              min="0" max="9999" ngControl="min">
+              min="0" max="9999"> <!-- ngControl="min"> -->
           </td>  
         </tr>  
         <tr>
           <td>Max:</td>
           <td>
             <input type="number"  name="vmax" size="5" [(ngModel)]="svg_slider_.max_"
-              min="0" max="9999" ngControl="max">
+              min="0" max="9999"> <!-- ngControl="max"> -->
           </td>  
         </tr>  
         <tr>

@@ -26,37 +26,56 @@
 <html>
   <head>
     <base href="/">
-    <title>Angular2 Sticky Div Demo</title>
+    <title>ng2goodies Angular2 demo and tutorial</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="Keywords" content="Angular2,Typescript">
     <meta name="Description" content="Angular2 tutorial and demo written in typescript">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
+
+
     <link rel="stylesheet" type="text/css" href="http://www.w3schools.com/lib/w3.css">
     <link rel="stylesheet" type="text/css" href="http://www.w3schools.com/lib/w3-theme-dark-grey.css">
-    <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.css">
     <link rel="stylesheet" type="text/css" href="css/styles.css"/>
 
-    
+    <!-- We use nunjucks for our macro language -->
+
+    {% if is_prod %}
+    <script src="https://npmcdn.com/systemjs@0.19.6/dist/system.js"></script>
+    {% else %}
     <script src="lib/system.src.js"></script>
+    {% endif %}
+
     <script>
-      System.config({
-        packages: {'app': {defaultExtension: 'js'}}
-      });
+      System.config({defaultJSExtensions: true});
     </script>
+
+    {% if is_prod %}
+    <script src="https://code.angularjs.org/{{ ng2ver }}/angular2-polyfills.min.js"></script>
+    <script src="https://code.angularjs.org/{{ ng2ver }}/Rx.min.js"></script>
+    <script src="https://code.angularjs.org/{{ ng2ver }}/angular2.min.js"></script>
+    <script src="https://code.angularjs.org/{{ ng2ver }}/router.min.js"></script>
+    {% else %}
     <script src="lib/angular2-polyfills.js"></script>
     <script src="lib/Rx.js"></script>
     <script src="lib/angular2.dev.js"></script>
     <script src="lib/router.dev.js"></script>
+    {% endif %}
 
+    <!-- include google analytics if needed -->
+    {% if use_ga %}
+    {% include "src/ga.html" %}
+    {% endif %}
 
   </head>
 
   <body>
-    <main-cmp>Loading...please wait<main-cmp>
-    <script>
-      System.import('app/main').catch(console.log.bind(console));
-    </script>
+    <gg-main>Loading...please wait</gg-main>
   </body>
+  <script>
+    System.import('app/boot').catch(console.log.bind(console));
+  </script>
+
 </html>

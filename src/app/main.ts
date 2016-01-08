@@ -30,12 +30,9 @@ import {Component,
 import {RouterLink, RouterOutlet, RouteConfig, ROUTER_PROVIDERS }    from 'angular2/router';
 
 
-
-import {bootstrap}           from 'angular2/platform/browser';
 import {StickyDivDemoCmp}    from './stickydivdemo/stickydivdemo';
 import {SliderDemoSimpleCmp} from './sliderdemo/sliderdemo_simple';
 import {SliderDemoService}   from './sliderdemo/sliderdemo_service';
-import {enableProdMode}      from 'angular2/core';
 
 @Component({
   selector: 'gg-home',
@@ -48,13 +45,13 @@ import {enableProdMode}      from 'angular2/core';
     <div class="w3-text-theme">
       <div class="w3-container w3-padding">
         Two great demos are available:<br>
-        <a [routerLink]="['StickyDivDemoCmp']" >Sticky Div Demo</a><br>
-        <a [routerLink]="['SliderDemoSimpleCmp']" >Slider Demo</a><br>
+        <a [routerLink]="['StickyDivDemoCmp']" >Sticky Div</a><br>
+        <a [routerLink]="['SliderDemoSimpleCmp']" >SVG Based Slider</a><br>
         <br>
         <br>
       </div>
       <div class="w3-container w3-tiny">
-        Page last updated 23-Dec-2015<br>
+        Page last updated 08-Jan-2016<br>
         Log log all bugs <a href="https://github.com/meandemo/ng2-demo/issues">here</a><br>
         (c) <a href="http://www.ng2goodies.com">ng2goodies</a><br>
       </div>
@@ -76,11 +73,3 @@ class HomeCmp { }
   { path: 'svgslider',  component: SliderDemoSimpleCmp, name: 'SliderDemoSimpleCmp' }
 ])
 class MainCmp { }
-
-
-// With angular in 2.0.0-beta
-// we stay in prod mode until our code refactoring is completed
-//
-
-enableProdMode();
-bootstrap(MainCmp, [ROUTER_PROVIDERS, SliderDemoService]);

@@ -59,11 +59,11 @@
 
 <!-- (B) scrollable header with additional titles -->
 
-<gg-sticky-div #_inst0>
+<gg-sticky-div (height)="_height_section_b = $event">
   <div class="w3-container w3-large w3-theme-l3 w3-padding-4">
     <div class="w3-left w3-small">Navigation: host &gt; stickydivdemo
     </div><br>
-    <div class="w3-right w3-tiny">Section height = {{_inst0.height()}}px
+    <div class="w3-right w3-tiny">Section height = {{_height_section_b}}px
     </div>
     <div class="w3-left w3-xlarge">(B) This Large Title Scrolls freely
     </div>
@@ -72,7 +72,7 @@
 
 <!-- (C) sticky horizontal navbar -->
 
-<gg-sticky-div [maxscroll]="_inst0.height()">
+<gg-sticky-div [maxscroll]="_height_section_b">
   <div class="w3-topnav w3-large w3-theme-l4">
     <a href="#">(C)</a>
     <a [routerLink]="['HomeCmp']"><i class="fa fa-home w3-large"></i></a>
@@ -92,20 +92,20 @@
 
     <!-- (D) scrollable side text  -->
 
-    <gg-sticky-div #_inst1>
+    <gg-sticky-div (height)="_height_section_d = $event">
       <div class="w3-container w3-theme-d1">
         <p>
           (D) This header scrolls normally, the side menu below
           scrolls and locks just below the navigation bar
         </p>  
-        <div class="w3-right w3-tiny">Section height = {{_inst1.height()}}px
+        <div class="w3-right w3-tiny">Section height = {{_height_section_d}}px
         </div>  
       </div>  
     </gg-sticky-div>
 
     <!-- (E) sticky side navigation bar  -->
 
-    <gg-sticky-div [maxscroll]="_inst0.height() + _inst1.height()">
+    <gg-sticky-div [maxscroll]="_height_section_b + _height_section_d">
       <div class="w3-container w3-theme-d2">
          <ul style="list-style-type: none; padding: 0;">
             <li>(E)</li>
@@ -156,14 +156,15 @@
         This div is fully scrollable, but we didn't use <code>div</code>, instead we used
       </p>  
         <pre class="snippet">
-          &lt;gg-sticky-div &#x23;_inst0&gt;
+          &lt;gg-sticky-div (height)="_height_section_b = $event"&gt;
           ...
           &lt;&#x2F;gg-sticky-div&gt;
         </pre>
       <p>
         Without maxscroll property, this component behaves like a normal div.
-        Note the local variable <code>&x23;_inst0</code>,
-        please read-on to see how it is used.
+        Note the local variable <code>_height_section_b</code> used with
+        the directive event (height) to capture the height of the sticky div.
+        Please read-on to see how it is used.
       </p>  
 
       <h3>Section C</h3>
@@ -171,12 +172,12 @@
         This navbar has a sticky behavior, we used the following code
       </p>  
         <pre class="snippet">
-          &lt;gg-sticky-div &#x5B;maxscroll&#x5D;="_inst0.height()"&gt;
+          &lt;gg-sticky-div &#x5B;maxscroll&#x5D;="_height_section_b"&gt;
           ...
           &lt;&#x2F;gg-sticky-div&gt;
         </pre>
       <p>
-        We used the local variable <code>_inst0</code> to obtain the height of the 
+        We used the local variable <code>_height_section_b</code> to obtain the height of the 
         scrollable div just above. This height gives the scrollable amount 
         of our sticky navbar using the one-way
         property binding syntax <code>&#x5B;maxscroll&#x5D;</code>. 
@@ -326,17 +327,19 @@
   <!-- right side bar -->
   <div class="w3-col m3 l2">
 
-    <!-- a scrollable text div -->
+    <!-- Section F: a scrollable text div -->
 
-    <div #_inst4 class="w3-container w3-theme-l2">
-      (F) The div below shows an incorrect use of a <code>gg-sticky-div</code> component.
-      The correct height for a sticky must be the sum of all the heights
-      of the scrollable divs above, i.e. Section (B) and Section (F).
-      The height must be the exact height, 
-      not the rounded one given by <code>clientHeight</code>.   
-      <div class="w3-right w3-tiny">Section height = {{_inst4.clientHeight}}px ({{_inst4.getBoundingClientRect().height}}px)
+    <gg-sticky-div (height)="_height_section_f = $event">
+      <div class="w3-container w3-theme-l2">
+        (F) The div below shows an incorrect use of a <code>gg-sticky-div</code> component.
+        The correct height for a sticky must be the sum of all the heights
+        of the scrollable divs above, i.e. Section (B) and Section (F).
+        The height must be the exact height, 
+        not the rounded one given by <code>clientHeight</code>.   
+        <div class="w3-right w3-tiny">Section height = {{_height_section_f}}px
+        </div>
       </div>
-    </div>
+    </gg-sticky-div>
 
     <!-- a sticky div with an incorrect maxscroll value ->
       1) we use the clientHeight which is a rounded value.  
@@ -344,7 +347,7 @@
       2) we use only height of section (F) instead of (B)+(F)
      -->
 
-    <gg-sticky-div [maxscroll]="_inst4.clientHeight">
+    <gg-sticky-div [maxscroll]="_height_section_f">
       <div class="w3-container w3-theme-l3">
         (G) The maxscroll parameter for this div has been incorrectly specified.
         As the viewport scrolls, it reveals what is placed under this div.

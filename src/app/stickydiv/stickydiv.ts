@@ -55,7 +55,7 @@ import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
     of the the navbar. The first div is doing just this
   -->
 
-    <div [id]="id_div_top_"  (window:resize)="onResize()">
+  <div [id]="id_div_top_"  (window:resize)="onResize()">
 
     <!-- div 1 -->
 
@@ -71,7 +71,7 @@ import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
 
     <!-- div 2 -->
 
-    <div [id]="id_div2_" [ngStyle]="setStyles()"
+    <div [id]="id_div2_" [ngStyle]="sticky_style_"
       (window:scroll)="onScroll()">
       <ng-content></ng-content>
     </div>
@@ -84,6 +84,9 @@ import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
 export class StickyDivCmp implements OnInit, AfterViewInit {
   static instance_cnt_ = 0;
   @Input() maxscroll: any;
+
+  //@Input() height: any;
+  @Output('height') heightChange:  EventEmitter<number> = new EventEmitter<number>();
 
   private is_sticky_ = false;
 
@@ -100,6 +103,7 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
 
   private is_div2_fixed_ = false;
   private div2_elm_: any;
+  private sticky_style_: any = {};
 
   //
   // We use the constructor to register a unique id
@@ -122,7 +126,7 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
   ngOnInit() {
   }
 
-  height(): number {
+  accurate_height(): number {
     return this.div_height_;
   }
   //
@@ -144,6 +148,7 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
     this.div2_elm_ = document.getElementById(this.id_div2_);
     const bbox = this.div2_elm_.getBoundingClientRect();
     this.div_height_      = bbox.height;
+    this.heightChange.emit(this.div_height_);
     this.div_width_       = bbox.width;
     this.div_initial_top_ = bbox.top;
     this.div_left_        = bbox.left;
@@ -168,11 +173,13 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
         this.is_div2_fixed_ = false;
         const bbox = this.div2_elm_.getBoundingClientRect();
         this.div_height_      = bbox.height;
+        this.heightChange.emit(this.div_height_);
         this.div_width_       = bbox.width;
         this.div_initial_top_ = bbox.top;
         this.div_left_        = bbox.left;
         this.div_top_         = this.div_initial_top_ - this.y_offset_;
         this.do_resize_       = false;
+        this.sticky_style_    = this.setStyles();
       }
     }
   }
@@ -206,6 +213,7 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
 
     if (this.is_sticky_) {
       this.is_div2_fixed_ = (window.pageYOffset >= this.y_offset_);
+      this.sticky_style_  = this.setStyles();
     }
   }
 
@@ -225,6 +233,7 @@ export class StickyDivCmp implements OnInit, AfterViewInit {
       // update the div_height_ of fully scrollable sticky-div
       const bbox = this.div2_elm_.getBoundingClientRect();
       this.div_height_      = bbox.height;
+      this.heightChange.emit(this.div_height_);
     }
   }
 }

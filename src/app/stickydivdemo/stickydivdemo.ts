@@ -49,3 +49,27 @@ import {StickyDivCmp}          from '../stickydiv/stickydiv';
 })
 export class StickyDivDemoCmp {
 }
+/*
+  private height_section_b_: number = 40;
+
+  ngOnInit() {
+    this.elm_hdr1_ = document.getElementById('inst1');
+    //this.elm_hdr1_height_ += this.elm_hdr1_.getBoundingClientRect().height + ':ngOnInit ';
+    this.inst1_height_ = this.elm_hdr1_.getBoundingClientRect().height; // + ':ngOnInit ';
+  }
+
+  ngAfterViewChecked() {
+    if (!this.checked_) {
+      this.elm_hdr1_ = document.getElementById('inst1');
+      this.inst1_height_ = this.elm_hdr1_.getBoundingClientRect().height; // + ':ngAfterViewChecked ';
+      this.checked_ = true;
+    }
+  }
+
+  ngAfterViewInit() {
+    this.elm_hdr1_ = document.getElementById('inst1');
+    this.inst1_height_ = this.elm_hdr1_.getBoundingClientRect().height; // + ':ngAfterViewInit ';
+  }
+}
+
+*/

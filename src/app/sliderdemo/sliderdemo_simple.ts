@@ -108,6 +108,7 @@ export class SliderDemoSimpleCmp implements AfterViewInit, OnActivate, OnDeactiv
   public svg_slider_: NumericalSlider;
 
   private std_ctrl_: ControlGroup;
+  private std_slider_value_: number = 25;
 
   routerOnActivate(next: ComponentInstruction, prev: ComponentInstruction) {
     //console.log('Activate:   navigating from ', prev);

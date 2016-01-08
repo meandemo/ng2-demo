@@ -1,53 +1,134 @@
-const gasync        = require('async');            // from nodejs.org/api/async.html
-const gulp          = require('gulp');
-const livereload    = require('livereload');
-const nodemon       = require('gulp-nodemon');
-const ts            = require('gulp-typescript');
-const tslint        = require('gulp-tslint');
-const tslintStylish = require('gulp-tslint-stylish');
+//
+// header-start
+//////////////////////////////////////////////////////////////////////////////////
+//
+// \file      gulpfile.ts
+//
+// \brief     This file belongs to the ng2 tutorial project
+//
+// \author    Bernard
+//
+// \copyright Copyright ng2goodies 2015
+//            Distributed under the MIT License
+//            See http://opensource.org/licenses/MIT
+//
+//////////////////////////////////////////////////////////////////////////////////
+// header-log
+//
+// $Author$
+// $Date$
+// $Revision$
+//
+//////////////////////////////////////////////////////////////////////////////////
+// header-end
+//
 
-//const fs            = require('fs');
-//const cp            = require('child_process');
-//const wget          = require('wgetjs');
-const rename        = require('gulp-rename');
-const sass          = require('gulp-sass');
-const sourcemaps    = require('gulp-sourcemaps');
+//import {fs} from 'fs';
+//import {cp} from {'child_process'};
+//import {gulp} from './typings/gulp/gulp';
 
-const gprint        = require('gulp-print');
-const yargs         = require('yargs');
 
-const argv = yargs
-              .option('v', {
-                alias: 'verbose'
-              })
-              .argv;
+const fs             = require('fs');
+const cp             = require('child_process');
+const gulp           = require('gulp');
+const nunjucksRender = require('gulp-nunjucks-render');
+const nodemon        = require('gulp-nodemon');
+const livereload     = require('livereload');
+const gasync         = require('async');            // from nodejs.org/api/async.html
+const wget           = require('wgetjs');
+const rename         = require('gulp-rename');
+const sass           = require('gulp-sass');
+const sourcemaps     = require('gulp-sourcemaps');
+const gprint         = require('gulp-print');
+const ts             = require('gulp-typescript');
+const tslint         = require('gulp-tslint');
+const tslintStylish  = require('gulp-tslint-stylish');
 
-const verbosity = ('verbose' in argv) ? Number(argv.verbose) : 0;
 
-console.log("DEBUG = verbosity = ", verbosity);
+//
+// argument processing
+//
 
-function filtered_log(level: number, args: string) {
-  if (level <= verbosity) {
-    console.log(args);
+const argv = require('yargs')
+        .option('v', {
+          alias: 'verbose'
+        })
+        .option('p', {
+          alias: 'production'
+        })
+        .option('ga', {
+          alias: 'google-analytics'
+        })
+        .argv;
+
+interface Config {
+  verbosity: number;
+  production: boolean;
+  use_ga: boolean;
+  ng2version: string;
+}
+
+const config = <Config>{};
+config.verbosity = ('verbose' in argv) ? Number(argv.verbose) : 0;
+config.production = ('production' in argv) ? true : false;
+config.use_ga     = ('google-analytics' in argv) ? true : false;
+config.ng2version = '2.0.0-beta.0';
+
+
+
+function filtered_log(level: number, msg: string, filename?: string ) {
+  if (level <= config.verbosity) {
+    if (filename) {
+      // given filename has escape codes which 
+      // prevents correct display with power-shell ;-( but ok with zsh 
+      // also enforces / as the directory separator
+      let nfilename = filename.replace(/\x1B\[\d\dm/g, '');
+      nfilename = nfilename.replace(/\\/g, '/');
+      console.log(msg, nfilename);
+    } else {
+      console.log(msg);
+    }
   }
 }
+
+
+//
+// file processing functions
+// - transpile
+// - lint
+// - sass
+// - nunjucks
+
 
 function transpile_ts_files(source: string | string[], rebase: string, dest: string): NodeJS.ReadWriteStream {
   const tsProject = ts.createProject('./tsconfig.json');
   return gulp.src(source, { base: rebase })
     .pipe(gprint((filename: string): string => {
-      // given filename has escape codes which prevent correct display!!!
-      filtered_log(2, '[TRACE] Gulpfile: transpiling ts file: ' + filename.replace(/\x1B\[\d\dm/g, ''));
+      filtered_log(2, '[TRACE] Gulpfile - transpiling ts file:   ', filename);
       return '';
     }))
     .pipe(ts(tsProject))
     .pipe(gulp.dest(dest));
 };
 
+function nunjucks_html_file(source: string | string[], rebase: string, dest: string): NodeJS.ReadWriteStream {
+  return gulp.src(source, { base: rebase })
+    .pipe(gprint((filename: string): string => {
+      filtered_log(2, '[TRACE] Gulpfile - nunjucks html file:    ', filename);
+      return '';
+    }))
+    .pipe(nunjucksRender({
+      use_ga: config.use_ga,
+      is_prod: config.production,
+      ng2ver: config.ng2version
+    }))
+    .pipe(gulp.dest(dest));
+};
+
 function lint_ts_files(src: string | string[]) {
   gulp.src(src)
     .pipe(gprint((filename: string): string => {
-      filtered_log(2, '[TRACE] Gulpfile: linting ts files: ' + filename.replace(/\x1B\[\d\dm/g, ''));
+      filtered_log(2, '[TRACE] Gulpfile - linting ts files:      ', filename);
       return '';
     }))
     .pipe(tslint())
@@ -63,7 +144,7 @@ function lint_ts_files(src: string | string[]) {
 function scss_to_css(source: string | string[], rebase: string, dest: string): NodeJS.ReadWriteStream {
   return gulp.src(source, { base: rebase })
     .pipe(gprint((filename: string): string => {
-      filtered_log(2, '[TRACE] Gulpfile: converting scss files: ' + filename.replace(/\x1B\[\d\dm/g, ''));
+      filtered_log(2, '[TRACE] Gulpfile - converting scss files: ', filename);
        return '';
     }))
     .pipe(sourcemaps.init())
@@ -97,13 +178,19 @@ function init_lib(dest: string) {
   gulp.src('node_modules/angular2/bundles/router.dev.js').pipe(gulp.dest(dest_lib));
   gulp.src('node_modules/angular2/bundles/router.js').pipe(gulp.dest(dest_lib));
 
-  filtered_log(1, '[TRACE] Gulpfile: all lib files copied in: ' + dest_lib);
+  filtered_log(1, '[TRACE] Gulpfile - lib files copied in:   ', dest_lib);
 }
 
-gulp.task('init_lib', () => {
-  const dest = './dist/client';
-  init_lib(dest);
+gulp.task('test.init_lib', () => {
+  init_lib('dist/client');
 });
+
+
+gulp.task('test.nunjucks', () => {
+  nunjucks_html_file('src/index.html', 'src', 'dist/client');
+});
+
+
 
 //////////////////////////////////////////////////
 //
@@ -116,13 +203,15 @@ gulp.task('init_lib', () => {
 //////////////////////////////////////////////////
 
 gulp.task('init', () => {
-  gulp.start('init_lib');
 
-  gulp.src('src/**/*.html', {base : 'src'}).pipe(gulp.dest('dist/client'));
+  init_lib('dist/client');
+
+  gulp.src('src/app/**/*.html', {base : 'src'}).pipe(gulp.dest('dist/client'));
   gulp.src('src/**/*.svg', {base : 'src'}).pipe(gulp.dest('dist/client'));
   gulp.src('src/**/*.png', {base : 'src'}).pipe(gulp.dest('dist/client'));
   gulp.src('src/**/favicon.ico', {base : 'src'}).pipe(gulp.dest('dist/client'));
 
+  nunjucks_html_file('src/index.html', 'src', 'dist/client');
   scss_to_css('src/**/*.scss', 'src', 'dist/client');
   transpile_ts_files('src/**/*.ts', 'src', 'dist/client');
   lint_ts_files(['src/**/*.ts', 'gulpfile.ts', 'server/**/*.ts']);
@@ -144,9 +233,17 @@ gulp.task('watch.transpile', () => {
   });
 });
 
+gulp.task('watch.index', () => {
+  filtered_log(1, '[INFO] Launching watch on index.html');
+  gulp.watch(['src/index.html'], (event: any) => {
+    filtered_log(2, '[INFO] File ' + event.path + ' event: ' + event.type);
+    nunjucks_html_file(event.path, 'src', 'dist/client');
+  });
+});
+
 gulp.task('watch.copy', () => {
-  filtered_log(1, '[INFO] Launching watch on *.html, *.svg, favicon.ico files');
-  gulp.watch(['src/**/*.html', 'src/**/*.png', 'src/**/*.svg', 'src/favion.ico'], (event: any) => {
+  filtered_log(1, '[INFO] Launching watch on app/**/*.html, *.svg, favicon.ico files');
+  gulp.watch(['src/app/**/*.html', 'src/**/*.png', 'src/**/*.svg', 'src/favion.ico'], (event: any) => {
     filtered_log(2, '[INFO] File ' + event.path + ' event: ' + event.type);
     gulp.src(event.path, {base : 'src'}).pipe(gulp.dest('dist/client'));
   });
@@ -216,9 +313,11 @@ gulp.task('demo', () => {
 gulp.task('default', () => {
   console.log(`Usage: gulp task [options]
     Options:
-      [--verbose [num]]   console.log output level
+      [--verbose|-v  [num]]     Log to console, 0: limited, 1: more, 2: all 
+      [--production|-p ]        Production mode: external scripts loaded from cdns
+      [--ga]                    Include google analytics
     Task list:
-      init                Initialize all the local client files
-      demo                Start local server in dev mode, with live reload
+      init                      Initialize all the local client files
+      demo                      Start local server with live reload
   `);
 });
