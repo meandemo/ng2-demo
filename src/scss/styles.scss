@@ -44,12 +44,114 @@ pre.snippet  {
   padding-left: 3%;
   padding-bottom: 10px;
   border-radius: 10px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.15);
+  background-color: rgba(255, 255, 255, 0.15);
+  font-family: Consolas, monospace, sans-serif;
+  white-space: pre-line;
+}
+pre.side-snippet  {
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 10px;
+  padding: 10px;
+  padding-left: 3%;
+  padding-bottom: 10px;
+  border-radius: 10px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.15);
   background-color: rgba(255, 255, 255, 0.15);
   font-family: Consolas, monospace, sans-serif;
   white-space: pre-line;
 }
 
+//  a {
+//    text-decoration: none;
+//  }
+//  a.router-link-active {
+//    background-color: rgba(0, 0, 0, 0.15);
+//  }
+//  #leftmenu h2 {
+//  font-size:21px;
+//  padding-left:16px;
+//  margin:0 0 2px 0;
+//}
+
+.gg-left-menu a {
+  display:block;
+  text-decoration:none;
+  padding:2px 2px 2px 16px;
+  font-size:15px;
+}
+.gg-left-menu a:hover {
+  background-color:#dddddd;
+  color:#000000;
+}
+
+.gg-left-menu a:selected {
+  background-color:#dddddd;
+  color:#000000;
+}
+
+.gg-left-menu a.gg-link-active {
+  background-color:#777777;
+  color:#ffffff;  
+}
+
+//
+//  a.router-link-active {
+//
+//    background-color: rgba(0, 0, 0, 0.15);
+//  }
+
 div.gg-motto {
   padding-top: 10px;
   text-transform: uppercase;
 }
+
+
+form {
+  margin-: 20px 0;
+//  padding: 3em 20px;
+  border: 2px solid #aaa;
+  background: #fafafa;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  width: 50%;
+}
+
+//svg {
+//  position:absolute; top:5%; left:5%; width:90%; height:90%;
+//  background:#fff; border:1px solid #ccc
+//}
+div #slider #rail {
+  opacity:0.6;
+  stroke: black;
+  fill: red;
+}
+
+div #slider #runner {
+  cursor: pointer; 
+}
+
+div #slider #runner #circle {
+  opacity:0.6;
+  stroke: black;
+  fill: yellow;
+}
+
+div #slider #runner #label {
+}
+
+div #slider  #runner:hover {
+  opacity:0.8;
+}
+
+div #slider  #rail:hover {
+  opacity:0.8;
+}
+
+//svg .drag { cursor: move }
+//svg .sizer { opacity:0.7; fill:#ff0; stroke:#630; }

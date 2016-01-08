@@ -27,19 +27,64 @@ import {Component,
         Directive,
         View           }    from 'angular2/core';
 
-import {bootstrap}           from 'angular2/platform/browser';
-import {StickyDivDemoCmp}   from './stickydivdemo/stickydivdemo';
+import {RouterLink, RouterOutlet, RouteConfig, ROUTER_PROVIDERS }    from 'angular2/router';
+
+
+import {StickyDivDemoCmp}    from './stickydivdemo/stickydivdemo';
+import {SliderDemoSimpleCmp} from './sliderdemo/sliderdemo_simple';
+import {SliderDemoService}   from './sliderdemo/sliderdemo_service';
+import {assertionsEnabled} from 'angular2/src/facade/lang';
+
+@Component({
+  selector: 'gg-home',
+  template: `
+    <div class="w3-theme-l3">
+      <div class="w3-container w3-padding">
+        <h1>Angular2 Demo and Tutorial</h1>
+      </div>
+    </div>
+    <div class="w3-text-theme">
+      <div class="w3-container w3-padding">
+        Two great demos are available:<br>
+        <a [routerLink]="['StickyDivDemoCmp']" >Sticky Div</a><br>
+        <a [routerLink]="['SliderDemoSimpleCmp']" >SVG Based Slider</a><br>
+        <br>
+        <br>
+      </div>
+      <div class="w3-container w3-tiny">
+        Using angular2 version {{ng2version_}} in {{mode_str_}}<br>
+        Page last updated 08-Jan-2016<br>
+        Log log all bugs <a href="https://github.com/meandemo/ng2-demo/issues">here</a><br>
+        (c) <a href="http://www.ng2goodies.com">ng2goodies</a><br>
+      </div>
+    </div>
+   `,
+   directives: [RouterLink, StickyDivDemoCmp, SliderDemoSimpleCmp]
+})
+class HomeCmp {
+  private mode_str_: string = 'production mode';
+  private is_in_prod_mode_: boolean = true;
+  private ng2version_: string = '2.0.0-beta.0';
+
+  constructor() {
+    if (assertionsEnabled()) {
+      this.mode_str_ = 'development mode';
+      this.is_in_prod_mode_ = false;
+    }
+  }
+}
+
 
 
 @Component({
-  selector: 'main-cmp'
+  selector: 'gg-main',
+    template: `<router-outlet></router-outlet>`,
+    directives: [RouterOutlet]
 })
-@View({
-  template: `
-    <gg-sticky-div-demo></gg-sticky-div-demo>
-    `,
-  directives: [StickyDivDemoCmp]
-})
-class MainCmp { }
-
-bootstrap(MainCmp, []);
+@RouteConfig([
+  { path: '' ,          component: HomeCmp,             name: 'HomeCmp' },
+  { path: 'stickydiv' , component: StickyDivDemoCmp,    name: 'StickyDivDemoCmp' },
+  { path: 'svgslider',  component: SliderDemoSimpleCmp, name: 'SliderDemoSimpleCmp' }
+])
+export class MainCmp {
+}
