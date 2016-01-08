@@ -33,6 +33,7 @@ import {RouterLink, RouterOutlet, RouteConfig, ROUTER_PROVIDERS }    from 'angul
 import {StickyDivDemoCmp}    from './stickydivdemo/stickydivdemo';
 import {SliderDemoSimpleCmp} from './sliderdemo/sliderdemo_simple';
 import {SliderDemoService}   from './sliderdemo/sliderdemo_service';
+import {assertionsEnabled} from 'angular2/src/facade/lang';
 
 @Component({
   selector: 'gg-home',
@@ -51,6 +52,7 @@ import {SliderDemoService}   from './sliderdemo/sliderdemo_service';
         <br>
       </div>
       <div class="w3-container w3-tiny">
+        Using angular2 version {{ng2version_}} in {{mode_str_}}<br>
         Page last updated 08-Jan-2016<br>
         Log log all bugs <a href="https://github.com/meandemo/ng2-demo/issues">here</a><br>
         (c) <a href="http://www.ng2goodies.com">ng2goodies</a><br>
@@ -59,11 +61,23 @@ import {SliderDemoService}   from './sliderdemo/sliderdemo_service';
    `,
    directives: [RouterLink, StickyDivDemoCmp, SliderDemoSimpleCmp]
 })
-class HomeCmp { }
+class HomeCmp {
+  private mode_str_: string = 'production mode';
+  private is_in_prod_mode_: boolean = true;
+  private ng2version_: string = '2.0.0-beta.0';
+
+  constructor() {
+    if (assertionsEnabled()) {
+      this.mode_str_ = 'development mode';
+      this.is_in_prod_mode_ = false;
+    }
+  }
+}
+
 
 
 @Component({
-  selector: 'main-cmp',
+  selector: 'gg-main',
     template: `<router-outlet></router-outlet>`,
     directives: [RouterOutlet]
 })
@@ -72,4 +86,5 @@ class HomeCmp { }
   { path: 'stickydiv' , component: StickyDivDemoCmp,    name: 'StickyDivDemoCmp' },
   { path: 'svgslider',  component: SliderDemoSimpleCmp, name: 'SliderDemoSimpleCmp' }
 ])
-class MainCmp { }
+export class MainCmp {
+}
