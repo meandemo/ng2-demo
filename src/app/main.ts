@@ -32,8 +32,9 @@ import {RouterLink, RouterOutlet, RouteConfig, ROUTER_PROVIDERS }    from 'angul
 
 import {StickyDivDemoCmp}    from './stickydivdemo/stickydivdemo';
 import {SliderDemoSimpleCmp} from './sliderdemo/sliderdemo_simple';
+import {SliderDemoRgbCmp}    from './sliderdemo/sliderdemo_rgb';
 import {SliderDemoService}   from './sliderdemo/sliderdemo_service';
-import {assertionsEnabled} from 'angular2/src/facade/lang';
+import {assertionsEnabled}   from 'angular2/src/facade/lang';
 
 @Component({
   selector: 'gg-home',
@@ -45,15 +46,16 @@ import {assertionsEnabled} from 'angular2/src/facade/lang';
     </div>
     <div class="w3-text-theme">
       <div class="w3-container w3-padding">
-        Two great demos are available:<br>
+        Three great demos are available:<br>
         <a [routerLink]="['StickyDivDemoCmp']" >Sticky Div</a><br>
         <a [routerLink]="['SliderDemoSimpleCmp']" >SVG Based Slider</a><br>
+        <a [routerLink]="['SliderDemoRgbCmp']" >SVG Based Color Selector with full form control</a><br>
         <br>
         <br>
       </div>
       <div class="w3-container w3-tiny">
         Using angular2 version {{ng2version_}} in {{mode_str_}}<br>
-        Page last updated 08-Jan-2016<br>
+        Page last updated 11-Jan-2016<br>
         Log log all bugs <a href="https://github.com/meandemo/ng2-demo/issues">here</a><br>
         (c) <a href="http://www.ng2goodies.com">ng2goodies</a><br>
       </div>
@@ -84,7 +86,8 @@ class HomeCmp {
 @RouteConfig([
   { path: '' ,          component: HomeCmp,             name: 'HomeCmp' },
   { path: 'stickydiv' , component: StickyDivDemoCmp,    name: 'StickyDivDemoCmp' },
-  { path: 'svgslider',  component: SliderDemoSimpleCmp, name: 'SliderDemoSimpleCmp' }
+  { path: 'svgslider',  component: SliderDemoSimpleCmp, name: 'SliderDemoSimpleCmp' },
+  { path: 'rgbslider',  component: SliderDemoRgbCmp,    name: 'SliderDemoRgbCmp' }
 ])
 export class MainCmp {
 }

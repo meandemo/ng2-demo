@@ -2,7 +2,10 @@ update:
 	cp ../ng2goodies/src/app/stickydiv/stickydiv.ts            ./src/app/stickydiv
 	cp ../ng2goodies/src/app/stickydivdemo/stickydivdemo.html  ./src/app/stickydivdemo
 	cp ../ng2goodies/src/app/stickydivdemo/stickydivdemo.ts    ./src/app/stickydivdemo
+	cp ../ng2goodies/src/app/slider/slider_rgb.ts              ./src/app/slider
 	cp ../ng2goodies/src/app/slider/slider.ts                  ./src/app/slider
+	cp ../ng2goodies/src/app/sliderdemo/sliderdemo_rgb.html    ./src/app/sliderdemo
+	cp ../ng2goodies/src/app/sliderdemo/sliderdemo_rgb.ts      ./src/app/sliderdemo
 	cp ../ng2goodies/src/app/sliderdemo/sliderdemo_simple.html ./src/app/sliderdemo
 	cp ../ng2goodies/src/app/sliderdemo/sliderdemo_simple.ts   ./src/app/sliderdemo
 	cp ../ng2goodies/src/scss/styles.scss                      ./src/scss/styles.scss

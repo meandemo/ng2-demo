@@ -14,9 +14,9 @@ import {RouteConfig, RouteDefinition, Router, Route, RouteParams, Location, Loca
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-import {LipsumCmp}          from '../lipsum/lipsum';
-import {SvgSliderCmp}       from '../slider/slider';
-import {SliderDemoService}  from '../sliderdemo/sliderdemo_service';
+import {LipsumCmp}                 from '../lipsum/lipsum';
+import {SvgSliderCmp}              from '../slider/slider';
+import {SliderDemoService}         from '../sliderdemo/sliderdemo_service';
 
 
 class NumericalSlider {

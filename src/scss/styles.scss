@@ -153,5 +153,51 @@ div #slider  #rail:hover {
   opacity:0.8;
 }
 
+div #slider #runner0 #circle {
+  opacity:0.6;
+  stroke: black;
+  fill: red;
+}
+
+div #slider #runner1 #circle {
+  opacity:0.6;
+  stroke: black;
+  fill: green;
+}
+
+div #slider #runner2 #circle {
+  opacity:0.6;
+  stroke: black;
+  fill: blue;
+}
+
+div #slider  #runner0:hover {
+  opacity:0.8;
+}
+div #slider  #runner1:hover {
+  opacity:0.8;
+}
+div #slider  #runner2:hover {
+  opacity:0.8;
+}
+
+div #rail text {
+  opacity: 1.0;
+  font-family: Consolas, monospace, sans-serif;
+  font-size: 15px;
+}
+
+table .color-demo {
+  width: 40%;
+}
+
+input#hex.ng-valid {
+  border-right: 10px solid green;
+}
+
+input#hex.ng-invalid {
+  border-right: 10px solid red;
+}
+
 //svg .drag { cursor: move }
 //svg .sizer { opacity:0.7; fill:#ff0; stroke:#630; }

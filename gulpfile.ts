@@ -56,6 +56,9 @@ const argv = require('yargs')
         .option('p', {
           alias: 'production'
         })
+        .option('f', {
+          alias: 'file'
+        })
         .option('ga', {
           alias: 'google-analytics'
         })
@@ -66,6 +69,7 @@ interface Config {
   production: boolean;
   use_ga: boolean;
   ng2version: string;
+  tsfile: string;
 }
 
 const config = <Config>{};
@@ -73,6 +77,7 @@ config.verbosity = ('verbose' in argv) ? Number(argv.verbose) : 0;
 config.production = ('production' in argv) ? true : false;
 config.use_ga     = ('google-analytics' in argv) ? true : false;
 config.ng2version = '2.0.0-beta.0';
+config.tsfile = ('file' in argv) ? argv.file : '';
 
 
 
@@ -190,6 +195,21 @@ gulp.task('test.nunjucks', () => {
   nunjucks_html_file('src/index.html', 'src', 'dist/client');
 });
 
+
+gulp.task('transpile', () => {
+  if (config.tsfile === '')  {
+    throw (() => { console.log("Error: not typescript file given"); })();
+  }
+
+  try {
+    fs.accessSync(config.tsfile, fs.R_OK);
+  } catch (e) {
+    console.log(`Error: file ${config.tsfile} is not a file or can not be read`);
+  }
+
+  lint_ts_files(config.tsfile);
+  transpile_ts_files(config.tsfile, 'src', 'dist/client');
+});
 
 
 //////////////////////////////////////////////////
@@ -319,5 +339,6 @@ gulp.task('default', () => {
     Task list:
       init                      Initialize all the local client files
       demo                      Start local server with live reload
+      transpile -f filename     Test ts lint and transpile
   `);
 });

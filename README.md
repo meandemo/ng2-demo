@@ -36,11 +36,6 @@ We are using production mode to avoid the 'has changed after it was checked' err
 6. open web page on http://localhost:8080, don't forget to activate the livereload button
 
 
-## Beware
-
-If you are using cygwin, you will have to open a powershell terminal for all the above steps.
-I ran into trouble with nodemon when launching from patty.  
-
 # Features
 
 A live demo is available here: http://meandemo.github.io.
@@ -57,6 +52,17 @@ The web page has all the information, enjoy!
 Using the power of angular2, we demonstrate an SVG based slider which can be easily customized to fit
 your needs.
 
+## RGB Color selector using SVG Slider
+
+An extension of the SVG Slider with 3 runners on the rail is the basis for this interesting RGB color
+selector. In addition, we have a good example of form control with ngControl.
+
+
 ## Misc Info
 
 Tested ok on Chrome 47.0.2526.80 m & win7 
+
+## Beware
+
+If you are using cygwin, you will have to open a powershell terminal for all the above steps.
+I ran into trouble with nodemon when launching from patty.  

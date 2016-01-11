@@ -24,7 +24,7 @@ import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
   template: `
     <div  id="slider" style="margin:5px">
 
-      <!-- special div which disable mousemove and mouseup event -->
+      <!-- special div which disables mousemove and mouseup event -->
 
       <div *ngIf="button_is_down_" style="position:relative"
            (window:mousemove)="onMousemove($event)"

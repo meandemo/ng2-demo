@@ -1,0 +1,122 @@
+<div class="w3-row">
+  <div class="w3-container w3-padding w3-col w3-text-theme" style="width:10%">
+    <div hidden>Reserved for future use</div>
+  </div>
+  <div class="w3-container w3-padding w3-col w3-text-theme" style="width:60%">
+    <br>
+    <br>
+    <h2 >RGB Slider</h2>
+    <p>
+      We show an example of a 3 runner slider used as a color selector, 
+      which is a customization of the simple svg slider.
+      We have created a new html tag <code>&lt;gg-svg-slider-rgb&gt;</code> which can be used
+      like the standard <code>&lt;gg-svg-slider&gt;</code> slider.
+      The 3 colored runners are not constrained with each others so they can move
+      freely on the rail.
+      Note that a click on the rail forces all the runners to that position,
+      the resulting color ranges from white to shade of grey and  black.
+    </p>
+
+    <gg-svg-slider-rgb
+        [min]="0"
+        [max]="255"
+        [(red)]="values_red"
+        [(green)]="values_green"
+        [(blue)]="values_blue"
+        [length]="length_">
+    </gg-svg-slider-rgb>
+
+    <p>
+    The numerical values in the control panel can be changed which trigger a change one of the runner position thanks to angular2 bi-directional binding.
+
+    <h4 #_id_svg_ctrl_panel>RGB Slider Control Panel</h4>
+    <form [ngFormModel]="form_ctrl_"> 
+      <table class="w3-table">
+        <tbody>
+        <tr>
+          <td>Red:</td>
+          <td>
+            <input type="number" id="red" [(ngModel)]="values_red"
+                   [min]="0" [max]="255" >
+          </td>
+          <td class="color-demo" rowspan="4" [attr.bgcolor]="cell_hex_str_">
+          </td>
+        </tr>
+
+        <tr>
+          <td>Green:</td>
+          <td>
+            <input type="number" id="green" [(ngModel)]="values_green"
+                   [min]="0" [max]="255" >
+          </td>
+        </tr>
+
+        <tr>
+          <td>Blue:</td>
+          <td>
+            <input type="number" id="blue" [(ngModel)]="values_blue"
+                   [min]="0" [max]="255" >
+          </td>
+        </tr>
+        <tr>
+          <td>Hex:</td>
+          <td>
+            <input type="text" #_hex id="hex" size="7"
+              [(ngModel)]="hex_str_" ngControl="hex_string">
+        </tr>
+        </tbody>
+      </table>
+    </form>
+    <div style="color:red" *ngIf="form_ctrl_.controls['hex_string'].msg">
+      Error: {{form_ctrl_.controls['hex_string'].msg}}
+    </div>      
+    <div style="color:rgba(0,0,0,0)" *ngIf="!form_ctrl_.controls['hex_string'].msg">
+      Invisible message 
+    </div>      
+
+    <!-- Note the ngControl property implies the following:   
+      1) Addition of classes: ng-dirty/ng-pristine, ng-touched/ng-untouched, ng-valid/ng-invalid 
+      2) The class behavior is control by the return value of a control function
+          this.form_ctrl_ = this.fb_.group({ 
+            hex_string: [ '',  (c: Control) => { do_something; return some_value; } ]
+          });
+
+      2.a) If some_value ===  null => the ng-valid class is set, otherwise the ng-invalid class is set
+      2.b) The errors    s valuestatement 
+
+    <br>TODO: remove this: {{_hex.className}}
+    <br>TODO: Form CTRL : {{form_ctrl_.hex_string}}
+    <br>DEBUG control dirty       : {{form_ctrl_.controls['hex_string'].dirty}}
+    <br>DEBUG control errors      : {{form_ctrl_.controls['hex_string'].errors}}
+    <br>DEBUG control pending     : {{form_ctrl_.controls['hex_string'].pending}}
+    <br>DEBUG control pristine    : {{form_ctrl_.controls['hex_string'].pristine}}
+    <br>DEBUG control status      : {{form_ctrl_.controls['hex_string'].status}}
+    <br>DEBUG control changes     : {{form_ctrl_.controls['hex_string'].statusChanges}}
+    <br>DEBUG control touched     : {{form_ctrl_.controls['hex_string'].touched}}
+    <br>DEBUG control untouched   : {{form_ctrl_.controls['hex_string'].untouched}}
+    <br>DEBUG control valid       : {{form_ctrl_.controls['hex_string'].valid}}
+    <br>DEBUG control ongoing     : {{form_ctrl_.controls['hex_string'].ongoing}}
+    -->   
+    <br> 
+    <gg-lipsum></gg-lipsum>
+  </div>
+  <div class="w3-container w3-padding w3-col w3-text-theme" style="width:30%">
+    <!--
+    <div hidden style="position:relative w3-tiny">
+    std {{_id_std_ctrl_panel.getBoundingClientRect().top}}<br>
+    svg {{_id_svg_ctrl_panel.getBoundingClientRect().top}}<br>
+    </div>
+    -->
+    <div [ngStyle]="{'position':'absolute', 'top':'272px' }"> <!-- ">  -->
+      <h4>HTML Code</h4>
+      <pre class="side-snippet">
+        &lt;gg-svg-slider-rgb 
+        &nbsp;&nbsp;[(red)]="red_"
+        &nbsp;&nbsp;[(green)]="green_"
+        &nbsp;&nbsp;[(blue)]="blue_"
+        &nbsp;&nbsp;[length]="my_rail_length_"&gt;
+        &lt;/gg-svg-slider-rgb&gt; 
+      </pre>
+    </div>  
+  </div>
+</div>
