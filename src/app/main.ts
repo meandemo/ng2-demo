@@ -55,7 +55,7 @@ import {assertionsEnabled}   from 'angular2/src/facade/lang';
       </div>
       <div class="w3-container w3-tiny">
         Using angular2 version {{ng2version_}} in {{mode_str_}}<br>
-        Page last updated 11-Jan-2016<br>
+        Page last updated 12-Jan-2016<br>
         Log log all bugs <a href="https://github.com/meandemo/ng2-demo/issues">here</a><br>
         (c) <a href="http://www.ng2goodies.com">ng2goodies</a><br>
       </div>
@@ -66,7 +66,7 @@ import {assertionsEnabled}   from 'angular2/src/facade/lang';
 class HomeCmp {
   private mode_str_: string = 'production mode';
   private is_in_prod_mode_: boolean = true;
-  private ng2version_: string = '2.0.0-beta.0';
+  private ng2version_: string = '2.0.0-beta.1';
 
   constructor() {
     if (assertionsEnabled()) {

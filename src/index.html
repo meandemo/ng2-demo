@@ -52,15 +52,25 @@
     </script>
 
     {% if is_prod %}
+    <!-- TODO: replace path with 'read' CDN -->
     <script src="https://code.angularjs.org/{{ ng2ver }}/angular2-polyfills.min.js"></script>
     <script src="https://code.angularjs.org/{{ ng2ver }}/Rx.min.js"></script>
     <script src="https://code.angularjs.org/{{ ng2ver }}/angular2.min.js"></script>
     <script src="https://code.angularjs.org/{{ ng2ver }}/router.min.js"></script>
+    {% elif is_minified %}
+    <!-- TODO: investigate impact of minified files with beta.1 -->
+    <!-- When replacing angular2.dev.js with angular2.min.js -->
+    <!-- We have a bug, without message on the console ouch!) -->  
+    <!-- We also have a bug with router.min.js vs router.js -->
+    <script src="lib/angular2-polyfills.min.js"></script>
+    <script src="lib/Rx.min.js"></script>
+    <script src="lib/angular2.js"></script>
+    <script src="lib/router.js"></script>
     {% else %}
     <script src="lib/angular2-polyfills.js"></script>
     <script src="lib/Rx.js"></script>
     <script src="lib/angular2.dev.js"></script>
-    <script src="lib/router.dev.js"></script>
+    <script src="lib/router.js"></script>
     {% endif %}
 
     <!-- include google analytics if needed -->

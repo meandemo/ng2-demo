@@ -15,8 +15,13 @@ A Second demo demonstrate a slider component implemented using SVG which can be 
 
 # Changes
 
-8-jan-2016:
-The code has been aligned with NG2 version 2.0.0-beta.
+## 12-jan-2016:
+The code has been aligned with NG2 version 2.0.0-beta.1
+Minor fixes. The minified versions trigger a un-identified bug. 
+
+
+## 8-jan-2016:
+The code has been aligned with NG2 version 2.0.0-beta.0
 We are using production mode to avoid the 'has changed after it was checked' error messages. 
 
 
@@ -29,11 +34,9 @@ We are using production mode to avoid the 'has changed after it was checked' err
 
 3. `tsd reinstall --save --overwrite`
 
-4. `gulp init`
+4. `gulp demo`
 
-5. `gulp demo`
-
-6. open web page on http://localhost:8080, don't forget to activate the livereload button
+5. open web page on http://localhost:8080, don't forget to activate the livereload button
 
 
 # Features
@@ -55,7 +58,8 @@ your needs.
 ## RGB Color selector using SVG Slider
 
 An extension of the SVG Slider with 3 runners on the rail is the basis for this interesting RGB color
-selector. In addition, we have a good example of form control with ngControl.
+selector. In addition, we have a good example of form control with ngControl, and communication between
+3 components: slider, individual color input and hex color input.
 
 
 ## Misc Info

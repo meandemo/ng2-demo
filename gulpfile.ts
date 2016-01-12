@@ -45,6 +45,21 @@ const tslint         = require('gulp-tslint');
 const tslintStylish  = require('gulp-tslint-stylish');
 
 
+function get_ng2_version(): string {
+  const filename = 'node_modules/angular2/package.json';
+  let str = '<empty>';
+
+  const data = fs.readFileSync(filename, null);
+  const obj = JSON.parse(data, null);
+  if ('version' in obj) {
+    str = obj.version;
+  } else {
+    throw `Error: can't find version in ${filename}`;
+  }
+  return str;
+}
+
+
 //
 // argument processing
 //
@@ -55,6 +70,9 @@ const argv = require('yargs')
         })
         .option('p', {
           alias: 'production'
+        })
+        .option('m', {
+          alias: 'minified'
         })
         .option('f', {
           alias: 'file'
@@ -67,6 +85,7 @@ const argv = require('yargs')
 interface Config {
   verbosity: number;
   production: boolean;
+  minified: boolean;
   use_ga: boolean;
   ng2version: string;
   tsfile: string;
@@ -75,9 +94,13 @@ interface Config {
 const config = <Config>{};
 config.verbosity = ('verbose' in argv) ? Number(argv.verbose) : 0;
 config.production = ('production' in argv) ? true : false;
+config.minified =   ('minified' in argv) ? true : false;
 config.use_ga     = ('google-analytics' in argv) ? true : false;
-config.ng2version = '2.0.0-beta.0';
+config.ng2version = get_ng2_version();
 config.tsfile = ('file' in argv) ? argv.file : '';
+
+console.log('[INFO] Using angular2 version: ', config.ng2version);
+
 
 
 
@@ -125,6 +148,7 @@ function nunjucks_html_file(source: string | string[], rebase: string, dest: str
     .pipe(nunjucksRender({
       use_ga: config.use_ga,
       is_prod: config.production,
+      is_minified: config.minified,
       ng2ver: config.ng2version
     }))
     .pipe(gulp.dest(dest));
@@ -171,13 +195,14 @@ function init_lib(dest: string) {
   gulp.src('node_modules/systemjs/dist/system.src.js').pipe(gulp.dest(dest_lib));
 
   gulp.src('node_modules/rxjs/bundles/Rx.js').pipe(gulp.dest(dest_lib));
-  gulp.src('node_modules/rxjs/bundles/Rx.umd.js').pipe(gulp.dest(dest_lib));
+  gulp.src('node_modules/rxjs/bundles/Rx.min.js').pipe(gulp.dest(dest_lib));
 
   gulp.src('node_modules/angular2/bundles/angular2-polyfills.js').pipe(gulp.dest(dest_lib));
-  gulp.src('node_modules/angular2/bundles/angular2-all.umd.dev.js').pipe(gulp.dest(dest_lib));
-  gulp.src('node_modules/angular2/bundles/angular2-all.umd.js').pipe(gulp.dest(dest_lib));
+  gulp.src('node_modules/angular2/bundles/angular2-polyfills.min.js').pipe(gulp.dest(dest_lib));
+
   gulp.src('node_modules/angular2/bundles/angular2.min.js').pipe(gulp.dest(dest_lib));
   gulp.src('node_modules/angular2/bundles/angular2.dev.js').pipe(gulp.dest(dest_lib));
+  gulp.src('node_modules/angular2/bundles/angular2.js').pipe(gulp.dest(dest_lib));
 
   gulp.src('node_modules/angular2/bundles/router.min.js').pipe(gulp.dest(dest_lib));
   gulp.src('node_modules/angular2/bundles/router.dev.js').pipe(gulp.dest(dest_lib));
@@ -318,8 +343,9 @@ gulp.task('http.server', () => {
 // 4. live reload server on the web client files
 // 5. http server
 //
-gulp.task('demo', () => {
+gulp.task('loop', () => {
   gasync.parallel([
+    () => { gulp.start('watch.index'); },
     () => { gulp.start('watch.transpile'); },
     () => { gulp.start('watch.copy'); },
     () => { gulp.start('watch.scss'); },
@@ -328,17 +354,24 @@ gulp.task('demo', () => {
   ]);
 });
 
+gulp.task('demo', () => {
+  gasync.series([
+    (callback: any) => { gulp.start('init'); callback(null); },
+    (callback: any) => { gulp.start('loop'); callback(null); },
+  ]);
+});
 
 
 gulp.task('default', () => {
   console.log(`Usage: gulp task [options]
     Options:
       [--verbose|-v  [num]]     Log to console, 0: limited, 1: more, 2: all 
-      [--production|-p ]        Production mode: external scripts loaded from cdns
+      [--production|-p ]        Production mode: external scripts loaded from CDN
+      [--minified|-m ]          Use minified .js files
       [--ga]                    Include google analytics
     Task list:
       init                      Initialize all the local client files
-      demo                      Start local server with live reload
+      demo                      Initialize and start local server with live reload
       transpile -f filename     Test ts lint and transpile
   `);
 });

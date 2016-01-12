@@ -189,6 +189,7 @@ export class SliderDemoRgbCmp implements AfterViewInit, OnActivate, OnDeactivate
   constructor(private fb_: FormBuilder, private location_: Location,
               @Inject(forwardRef(() => SliderDemoService)) private slider_demo_service_: SliderDemoService ) {
     this.hex_str_ = this.to_rgb_str(this.values_.red, this.values_.green, this.values_.blue);
+    this.cell_hex_str_ = this.hex_str_;
 
     this.form_ctrl_ = this.fb_.group({
       hex_string: [ '', (c: Control): {[key: string]: any} => { return this.hex_string_validator(c); } ]

@@ -189,6 +189,16 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
       this.rail_length_ = 700;
     }
     this.rail_length_ = this.clip3(this.rail_length_, this.min_rail_length_, this.max_rail_length_);
+
+    for (let i = 0; i < this.nb_runners_; ++i) {
+      let v = (this.min_ + this.max_) / 2;
+      const str = `value${i}`;
+      if (str in this) {
+        v = Number(this[str]);
+      }
+      this.values_changed(v, i);
+      this.emit(i);
+    }
   }
 
   values_changed(v: number, idx: number) {
