@@ -273,8 +273,10 @@ gulp.task('watch.transpile', () => {
   filtered_log(1, '[INFO] Launching watch on the .ts files');
   gulp.watch('src/app/**/*.ts', (event: any) => {
     filtered_log(2, '[INFO] File ' + event.path + ' event: ' + event.type);
-    lint_ts_files(event.path);
-    transpile_ts_files(event.path, 'src', 'dist/client');
+    if (event.type !== 'deleted') {
+      lint_ts_files(event.path);
+      transpile_ts_files(event.path, 'src', 'dist/client');
+    }
   });
 });
 
@@ -282,7 +284,9 @@ gulp.task('watch.index', () => {
   filtered_log(1, '[INFO] Launching watch on index.html');
   gulp.watch(['src/index.html'], (event: any) => {
     filtered_log(2, '[INFO] File ' + event.path + ' event: ' + event.type);
-    nunjucks_html_file(event.path, 'src', 'dist/client');
+    if (event.type !== 'deleted') {
+      nunjucks_html_file(event.path, 'src', 'dist/client');
+    }
   });
 });
 
@@ -290,7 +294,9 @@ gulp.task('watch.copy', () => {
   filtered_log(1, '[INFO] Launching watch on app/**/*.html, *.svg, favicon.ico files');
   gulp.watch(['src/app/**/*.html', 'src/**/*.png', 'src/**/*.svg', 'src/favion.ico'], (event: any) => {
     filtered_log(2, '[INFO] File ' + event.path + ' event: ' + event.type);
-    gulp.src(event.path, {base : 'src'}).pipe(gulp.dest('dist/client'));
+    if (event.type !== 'deleted') {
+      gulp.src(event.path, {base : 'src'}).pipe(gulp.dest('dist/client'));
+    }
   });
 });
 
@@ -298,7 +304,9 @@ gulp.task('watch.scss', () => {
   filtered_log(1, '[INFO] Launching watch on the .scss files');
   gulp.watch(['src/**/*.scss'], (event: any) => {
     filtered_log(2, '[INFO] File ' + event.path + ' event: ' + event.type);
-    scss_to_css(event.path, 'src', 'dist/client');
+    if (event.type !== 'deleted') {
+      scss_to_css(event.path, 'src', 'dist/client');
+    }
   });
 });
 
@@ -343,7 +351,7 @@ gulp.task('http.server', () => {
 // 4. live reload server on the web client files
 // 5. http server
 //
-gulp.task('loop', () => {
+gulp.task('run', () => {
   gasync.parallel([
     () => { gulp.start('watch.index'); },
     () => { gulp.start('watch.transpile'); },
@@ -357,7 +365,7 @@ gulp.task('loop', () => {
 gulp.task('demo', () => {
   gasync.series([
     (callback: any) => { gulp.start('init'); callback(null); },
-    (callback: any) => { gulp.start('loop'); callback(null); },
+    (callback: any) => { gulp.start('run'); callback(null); },
   ]);
 });
 

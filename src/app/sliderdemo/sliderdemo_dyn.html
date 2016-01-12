@@ -1,0 +1,79 @@
+<div class="w3-row">
+  <div class="w3-container w3-padding w3-col w3-text-theme" style="width:10%">
+    <div hidden>Reserved for future use</div>
+  </div>
+  <div class="w3-container w3-padding w3-col w3-text-theme" style="width:60%">
+    <br>
+    <br>
+    <h2 >Dynamic Slider</h2>
+    <p>
+      We show an example a dynamic slider: runners can be added or removed. 
+      It is a customization of the simple svg slider.
+      We have created a new html tag <code>&lt;gg-svg-slider-dyn&gt;</code> which can be used
+      like the standard <code>&lt;gg-svg-slider&gt;</code> slider.
+      Note that a click on the rail has no effect.
+    </p>
+
+    <gg-svg-slider-dyn
+        [min]="0"
+        [max]="500"
+        (values)="_values_array = $event"
+        [length]="500">
+    </gg-svg-slider-dyn>
+
+    <button (click)="click_add_runner()" class="w3-btn w3-border w3-round-large">Add Runner</button>
+
+    <h4 #_id_svg_ctrl_panel>Dynamic Slider Control Panel</h4>
+    <form> <!-- [ngFormModel]="form_ctrl_"--> 
+      <table class="w3-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Value</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="#_value of _values_array; #_idx = index">
+          <td style="vertical-align:middle">{{_idx}}</td>
+          <td style="vertical-align:middle">
+            <input type="number" min="0" max="1000" (change)="runner_pos_change(_idx, $event)" [ngModel]="_value"> <!-- ngControl="hex_string" -->
+          </td>
+          <td style="vertical-align:middle">
+            <button (click)="click_delete_runner(_idx)" class="w3-btn w3-border w3-round-large" style="padding-top:3px;padding-bottom:3px">Delete</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </form>
+
+    <h4>Communication With Slider Component</h4>
+    <p>
+    You may note that we not using a bi-directional binding for the values. The slider emit an array of
+    values, which is capture in the parent component with the syntax <code>(values)="_values"</code>.
+    Notice, however, that the we can move one of the sliders using an number input field in the control panel.
+    </p>
+    <p>
+
+    </p>
+
+    <gg-lipsum></gg-lipsum>
+  </div>
+  <div class="w3-container w3-padding w3-col w3-text-theme" style="width:30%">
+    <!--
+    <div hidden style="position:relative w3-tiny">
+    std {{_id_std_ctrl_panel.getBoundingClientRect().top}}<br>
+    svg {{_id_svg_ctrl_panel.getBoundingClientRect().top}}<br>
+    </div>
+    -->
+    <div [ngStyle]="{'position':'absolute', 'top':'400px' }"> <!-- ">  -->
+      <h4>HTML Code</h4>
+      <pre class="side-snippet">
+        &lt;gg-svg-slider-dyn 
+        &nbsp;&nbsp;(values)="_values = $event"
+        &nbsp;&nbsp;[length]="my_rail_length_"&gt;
+        &lt;/gg-svg-slider-dyn&gt; 
+      </pre>
+    </div>  
+  </div>
+</div>
