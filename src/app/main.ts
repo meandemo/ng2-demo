@@ -33,6 +33,7 @@ import {RouterLink, RouterOutlet, RouteConfig, ROUTER_PROVIDERS }    from 'angul
 import {StickyDivDemoCmp}    from './stickydivdemo/stickydivdemo';
 import {SliderDemoSimpleCmp} from './sliderdemo/sliderdemo_simple';
 import {SliderDemoRgbCmp}    from './sliderdemo/sliderdemo_rgb';
+import {SliderDemoDynCmp}    from './sliderdemo/sliderdemo_dyn';
 import {SliderDemoService}   from './sliderdemo/sliderdemo_service';
 import {assertionsEnabled}   from 'angular2/src/facade/lang';
 
@@ -46,10 +47,11 @@ import {assertionsEnabled}   from 'angular2/src/facade/lang';
     </div>
     <div class="w3-text-theme">
       <div class="w3-container w3-padding">
-        Three great demos are available:<br>
+        Four great demos are available:<br>
         <a [routerLink]="['StickyDivDemoCmp']" >Sticky Div</a><br>
         <a [routerLink]="['SliderDemoSimpleCmp']" >SVG Based Slider</a><br>
         <a [routerLink]="['SliderDemoRgbCmp']" >SVG Based Color Selector with full form control</a><br>
+        <a [routerLink]="['SliderDemoDynCmp']" >Multi runner slider which can be added and removed</a><br>
         <br>
         <br>
       </div>
@@ -61,7 +63,7 @@ import {assertionsEnabled}   from 'angular2/src/facade/lang';
       </div>
     </div>
    `,
-   directives: [RouterLink, StickyDivDemoCmp, SliderDemoSimpleCmp]
+   directives: [RouterLink]
 })
 class HomeCmp {
   private mode_str_: string = 'production mode';
@@ -87,7 +89,8 @@ class HomeCmp {
   { path: '' ,          component: HomeCmp,             name: 'HomeCmp' },
   { path: 'stickydiv' , component: StickyDivDemoCmp,    name: 'StickyDivDemoCmp' },
   { path: 'svgslider',  component: SliderDemoSimpleCmp, name: 'SliderDemoSimpleCmp' },
-  { path: 'rgbslider',  component: SliderDemoRgbCmp,    name: 'SliderDemoRgbCmp' }
+  { path: 'rgbslider',  component: SliderDemoRgbCmp,    name: 'SliderDemoRgbCmp' },
+  { path: 'dynslider',  component: SliderDemoDynCmp,    name: 'SliderDemoDynCmp' }
 ])
 export class MainCmp {
 }

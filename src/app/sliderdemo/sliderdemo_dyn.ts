@@ -47,20 +47,20 @@ export class SliderDemoDynCmp implements AfterViewInit, OnActivate, OnDeactivate
   }
 
   click_delete_runner(idx: number) {
-    console.log('[TRACE] Requesting delete of runner ', idx);
+    //console.log('[TRACE] Requesting delete of runner ', idx);
     let evt_data: DynSliderEvtData = {'add': false, 'idx': idx, 'del': true, 'val': 0};
     this.dyn_slider_service_.next(evt_data);
   }
 
   click_add_runner() {
-    console.log('[TRACE] Requesting addition of a runner');
+    //console.log('[TRACE] Requesting addition of a runner');
     let evt_data: DynSliderEvtData = {'add': true, 'idx': 0, 'del': false, 'val': 0};
     this.dyn_slider_service_.next(evt_data);
   }
 
   runner_pos_change(idx: number, evt: any ) {
     const val = evt.target.valueAsNumber;
-    console.log('[TRACE] Value[', idx, '] has changed to', val);
+    //console.log('[TRACE] Value[', idx, '] has changed to', val);
     let evt_data: DynSliderEvtData = {'add': false, 'idx': idx, 'del': false, 'val': val};
     this.dyn_slider_service_.next(evt_data);
   }

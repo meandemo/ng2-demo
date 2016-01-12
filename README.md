@@ -18,6 +18,7 @@ A Second demo demonstrate a slider component implemented using SVG which can be 
 ## 12-jan-2016:
 The code has been aligned with NG2 version 2.0.0-beta.1
 Minor fixes. The minified versions trigger a un-identified bug. 
+Added dynamic multi runner slider.
 
 
 ## 8-jan-2016:
@@ -60,6 +61,11 @@ your needs.
 An extension of the SVG Slider with 3 runners on the rail is the basis for this interesting RGB color
 selector. In addition, we have a good example of form control with ngControl, and communication between
 3 components: slider, individual color input and hex color input.
+
+## Dynamic multi runner slider
+
+Another extension of the SVG Slider with any number of runners which can be updated, added and removed.
+We are using a service to communicate between parent and child.
 
 
 ## Misc Info
