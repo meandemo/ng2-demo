@@ -1,0 +1,21 @@
+.rgb-runner#red {
+  opacity:0.6;
+  stroke: black;
+  fill: red;
+}
+
+.rgb-runner#green {
+  opacity:0.6;
+  stroke: black;
+  fill: green;
+}
+
+.rgb-runner#blue {
+  opacity:0.6;
+  stroke: black;
+  fill: blue;
+}
+
+.rgb-runner :hover {
+  opacity:0.8;
+}

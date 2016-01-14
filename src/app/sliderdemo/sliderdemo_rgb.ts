@@ -18,13 +18,13 @@ import {LipsumCmp}                 from '../lipsum/lipsum';
 import {SvgSliderRgbCmp}           from '../slider/slider_rgb';
 import {SliderDemoService}         from '../sliderdemo/sliderdemo_service';
 
+import {Util}                      from '../../common/util';
 
 // Slider Demo RGB
 
 @Component ({
   selector: 'gg-slider-demo-rgb',
   templateUrl: 'app/sliderdemo/sliderdemo_rgb.html',
-  //events: ['colorChange'],
   directives: [LipsumCmp, SvgSliderRgbCmp]
 })
 export class SliderDemoRgbCmp implements AfterViewInit, OnActivate, OnDeactivate {
@@ -48,7 +48,7 @@ export class SliderDemoRgbCmp implements AfterViewInit, OnActivate, OnDeactivate
   set values_red(r: number) {
     //console.log("TRACE: set red value", this.values_.red);
     this.values_.red = r;
-    this.hex_str_ = this.to_rgb_str(this.values_.red, this.values_.green, this.values_.blue);
+    this.hex_str_ = Util.rgb2str(this.values_.red, this.values_.green, this.values_.blue);
     this.cell_hex_str_ = this.hex_str_;
   }
 
@@ -60,7 +60,7 @@ export class SliderDemoRgbCmp implements AfterViewInit, OnActivate, OnDeactivate
   set values_green(r: number) {
     //console.log("TRACE: set green value", this.values_.green);
     this.values_.green = r;
-    this.hex_str_ = this.to_rgb_str(this.values_.red, this.values_.green, this.values_.blue);
+    this.hex_str_ = Util.rgb2str(this.values_.red, this.values_.green, this.values_.blue);
     this.cell_hex_str_ = this.hex_str_;
   }
   get values_blue() {
@@ -71,27 +71,12 @@ export class SliderDemoRgbCmp implements AfterViewInit, OnActivate, OnDeactivate
   set values_blue(r: number) {
     //console.log("TRACE: set blue value", this.values_.blue);
     this.values_.blue = r;
-    this.hex_str_ = this.to_rgb_str(this.values_.red, this.values_.green, this.values_.blue);
+    this.hex_str_ = Util.rgb2str(this.values_.red, this.values_.green, this.values_.blue);
     this.cell_hex_str_ = this.hex_str_;
   }
 
 
-  rgb2str(v: number): string {
-    v = Math.round(v);
-    if (v < 0) {
-      return '00';
-    } else if (v > 255) {
-      return 'ff';
-    } else if (v < 16) {
-      return '0' + v.toString(16);
-    } else {
-      return v.toString(16);
-    }
-  }
 
-  to_rgb_str(r: number, g: number, b: number): string {
-    return '#' + this.rgb2str(r) + this.rgb2str(g) + this.rgb2str(b);
-  }
 
 
   routerOnActivate(next: ComponentInstruction, prev: ComponentInstruction) {
@@ -188,7 +173,7 @@ export class SliderDemoRgbCmp implements AfterViewInit, OnActivate, OnDeactivate
 
   constructor(private fb_: FormBuilder, private location_: Location,
               @Inject(forwardRef(() => SliderDemoService)) private slider_demo_service_: SliderDemoService ) {
-    this.hex_str_ = this.to_rgb_str(this.values_.red, this.values_.green, this.values_.blue);
+    this.hex_str_ = Util.rgb2str(this.values_.red, this.values_.green, this.values_.blue);
     this.cell_hex_str_ = this.hex_str_;
 
     this.form_ctrl_ = this.fb_.group({

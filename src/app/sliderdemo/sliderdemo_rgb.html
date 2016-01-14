@@ -23,7 +23,7 @@
         [(red)]="values_red"
         [(green)]="values_green"
         [(blue)]="values_blue"
-        [length]="length_">
+        [(length)]="length_">
     </gg-svg-slider-rgb>
 
     <p>
@@ -34,12 +34,20 @@
       <table class="w3-table">
         <tbody>
         <tr>
+          <td>Rail:</td>
+          <td>
+            <input type="number" #_hex id="rail" [(ngModel)]="length_"
+                   [min]="100" [max]="800" >
+          </td>
+          <td class="color-demo" rowspan="5" [attr.bgcolor]="cell_hex_str_">
+          </td>
+        </tr>
+
+        <tr>
           <td>Red:</td>
           <td>
             <input type="number" id="red" [(ngModel)]="values_red"
                    [min]="0" [max]="255" >
-          </td>
-          <td class="color-demo" rowspan="4" [attr.bgcolor]="cell_hex_str_">
           </td>
         </tr>
 
@@ -58,11 +66,13 @@
                    [min]="0" [max]="255" >
           </td>
         </tr>
+
         <tr>
           <td>Hex:</td>
           <td>
             <input type="text" #_hex id="hex" size="7"
               [(ngModel)]="hex_str_" ngControl="hex_string">
+          </td>
         </tr>
         </tbody>
       </table>
@@ -73,6 +83,56 @@
     <div style="color:rgba(0,0,0,0)" *ngIf="!form_ctrl_.controls['hex_string'].msg">
       Invisible message 
     </div>      
+
+    <h2 >Vertical Slider</h2>
+    <div class="w3-row">
+      <div class="w3-container w3-half">
+        <gg-svg-slider-rgb
+          [min]="0"
+          [max]="255"
+          [(red)]="_vred"
+          [(green)]="_vgreen"
+          [(blue)]="_vblue"
+          vertical
+          length="256">
+        </gg-svg-slider-rgb>
+      </div>  
+      <div class="w3-container w3-half">
+      <p>
+        The addition of the property <code>vertical</code> to our component <code>gg-svg-slider-rgb</code>
+        allows a counter-clockwise rotation of the base slider by 90 degree.
+      </p>
+      <h4 >Vertical Slider Control Panel</h4>
+      <form > 
+        <table class="w3-table">
+          <tr>
+            <td>Red:</td>
+            <td>
+              <input type="number" id="red" [(ngModel)]="_vred"
+                     [min]="0" [max]="255" >
+            </td>
+          </tr>
+
+          <tr>
+            <td>Green:</td>
+            <td>
+              <input type="number" id="green" [(ngModel)]="_vgreen"
+                     [min]="0" [max]="255" >
+            </td>
+          </tr>
+
+          <tr>
+            <td>Blue:</td>
+            <td>
+              <input type="number" id="blue" [(ngModel)]="_vblue"
+                     [min]="0" [max]="255" >
+            </td>
+          </tr>
+        </table>
+        </form>
+      </div>  
+    </div>  
+
 
     <!-- Note the ngControl property implies the following:   
       1) Addition of classes: ng-dirty/ng-pristine, ng-touched/ng-untouched, ng-valid/ng-invalid 
@@ -111,10 +171,23 @@
       <h4>HTML Code</h4>
       <pre class="side-snippet">
         &lt;gg-svg-slider-rgb 
-        &nbsp;&nbsp;[(red)]="red_"
-        &nbsp;&nbsp;[(green)]="green_"
-        &nbsp;&nbsp;[(blue)]="blue_"
-        &nbsp;&nbsp;[length]="my_rail_length_"&gt;
+        &nbsp;&nbsp;[(red)]="_red"
+        &nbsp;&nbsp;[(green)]="_green"
+        &nbsp;&nbsp;[(blue)]="_blue"
+        &nbsp;&nbsp;[length]="_length"&gt;
+        &lt;/gg-svg-slider-rgb&gt; 
+      </pre>
+    </div>  
+
+    <div [ngStyle]="{'position':'absolute', 'top':'900px' }"> <!-- ">  -->
+      <h4>HTML Code</h4>
+      <pre class="side-snippet">
+        &lt;gg-svg-slider-rgb 
+        &nbsp;&nbsp;[(red)]="_vred"
+        &nbsp;&nbsp;[(green)]="_vgreen"
+        &nbsp;&nbsp;[(blue)]="_vblue"
+        &nbsp;&nbsp;vertical
+        &nbsp;&nbsp;length="256"&gt;
         &lt;/gg-svg-slider-rgb&gt; 
       </pre>
     </div>  

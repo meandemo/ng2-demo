@@ -57,7 +57,7 @@ import {assertionsEnabled}   from 'angular2/src/facade/lang';
       </div>
       <div class="w3-container w3-tiny">
         Using angular2 version {{ng2version_}} in {{mode_str_}}<br>
-        Page last updated 12-Jan-2016<br>
+        Page last updated 14-Jan-2016<br>
         Log log all bugs <a href="https://github.com/meandemo/ng2-demo/issues">here</a><br>
         (c) <a href="http://www.ng2goodies.com">ng2goodies</a><br>
       </div>

@@ -271,7 +271,7 @@ gulp.task('init', () => {
 
 gulp.task('watch.transpile', () => {
   filtered_log(1, '[INFO] Launching watch on the .ts files');
-  gulp.watch('src/app/**/*.ts', (event: any) => {
+  gulp.watch('src/**/*.ts', (event: any) => {
     filtered_log(2, '[INFO] File ' + event.path + ' event: ' + event.type);
     if (event.type !== 'deleted') {
       lint_ts_files(event.path);
@@ -282,7 +282,7 @@ gulp.task('watch.transpile', () => {
 
 gulp.task('watch.index', () => {
   filtered_log(1, '[INFO] Launching watch on index.html');
-  gulp.watch(['src/index.html'], (event: any) => {
+  gulp.watch('src/index.html', (event: any) => {
     filtered_log(2, '[INFO] File ' + event.path + ' event: ' + event.type);
     if (event.type !== 'deleted') {
       nunjucks_html_file(event.path, 'src', 'dist/client');

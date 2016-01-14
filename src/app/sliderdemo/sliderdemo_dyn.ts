@@ -20,6 +20,8 @@ import {SliderDemoService}         from '../sliderdemo/sliderdemo_service';
 import {DynSliderService,
         DynSliderEvtData}          from '../slider/slider_dyn_service';
 
+import {Runner}                    from '../slider/runner';
+
 // Dynamic Slider Demo 
 
 @Component ({
@@ -46,22 +48,22 @@ export class SliderDemoDynCmp implements AfterViewInit, OnActivate, OnDeactivate
     }
   }
 
-  click_delete_runner(idx: number) {
-    //console.log('[TRACE] Requesting delete of runner ', idx);
-    let evt_data: DynSliderEvtData = {'add': false, 'idx': idx, 'del': true, 'val': 0};
+  click_delete_runner(runner: Runner) {
+    //console.log('[TRACE] Requesting delete of runner ', runner);
+    let evt_data: DynSliderEvtData = {'del': true, 'runner': runner};
     this.dyn_slider_service_.next(evt_data);
   }
 
   click_add_runner() {
     //console.log('[TRACE] Requesting addition of a runner');
-    let evt_data: DynSliderEvtData = {'add': true, 'idx': 0, 'del': false, 'val': 0};
+    let evt_data: DynSliderEvtData = {'add': true};
     this.dyn_slider_service_.next(evt_data);
   }
 
-  runner_pos_change(idx: number, evt: any ) {
+  runner_pos_change(runner: Runner, evt: any ) {
     const val = evt.target.valueAsNumber;
-    //console.log('[TRACE] Value[', idx, '] has changed to', val);
-    let evt_data: DynSliderEvtData = {'add': false, 'idx': idx, 'del': false, 'val': val};
+    //console.log('[TRACE] Runner[', runner, '] has changed to', val);
+    let evt_data: DynSliderEvtData = {'runner': runner, 'val': val};
     this.dyn_slider_service_.next(evt_data);
   }
 

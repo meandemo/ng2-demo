@@ -8,6 +8,32 @@ import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
         ROUTER_PROVIDERS,
         RouterOutlet, RouterLink, APP_BASE_HREF, ROUTER_BINDINGS} from 'angular2/router';
 
+import {Util}                      from '../../common/util';
+import {Runner}                    from './runner';
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Nested SVG: not working at the present time
+// See: https://github.com/angular/angular/issues/1632
+///////////////////////////////////////////////////////////////////////////////
+
+@Component({
+  selector: 'g[rgb-pie]',
+  template: `
+    <g id="circle" [attr.transform]=" 'rotate(' + (-110 + (idx * 40)) + ')' " >
+      <path id="pie" d="M 0 0 h 20 A 20,20 0 0,1 14.321 12.855 Z" ></path>
+      <g transform="rotate(120)">
+        <path id="pie" d="M 0 0 h 20 A 20,20 0 0,1 14.321 12.855 Z" ></path>
+        <g transform="rotate(120)">
+          <path id="pie" d="M 0 0 h 20 A 20,20 0 0,1 14.321 12.855 Z"></path>
+        </g>
+      </g>
+    </g>
+    `
+})
+class SvgRunnerRgbCmp {
+  @Input() idx: number;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -26,53 +52,89 @@ import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
            (window:mouseup)="onMouseup($event)" >
       </div>
 
-      <svg  height="100" preserveAspectRatio="xMinYMin meet"
-            xmlns="http://www.w3.org/2000/svg" viewBox="-60 -40 800 100" version="1.1" >
+      <!--              -->
+      <!-- Horizontal   -->
+      <!--              -->
 
-        <!-- reference (0,0), no fill, no stroke -->
+      <div *ngIf=!is_vertical_>
+        <svg height="100" preserveAspectRatio="xMinYMin meet"
+          xmlns="http://www.w3.org/2000/svg" viewBox="-60 -40 800 100" version="1.1" >
 
-        <rect #railref  x="0" y="0" width="1" height="1" style="fill:none;stroke:none"  />
+          <!-- reference (0,0), no fill, no stroke -->
 
-        <!-- rail group -->
+          <rect #railref  x="0" y="0" width="1" height="1" style="fill:none;stroke:none"  />
 
-        <g id="ruler" (mousedown)="onMousedown(railref, $event, false)">
-          <path [attr.d]="'M 0,0 h' + (rail_length_)" style="stroke-width:2px;stroke:black" />
-          <g *ngFor="#_val of tick_marks_">
-            <path [attr.d]="'M' + (_val * rail_length_ / 255) + ',0 v 30'" style="stroke-width:2px;stroke:black" />
-            <text [attr.x]="_val * rail_length_ /255" y=50 text-anchor="middle" font-size="20">{{_val}}</text>
+          <g id="rail" (mousedown)="onMousedown(railref, $event, false)">
+            <path [attr.d]="'M 0,-5 v 10 h' + (rl_) + ' v -10 z'"
+                  style="stroke-width:2px;stroke:black;fill:violet" />
           </g>
-        </g>
 
-        <!-- runner group -->
-        <!--
-          <rect id="default-rail" x="0" y="-3" [attr.width]="rail_length_" height="7" style="fill:white;stroke-width:2px;stroke:black" />
-          <path [attr.d]="'M0,0 L ' + rail_length_ + ',0' " style="stroke-width:2px;stroke:black" />
-            <path [attr.d]="'M 0,' + (_val * rail_length_ / 255) + 'v 30'" style="fill:grey;stroke:black">
-            <circle cx="0" cy="0" [r]="10 + _idx * 5" />
-        -->
+          <g *ngFor="#_val of tick_marks_">
+            <path [attr.d]="'M' + get_pos(_val) + ',5 v 30'" style="stroke-width:2px;stroke:black" />
+            <text [attr.x]="get_pos(_val)" y=50 text-anchor="middle" font-size="20">{{_val}}</text>
+          </g>
 
-        <g *ngFor="#_name of runners_; #_idx = index"
-            [id]="_name" 
-            [attr.transform]="trans_pos_[_idx]"
-            (mousedown)="onMousedown(railref, $event, true, _idx)" >
-          
-          <g id="circle" [attr.transform]=" 'rotate(' + (-110 + (_idx * 40)) + ')' " >
-            <path id="pie" d="M 0 0 h 20 A 20,20 0 0,1 14.321 12.855 Z" />
-            <g transform="rotate(120)">
+          <g *ngFor="#_runner of runners_; #_idx = index"
+              [id]="get_color(_runner)" class="rgb-runner"
+              [attr.transform]="'translate(' + _runner.get_pos() + ', 0)'"
+              (mousedown)="onMousedown(railref, $event, true, _idx)" >
+
+            <g id="circle" [attr.transform]=" 'rotate(' + (-110 + (_idx * 40)) + ')' " >
               <path id="pie" d="M 0 0 h 20 A 20,20 0 0,1 14.321 12.855 Z" />
               <g transform="rotate(120)">
                 <path id="pie" d="M 0 0 h 20 A 20,20 0 0,1 14.321 12.855 Z" />
+                <g transform="rotate(120)">
+                  <path id="pie" d="M 0 0 h 20 A 20,20 0 0,1 14.321 12.855 Z" />
+                </g>
+              </g>
+            </g>
+            -->
+          </g>
+
+        </svg>
+      </div>
+
+      <!--              -->
+      <!-- Vertical     -->
+      <!--              -->
+
+      <div *ngIf=is_vertical_>
+        <svg width="120" preserveAspectRatio="xMinYMin meet"
+             xmlns="http://www.w3.org/2000/svg" [attr.viewBox]="'-40 -60 120 ' + (rl_ + 100)" version="1.1" >
+
+          <rect #railref  x="0" y="0" width="1" height="1" style="fill:none;stroke:none"  />
+
+          <g id="rail" (mousedown)="onMousedown(railref, $event, false)">
+            <path [attr.d]="'M -5,0 h 10 v' + (rl_) + ' h -10 z'"
+                style="stroke-width:2px;stroke:black;fill:violet" />
+          </g>
+
+          <g *ngFor="#_val of tick_marks_">
+            <path [attr.d]="'M 5,' + get_pos(_val) + ' h 30'" style="stroke-width:2px;stroke:black" />
+            <text [attr.y]="get_pos(_val)" x=35 baseline-shift="-30%" font-size="20">{{_val}}</text>
+          </g>
+          <g *ngFor="#_runner of runners_; #_idx = index"
+              [id]="get_color(_runner)" class="rgb-runner"
+              [attr.transform]="'translate(0, ' + _runner.get_pos() + ')'"
+              (mousedown)="onMousedown(railref, $event, true, _idx)" >
+
+            <g id="circle" [attr.transform]="'rotate(' + (-110 + (_idx * 40)) + ')' " >
+              <path id="pie" d="M 0 0 h 20 A 20,20 0 0,1 14.321 12.855 Z" />
+              <g transform="rotate(120)">
+                <path id="pie" d="M 0 0 h 20 A 20,20 0 0,1 14.321 12.855 Z" />
+                <g transform="rotate(120)">
+                  <path id="pie" d="M 0 0 h 20 A 20,20 0 0,1 14.321 12.855 Z" />
+                </g>
               </g>
             </g>
           </g>
-        </g>
-
-      </svg>
+        </svg>
+      </div>
     </div>
   `,
-  styles: [`
-  `],
-  directives: [FORM_DIRECTIVES, NgFor]
+  styleUrls: [`./css/slider_rgb.css`
+  ],
+  directives: [FORM_DIRECTIVES, NgIf, NgFor]
 })
 export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
   @Input() min: any;
@@ -84,6 +146,7 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
   @Input() length: any;
   @Output() lengthChange:  EventEmitter<number> = new EventEmitter<number>();
 
+  @Input() vertical: boolean;
 
   @Input('red') value0: any;
   @Output('redChange') emit_value0_: EventEmitter<number> = new EventEmitter<number>();
@@ -96,77 +159,67 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
 
   private min_: number;
   private max_: number;
-  private rail_length_: number;
-  private min_rail_length_: number;
-  private max_rail_length_: number;
+  private rl_: number;          // rail length
+  private min_rl_: number;
+  private max_rl_: number;
+  private r2name_: Map<Runner, [string, number]>;
 
+  private runners_: Runner[] = [];
+  private active_runners_: Runner[];
   private nb_runners_: number;
-  private active_runner_: number[] = [];
+  private is_vertical_: boolean = false;
 
-  private value_: number[] = [];
-  private rounded_value_: number[] = [];
-
-  private pos_: number[] = [];
-
-  private delta_: number[] = [];
-  private base_: number[] = [];
   private button_is_down_: boolean = false;
 
-  private trans_pos_: string[] = [];
-  private label_offset_: number = 0;
-  private runners_: string[] = [];
-
-  private runner_style_is_circle_: boolean = true;
-  private runner_style_is_label_:  boolean = false;
   private tick_marks_: number[] = [0, 50, 100, 150, 200, 255];
+
   constructor() {
+    const colors  = ['red', 'green', 'blue'];
     this.min_ = 0;
     this.max_ = 255;
     this.nb_runners_ = 3;
+    this.rl_ = 700;
+    this.min_rl_ = 10;
+    this.max_rl_ = 4096;
+    this.r2name_ = new Map<Runner, [string, number]>();
 
     for (let i = 0; i < this.nb_runners_; ++i) {
-      this.value_.push(0);
-      this.rounded_value_.push(0);
-      this.pos_.push(0);
-      this.delta_.push(0);
-      this.base_.push(0);
-      this.trans_pos_.push('');
-      this.runners_.push(`runner${i}`);
-
-      this.values_changed(50 + (50 * i), i);
+      let runner = new Runner(50 + (50 * i), this.min_, this.max_, this.rl_);
+      this.runners_.push(runner);
+      this.r2name_.set(runner, [colors[i], i]);
     }
-
-    this.rail_length_ = 700;
-    this.min_rail_length_ = 10;
-    this.max_rail_length_ = 4096;
   }
 
-  clip3(v: number, min: number, max: number): number {
-    v = Number.isNaN(v) ? 0 : v;
-    if (v < min) { return min; }
-    if (v > max) { return max; }
-    return v;
+  get_pos(v: number) {
+    let pos = (this.rl_ * (v - this.min_)) / (this.max_ - this.min_);
+    if (this.is_vertical_) {
+      pos = this.rl_ - pos;
+    }
+    return Util.clip3(pos, 0, this.rl_);
   }
 
-  value2pos(v: number) {
-    const pos = (this.rail_length_ * (v - this.min_)) / (this.max_ - this.min_);
-    return this.clip3(pos, 0, this.rail_length_);
+  get_color(runner: Runner) {
+    //console.log("[TRACE] get_color: ", (this.r2name_.get(runner))[0]);
+    return (this.r2name_.get(runner))[0];
   }
 
-  pos2value(p: number) {
-    const v =  this.min_ + (p * (this.max_ - this.min_) / this.rail_length_);
-    return this.clip3(v, this.min_, this.max_);
-  }
-
-
-  emit(idx: number) {
+  emit_runner_value(runner: Runner) {
+    const idx = (this.r2name_.get(runner))[1];
     const str = `emit_value${idx}_`;
     if (str in this) {
-      this[str].emit(this.rounded_value_[idx]);
+      let v = this.runners_[idx].get_value(true);
+      this[str].emit(v);
     }
   }
 
   ngOnInit() {
+    //console.log("[TRACE] ngOnInit() ");
+    if ('vertical' in this) {
+      this.is_vertical_ = true;
+    }
+
+
+
     if ('min' in this) {
       this.min_ = Number(this.min);
     }
@@ -184,36 +237,16 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
     }
 
     if ('length' in this) {
-      this.rail_length_ = Number(this.length);
+      this.rl_ = Number(this.length);
     } else {
-      this.rail_length_ = 700;
+      this.rl_ = 700;
     }
-    this.rail_length_ = this.clip3(this.rail_length_, this.min_rail_length_, this.max_rail_length_);
-
-    for (let i = 0; i < this.nb_runners_; ++i) {
-      let v = (this.min_ + this.max_) / 2;
-      const str = `value${i}`;
-      if (str in this) {
-        v = Number(this[str]);
-      }
-      this.values_changed(v, i);
-      this.emit(i);
-    }
-  }
-
-  values_changed(v: number, idx: number) {
-    this.value_[idx] = this.clip3(v, this.min_, this.max_);
-    this.rounded_value_[idx] =   Math.round(v * 10) / 10;
-    this.pos_[idx] = this.value2pos(v);
-    this.trans_pos_[idx] = `translate(${this.pos_[idx]},${this.label_offset_})`;
-  }
-
-  position_changed(pos: number, idx: number) {
-    this.pos_[idx] = this.clip3(pos, 0, this.rail_length_);
-    this.trans_pos_[idx] = `translate(${this.pos_[idx]},${this.label_offset_})`;
-    this.value_[idx] = this.pos2value(this.pos_[idx]);
-    this.rounded_value_[idx] = Math.round(this.value_[idx] * 10) / 10;
-    this.emit(idx);
+    this.rl_ = Util.clip3(this.rl_, this.min_rl_, this.max_rl_);
+    this.runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
+      runner.set_direction(this.is_vertical_);
+      runner.update_rail_length(this.rl_);
+      this.emit_runner_value(runner);
+    });
   }
 
   //
@@ -221,31 +254,46 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
   // value, min, max
   // when the button is down, the changes
   // to the runner position are emitted with mousemove
+  get_min_of_values(): number {
+    let min = this.max_;
+    this.runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
+      min = Math.min(min, runner.get_value());
+    });
+    return min;
+  }
+
+  get_max_of_values(): number {
+    let max = this.min_;
+    this.runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
+      max = Math.max(max, runner.get_value());
+    });
+    return max;
+  }
 
   ngOnChanges(changes: {[propName: string]: SimpleChange}) {
     if (this.button_is_down_) {
       return;
     }
 
-    for (let i = 0; i < this.nb_runners_; ++i) {
+    this.runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
       const str = `value${i}`;
       if (changes[str]) {
         let v = Number(changes[str].currentValue);
         if ((Number.isNaN(v)) || (v < this.min_) || (v > this.max_)) {
           // submitted value is invalid, emit the current value
-          this.emit(i);
+          this.emit_runner_value(runner);
         } else {
           // it's a valid value => update runner position
           // but no need to emit the value in this case
           // as it is a valid external change.
-          this.values_changed(v, i);
+          runner.update_value(v);
         }
       }
-    }
+    });
 
     if (changes['min']) {
       let v = Number(changes['min'].currentValue);
-      if ((Number.isNaN(v)) || (v > Math.min(...this.value_))) {
+      if (Number.isNaN(v) || (v > this.get_min_of_values())) {
         // invalid change
         if ('minChange' in this) {
           this.minChange.emit(this.min_);
@@ -253,15 +301,15 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
       } else {
         // valid change, update runner position
         this.min_ = v;
-        for (let i = 0; i < this.nb_runners_; ++i) {
-          this.values_changed(this.value_[i], i);
-        }
+        this.runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
+          runner.update_min(v);
+        });
       }
     }
 
     if (changes['max']) {
       let v = Number(changes['max'].currentValue);
-      if ((Number.isNaN(v)) || (v < Math.max(...this.value_))) {
+      if (Number.isNaN(v) || (v < this.get_max_of_values())) {
         // invalid change
         if ('maxChange' in this) {
           this.maxChange.emit(this.max_);
@@ -269,19 +317,31 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
       } else {
         // valid change, update runner position
         this.max_ = v;
-        for (let i = 0; i < this.nb_runners_; ++i) {
-          this.values_changed(this.value_[i], i);
+        this.runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
+          runner.update_max(v);
+        });
+      }
+    }
+
+    if (changes['length']) {
+      let v = Number(changes['length'].currentValue);
+      if (Number.isNaN(v) || (v < this.get_max_of_values())) {
+        // invalid change
+        if ('lengthChange' in this) {
+          this.maxChange.emit(this.max_);
         }
+      } else {
+        // valid change, update runner position
+        this.rl_ = v;
+        this.runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
+          runner.update_rail_length(this.rl_);
+        });
       }
     }
   }
 
 
   ngAfterViewInit() {
-    this.runner_style_is_circle_ = true;
-    this.runner_style_is_label_ = false;
-    this.label_offset_ = 0;
-
     if ('min' in this) {
       this.min_ = Number(this.min);
     }
@@ -299,27 +359,23 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
     }
 
     if ('length' in this) {
-      this.rail_length_ = Number(this.length);
+      this.rl_ = Number(this.length);
     } else {
-      this.rail_length_ = 700;
+      this.rl_ = 700;
     }
-    this.rail_length_ = this.clip3(this.rail_length_, this.min_rail_length_, this.max_rail_length_);
-
-    for (let i = 0; i < this.nb_runners_; ++i) {
-      let v = (this.min_ + this.max_) / 2;
-      const str = `value${i}`;
-      if (str in this) {
-        v = Number(this[str]);
-      }
-      this.values_changed(v, i);
-      this.emit(i);
-    }
+    this.rl_ = Util.clip3(this.rl_, this.min_rl_, this.max_rl_);
+    this.runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
+      runner.update_rail_length(this.rl_);
+      runner.update_min(this.min_);
+      runner.update_max(this.max_);
+      this.emit_runner_value(runner);
+    });
   }
 
   //
   // Details on the position calculation
   //
-  //                    initial               final          !onbutton       
+  //                    initial               final          !onbutton
   //  [3]---------------------------------------------------------> (= evt.clientX)
   //
   //  |--------->@              (= base_  given by elm.getBoundingClientRect().left)
@@ -334,15 +390,15 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
   //  [2]-----------------------------------------> (= evt.clientX)
   //
   //  On initial mouse down, we can compute delta as we have:
-  //  evt.clientX[1] = base + pos + offset   
+  //  evt.clientX[1] = base + pos + offset
   //
   //  On mouse move/up, we can compute npos_ given by
-  //  evt.clientX[2] = base + npos + offset   
+  //  evt.clientX[2] = base + npos + offset
   //  => npos = evt.clientX[2] - (evt.clientX[1] - pos)
-  // 
-  //  Special case when rail is clicked [3], we assume a virtual [1], so we have: 
-  //  evt.clientX[3] = base + npos  
-  //  evt.clientX[1] = base + pos 
+  //
+  //  Special case when rail is clicked [3], we assume a virtual [1], so we have:
+  //  evt.clientX[3] = base + npos
+  //  evt.clientX[1] = base + pos
   //  => npos = evt.clientX[3] - (evt.clientX[1]  - pos)
 
   // Note the preventDefault to ensure that the future mouse events
@@ -351,19 +407,23 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
   onMousedown(elm: any, evt: any, on_button: boolean, idx?: number) {
     evt.preventDefault();
     this.button_is_down_ = true;
-    this.active_runner_ = [];
+    this.active_runners_ = [];
+    let evt_pos = this.is_vertical_ ? evt.clientY : evt.clientX;
     if (!on_button) {
       // special case when the mouse down occur on the slide zone
-      // and not on the slider button
-      for (let i = 0; i < this.nb_runners_; ++i) {
-        this.delta_[i] = elm.getBoundingClientRect().left;
-        const pos = evt.clientX - this.delta_[i];
-        this.position_changed(pos, i);
-        this.active_runner_.push(i);
-      }
+      // and not on the slider button:
+      // all the sliders are selected and moved to that position
+      let delta = this.is_vertical_ ? elm.getBoundingClientRect().top :
+                                elm.getBoundingClientRect().left;
+      this.runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
+        runner.set_delta(delta);
+        runner.update_position(evt_pos - delta);
+        this.active_runners_.push(runner);
+        this.emit_runner_value(runner);
+      });
     } else {
-      this.active_runner_.push(idx);
-      this.delta_[idx] = evt.clientX - this.pos_[idx];
+      this.active_runners_.push(this.runners_[idx]);
+      this.runners_[idx].init_mouse_down_evt(evt_pos);
     }
   }
 
@@ -371,11 +431,14 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
   // this function can only be called when button_is_down_ is true
   // as we have used a special div with *ngIf
   // <div *ngIf="button_is_down_"  (window:mousemove)="onMousemove($event)" ..
-  //
+  // the release of the mouse button
+  // removes the div with the (window:mousemove) events
+
   onMousemove(evt: any) {
-    this.active_runner_.forEach((val: number, idx: number, arr: number[]) => {
-      const pos = evt.clientX - this.delta_[val];
-      this.position_changed(pos, val);
+    let evt_pos = this.is_vertical_ ? evt.clientY : evt.clientX;
+    this.active_runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
+      runner.update_mouse_move_position(evt_pos);
+      this.emit_runner_value(runner);
     });
   }
 

@@ -17,7 +17,7 @@
     <gg-svg-slider-dyn
         [min]="0"
         [max]="500"
-        (values)="_values_array = $event"
+        (values)="_datas = $event"
         [length]="500">
     </gg-svg-slider-dyn>
 
@@ -34,13 +34,15 @@
           </tr>
         </thead>
         <tbody>
-        <tr *ngFor="#_value of _values_array; #_idx = index">
-          <td style="vertical-align:middle">{{_idx}}</td>
+        <tr *ngFor="#_data of _datas; #_idx = index">
+          <td style="vertical-align:middle">{{_data.name}}</td>
           <td style="vertical-align:middle">
-            <input type="number" min="0" max="1000" (change)="runner_pos_change(_idx, $event)" [ngModel]="_value"> <!-- ngControl="hex_string" -->
+            <input type="number" min="0" max="1000"
+                   (change)="runner_pos_change(_data.runner, $event)"
+                   [ngModel]="_data.value" > <!-- ngControl="hex_string" -->
           </td>
           <td style="vertical-align:middle">
-            <button (click)="click_delete_runner(_idx)" class="w3-btn w3-border w3-round-large" style="padding-top:3px;padding-bottom:3px">Delete</button>
+            <button (click)="click_delete_runner(_data.runner)" class="w3-btn w3-border w3-round-large" style="padding-top:3px;padding-bottom:3px">Delete</button>
           </td>
         </tr>
         </tbody>

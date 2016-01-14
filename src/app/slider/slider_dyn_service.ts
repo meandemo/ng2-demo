@@ -14,12 +14,15 @@ import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
 // 
 ///////////////////////////////////////////////////////////////////////////////
 
+import {Runner}                    from './runner';
+
 export interface DynSliderEvtData {
-  add: boolean;  // if true: a new slider must be added, all other data is ignored
-  idx: number;   // slider index
-  del: boolean;  // if true: slider[idx] must be removed
-  val: number;   // otherwise slider[idx] value must be updated with val 
+  add?:     boolean;  // if true: a new slider must be added, all other data is ignored
+  del?:     boolean;   // if true: slider[idx] must be removed
+  runner?: Runner;    // Runner to operate on
+  val?:    number;    // otherwise slider[idx] value must be updated with val 
 }
+
 
 export class DynSliderService extends EventEmitter<DynSliderEvtData> {
   private idx_: number;

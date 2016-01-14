@@ -11,64 +11,22 @@ import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
 import {DynSliderService,
         DynSliderEvtData}          from '../slider/slider_dyn_service';
 
+import {Util}                      from '../../common/util';
+import {Runner}                    from './runner';
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Slider with Dynamic number of runners
-// 
+//
 ///////////////////////////////////////////////////////////////////////////////
 
-class Runner {
-  static cnt_ = 0;                     // instance counter          
-  private val_ = 0;                   // exact value 
-  private rounded_val_ = 0;           // rounded to 1/100th precision 
-  private delta_ = 0;                 // to track offset while mouseMove;
-  private base_ = 0;                  // id. k.push(0);
-  private pos_ = 0;                   // pixel offset on the rail
-  private trans_pos_ = '';            // the transform string for svg 'translate(${pos_})' 
-  private rl_ = 0;                    // rail length in pixel
-
-  private id_ = 0;                    // unique identifier
-  private min_ = 0;                   // default min
-  private max_ = 100;                 // default max
-
-  constructor(val: number, min: number, max: number, rl: number) {
-    this.id_ = Runner.cnt_++;
-    // val: initial value;
-    // rl: initial rail length
-    //
-    this.val_ = val;
-    this.rl_ = rl;
-    this.min_ = min;
-    this.max_ = max;
-    this.pos_ = this.value2pos(val);
-    this.trans_pos_ = `translate(${this.pos_}, 0)`;
-  }
-
-  clip3(v: number, min: number, max: number): number {
-    v = Number.isNaN(v) ? 0 : v;
-    if (v < min) { return min; }
-    if (v > max) { return max; }
-    return v;
-  }
-
-  value2pos(v: number) {
-    const pos = (this.rl_ * (v - this.min_)) / (this.max_ - this.min_);
-    return this.clip3(pos, 0, this.rl_);
-  }
-
-  pos2value(p: number) {
-    const v =  this.min_ + (p * (this.max_ - this.min_) / this.rl_);
-    return this.clip3(v, this.min_, this.max_);
-  }
-
-
-
-}
 
 @Component ({
   selector: 'gg-svg-slider-dyn',
   template: `
-    <div  id="slider" style="margin:5px">
+    <div id="slider" style="margin:5px">
 
       <!-- special div which disables mousemove and mouseup event -->
       <div *ngIf="button_is_down_" style="position:relative"
@@ -85,33 +43,27 @@ class Runner {
 
         <!-- rail group -->
 
-        <g id="ruler">
-          <path [attr.d]="'M 0,0 h' + (rail_length_)" style="stroke-width:2px;stroke:black" />
-          <g *ngFor="#_val of tick_marks_">
-            <path [attr.d]="'M' + (_val * rail_length_ / 255) + ',0 v 30'" style="stroke-width:2px;stroke:black" />
-            <text [attr.x]="_val * rail_length_ /255" y=50 text-anchor="middle" font-size="20">{{_val}}</text>
-          </g>
+        <g id="rail" (mousedown)="onMousedown(railref, $event, false)">
+          <path [attr.d]="'M 0,-5 v 10 h' + (rl_) + ' v -10 z'" style="stroke-width:2px;stroke:black;fill:violet" />
         </g>
 
-        <!-- runner group -->
-        <!--
-          <rect id="default-rail" x="0" y="-3" [attr.width]="rail_length_" height="7" style="fill:white;stroke-width:2px;stroke:black" />
-          <path [attr.d]="'M0,0 L ' + rail_length_ + ',0' " style="stroke-width:2px;stroke:black" />
-            <path [attr.d]="'M 0,' + (_val * rail_length_ / 255) + 'v 30'" style="fill:grey;stroke:black">
-            <circle cx="0" cy="0" [r]="10 + _idx * 5" />
-        -->
+        <!-- tick marks -->
 
-        <g *ngFor="#_name of runners_; #_idx = index" [attr.class]="change_notifier_"
-            [id]="_name" 
-            [attr.transform]="trans_pos_[_idx]"
+        <g *ngFor="#_val of tick_marks_">
+          <path [attr.d]="'M' + get_pos(_val) + ',5 v 30'" style="stroke-width:2px;stroke:black" />
+          <text [attr.x]="get_pos(_val)" y=50 text-anchor="middle" font-size="20">{{_val}}</text>
+        </g>
+
+        <g *ngFor="#_runner of runners_; #_idx = index"
+            [id]="_runner.get_id()"
+            [attr.transform]="'translate(' + _runner.get_pos() + ', 0)'"
             (mousedown)="onMousedown(railref, $event, true, _idx)" >
-          
+
           <path id="panel" d="M 0 0 L 10 -10 L 30 -10 L 30 -35 L -30 -35 L -30 -10 L -10 -10 z"
           style="color:black;fill:black" />
           <text id="text" x="0" y="-17" text-anchor="middle"
-                font-family="Verdana" font-size="10" fill="white">Runner {{_idx}}
+                font-family="Verdana" font-size="10" fill="white">{{_runner.get_id()}}
           </text>
-
         </g>
 
       </svg>
@@ -132,51 +84,35 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
   @Output() lengthChange:  EventEmitter<number> = new EventEmitter<number>();
 
   //@Input('values') values: any;
-  @Output('values') emit_values: EventEmitter<number[]> = new EventEmitter<number[]>();
+  @Output('values') emit_values: EventEmitter<any[]> = new EventEmitter<any[]>();
 
   private min_: number;
   private max_: number;
-  private rail_length_: number;
-  private min_rail_length_: number;
-  private max_rail_length_: number;
-  private change_notifier_ = 'dummy';
+  private rl_: number;          // rail length
+  private min_rl_: number;
+  private max_rl_: number;
 
+  private runners_: Runner[] = [];
+  private active_runners_: Runner[];
   private nb_runners_: number;
-  private active_runner_: number[] = [];
 
-  private value_: number[] = [];
-  private rounded_value_: number[] = [];
-
-  private pos_: number[] = [];
-
-  private delta_: number[] = [];
-  private base_: number[] = [];
   private button_is_down_: boolean = false;
 
-  private trans_pos_: string[] = [];
-  private label_offset_: number = 0;
-  private runners_: string[] = [];
-
-  private tick_marks_: number[] = [0, 50, 100, 150, 200, 255];
+  private tick_marks_: number[] = [0, 20, 40, 60, 80, 100];
 
   constructor(private dyn_slider_service_: DynSliderService) {
     this.min_ = 0;
-    this.max_ = 255;
+    this.max_ = 100;
     this.nb_runners_ = 3;
-    this.rail_length_ = 700;
-    this.min_rail_length_ = 10;
-    this.max_rail_length_ = 4096;
+    this.rl_ = 700;
+    this.min_rl_ = 10;
+    this.max_rl_ = 4096;
 
     for (let i = 0; i < this.nb_runners_; ++i) {
-      this.value_.push(0);
-      this.rounded_value_.push(0);
-      this.pos_.push(0);
-      this.delta_.push(0);
-      this.base_.push(0);
-      this.trans_pos_.push('');
-      this.runners_.push(`runner${i}`);
-      this.values_changed(50 + (50 * i), i);
+      let runner = new Runner(20 + (20 * i), this.min_, this.max_, this.rl_);
+      this.runners_.push(runner);
     }
+
 
     //console.log("[TRACE] constructor value = ", this.value_);
     //console.log("[TRACE] pos   = ", this.pos_);
@@ -186,133 +122,78 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
       next: (data: DynSliderEvtData) => {
         if (data.add) {
           //console.log('[TRACE] Receive add slider request');
-          const m = this.rounded_value_.length;
-          this.rounded_value_.push(0);
-          this.pos_.push(0);
-          this.delta_.push(0);
-          this.base_.push(0);
-          this.trans_pos_.push('');
-          this.runners_.push(`runner${m}`);
-          this.value_.push(0);
-          //this.values_changed(0);
+          let runner = new Runner(0, this.min_, this.max_, this.rl_);
+          this.runners_.push(runner);
           this.emit_full();
-          //change_notifier = `dummy${value_.length}`;
         } else if (data.del) {
-          //console.log('[TRACE] Receive remove slider request:', data.idx);
-          this.rounded_value_.splice(data.idx, 1);
-          this.pos_.splice(data.idx, 1);
-          this.delta_.splice(data.idx, 1);
-          this.base_.splice(data.idx, 1);
-          this.trans_pos_.splice(data.idx, 1);
-          this.runners_.splice(data.idx, 1);
-          this.value_.splice(data.idx, 1);
+          console.log('[TRACE] Receive remove slider request:', data.runner);
+          let idx: number;
+          idx = this.runners_.findIndex((runner: Runner) => {
+            return (runner === data.runner);
+          });
+          this.runners_.splice(idx, 1);
           this.emit_full();
         } else {
           //console.log('[TRACE] Receive update slider request:', data.idx, ' with value ', data.val);
-          this.values_changed(data.val, data.idx);
+          data.runner.update_value(data.val);
         }
-        //console.log('[TRACE] notify value = ', this.value_);
       }
     });
 
   }
 
-  clip3(v: number, min: number, max: number): number {
-    v = Number.isNaN(v) ? 0 : v;
-    if (v < min) { return min; }
-    if (v > max) { return max; }
-    return v;
-  }
+  // given value between min and max
+  // converted into a pixel position between 0 and rail length
 
-  value2pos(v: number) {
-    const pos = (this.rail_length_ * (v - this.min_)) / (this.max_ - this.min_);
-    return this.clip3(pos, 0, this.rail_length_);
-  }
-
-  pos2value(p: number) {
-    const v =  this.min_ + (p * (this.max_ - this.min_) / this.rail_length_);
-    return this.clip3(v, this.min_, this.max_);
-  }
-
-
-  emit(idx: number) {
-    const str = `emit_values`;
-    if (str in this) {
-      //console.log('[TRACE] emit  ',`${this.rounded_value_[idx]}`);
-      this[str].emit(this.rounded_value_);
-    }
+  get_pos(v: number) {
+    const pos = (this.rl_ * (v - this.min_)) / (this.max_ - this.min_);
+    return Util.clip3(pos, 0, this.rl_);
   }
 
   emit_full() {
     const str = `emit_values`;
     if (str in this) {
-      //console.log('[TRACE] emit* ',`${this.rounded_value_}`);
-      this[str].emit(this.rounded_value_);
+      let datas: any[] = [];
+      this.runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
+        let data = {};
+        data['name']  = runner.get_id();
+        data['value'] = runner.get_value(true);
+        data['runner'] = runner;
+        datas.push(data);
+      });
+      console.log('[TRACE] emit* ', datas);
+      this[str].emit(datas);
     }
+  }
+
+  ngOnChanges() {
+    console.log('[TRACE] ngOnChanges');
   }
 
   ngOnInit() {
     if ('length' in this) {
-      this.rail_length_ = Number(this.length);
-    } else {
-      this.rail_length_ = 700;
+      this.rl_ = Util.clip3(Number(this.length), this.min_rl_, this.max_rl_);
+      this.runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
+        runner.update_rail_length(this.rl_);
+      });
     }
-    this.rail_length_ = this.clip3(this.rail_length_, this.min_rail_length_, this.max_rail_length_);
-    for (let i = 0; i < this.nb_runners_; ++i) {
-      this.values_changed(this.value_[i], i);
-    }
-
-    //console.log("[TRACE] after view init value = ", this.value_);
     this.emit_full();
   }
-
-  values_changed(v: number, idx: number) {
-    //console.log('[TRACE] value change[', idx, '] = ', v);
-    this.value_[idx] = this.clip3(v, this.min_, this.max_);
-    this.rounded_value_[idx] =   Math.round(v * 10) / 10;
-    this.pos_[idx] = this.value2pos(v);
-    this.trans_pos_[idx] = `translate(${this.pos_[idx]},${this.label_offset_})`;
-  }
-
-  position_changed(pos: number, idx: number) {
-    //console.log('[TRACE] pos change[', idx, '] = ', pos);
-    this.pos_[idx] = this.clip3(pos, 0, this.rail_length_);
-    this.trans_pos_[idx] = `translate(${this.pos_[idx]},${this.label_offset_})`;
-    this.value_[idx] = this.pos2value(this.pos_[idx]);
-    this.rounded_value_[idx] = Math.round(this.value_[idx] * 10) / 10;
-    this.emit(idx);
-  }
-
-  //
-  // detecting changes and emit value
-  // value, min, max
-  // when the button is down, the changes
-  // to the runner position are emitted with mousemove
-
-  ngOnChanges(changes: {[propName: string]: SimpleChange}) {
-  }
-
 
   ngAfterViewInit() {
-    this.label_offset_ = 0;
-
     if ('length' in this) {
-      this.rail_length_ = Number(this.length);
-    } else {
-      this.rail_length_ = 700;
+      this.rl_ = Util.clip3(Number(this.length), this.min_rl_, this.max_rl_);
+      this.runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
+        runner.update_rail_length(this.rl_);
+      });
+      this.emit_full();
     }
-    this.rail_length_ = this.clip3(this.rail_length_, this.min_rail_length_, this.max_rail_length_);
-    for (let i = 0; i < this.nb_runners_; ++i) {
-      this.values_changed(this.value_[i], i);
-    }
-    this.emit_full();
-    //console.log("[TRACE] after view init value = ", this.value_);
   }
 
   //
   // Details on the position calculation
   //
-  //                    initial               final          !onbutton       
+  //                    initial               final          !onbutton
   //  [3]---------------------------------------------------------> (= evt.clientX)
   //
   //  |--------->@              (= base_  given by elm.getBoundingClientRect().left)
@@ -327,15 +208,15 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
   //  [2]-----------------------------------------> (= evt.clientX)
   //
   //  On initial mouse down, we can compute delta as we have:
-  //  evt.clientX[1] = base + pos + offset   
+  //  evt.clientX[1] = base + pos + offset
   //
   //  On mouse move/up, we can compute npos_ given by
-  //  evt.clientX[2] = base + npos + offset   
+  //  evt.clientX[2] = base + npos + offset
   //  => npos = evt.clientX[2] - (evt.clientX[1] - pos)
-  // 
-  //  Special case when rail is clicked [3], we assume a virtual [1], so we have: 
-  //  evt.clientX[3] = base + npos  
-  //  evt.clientX[1] = base + pos 
+  //
+  //  Special case when rail is clicked [3], we assume a virtual [1], so we have:
+  //  evt.clientX[3] = base + npos
+  //  evt.clientX[1] = base + pos
   //  => npos = evt.clientX[3] - (evt.clientX[1]  - pos)
 
   // Note the preventDefault to ensure that the future mouse events
@@ -344,19 +225,21 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
   onMousedown(elm: any, evt: any, on_button: boolean, idx?: number) {
     evt.preventDefault();
     this.button_is_down_ = true;
-    this.active_runner_ = [];
+    this.active_runners_ = [];
     if (!on_button) {
       // special case when the mouse down occur on the slide zone
-      // and not on the slider button
-      for (let i = 0; i < this.nb_runners_; ++i) {
-        this.delta_[i] = elm.getBoundingClientRect().left;
-        const pos = evt.clientX - this.delta_[i];
-        this.position_changed(pos, i);
-        this.active_runner_.push(i);
-      }
+      // and not on the slider button: 
+      // we add a slider here
+      let runner = new Runner(0, this.min_, this.max_, this.rl_);
+      let delta = elm.getBoundingClientRect().left;
+      runner.set_delta(delta);
+      runner.update_position(evt.clientX - delta);
+      this.runners_.push(runner);
+      this.emit_full();
+      this.active_runners_.push(runner);
     } else {
-      this.active_runner_.push(idx);
-      this.delta_[idx] = evt.clientX - this.pos_[idx];
+      this.active_runners_.push(this.runners_[idx]);
+      this.runners_[idx].init_mouse_down_evt(evt.clientX);
     }
   }
 
@@ -364,12 +247,14 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
   // this function can only be called when button_is_down_ is true
   // as we have used a special div with *ngIf
   // <div *ngIf="button_is_down_"  (window:mousemove)="onMousemove($event)" ..
-  //
+  // the release of the mouse button
+  // removes the div with the (window:mousemove) events
+
   onMousemove(evt: any) {
-    this.active_runner_.forEach((val: number, idx: number, arr: number[]) => {
-      const pos = evt.clientX - this.delta_[val];
-      this.position_changed(pos, val);
+    this.active_runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
+      runner.update_mouse_move_position(evt.clientX);
     });
+    this.emit_full();
   }
 
   //

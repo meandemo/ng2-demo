@@ -15,7 +15,7 @@
 		],
 		"no-any": false,
 		"no-arg": true,
-		"no-bitwise": true,
+		"no-bitwise": false,
 		"no-conditional-assignment": true,
 		"no-construct": true,
 		"no-duplicate-key": true,
