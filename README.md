@@ -7,21 +7,29 @@ Demo & Tutorial: Angular2 with Typescript
 
 This repository introduces useful angular2 components which mimic behaviors found on many 
 web sites and implemented with javascript using jquery or bootstrap frameworks.
+A live demo is available here: http://meandemo.github.io.
 
-# Latest News
+# Features 
 
-Our first demo shows how a sticky div or sticky navbar behavior can be achieved with a simple angular2 component.
-A Second demo demonstrate a slider component implemented using SVG which can be easily customized.
+1. Our first demo shows how a sticky div or sticky navbar behavior can be achieved with a simple angular2 component.
+2. A Second demo demonstrates a slider component implemented using SVG which can be easily customized.
+   We present horizontal and vertical sliders
+3. In the third demo, the runners can be added and removed dynamically. We use a different way to communicate between
+   components: instead of the bi-directional property binding, the slider subscribes to a service. 
 
 # Changes
 
-## 12-jan-2016:
+### 14-jan-2016:
+Refactoring  part of the code for to facilitate  reuse.
+Added slider orientation, demo in RGB slider. 
+
+### 12-jan-2016:
 The code has been aligned with NG2 version 2.0.0-beta.1
 Minor fixes. The minified versions trigger a un-identified bug. 
 Added dynamic multi runner slider.
 
 
-## 8-jan-2016:
+### 8-jan-2016:
 The code has been aligned with NG2 version 2.0.0-beta.0
 We are using production mode to avoid the 'has changed after it was checked' error messages. 
 
@@ -35,14 +43,15 @@ We are using production mode to avoid the 'has changed after it was checked' err
 
 3. `tsd reinstall --save --overwrite`
 
-4. `gulp demo`
+4. `gulp init`
+
+4. `gulp run`
 
 5. open web page on http://localhost:8080, don't forget to activate the livereload button
 
 
-# Features
+# Details
 
-A live demo is available here: http://meandemo.github.io.
 
 ## A Sticky div
 
