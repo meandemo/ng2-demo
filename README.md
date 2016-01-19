@@ -19,6 +19,11 @@ A live demo is available here: http://meandemo.github.io.
 
 # Changes
 
+### 18-jan-2016:
+Further refactoring to prepare the fourth demo.
+Addition of error page to catch 404 errors.
+This does not work on githup.io as it's a fully static server.
+
 ### 14-jan-2016:
 Refactoring  part of the code for to facilitate  reuse.
 Added slider orientation, demo in RGB slider. 
