@@ -35,7 +35,7 @@
         </thead>
         <tbody>
         <tr *ngFor="#_data of _datas; #_idx = index">
-          <td style="vertical-align:middle">{{_data.name}}</td>
+          <td style="vertical-align:middle">{{_data.id}}</td>
           <td style="vertical-align:middle">
             <input type="number" min="0" max="1000"
                    (change)="runner_pos_change(_data.runner, $event)"

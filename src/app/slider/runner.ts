@@ -6,6 +6,12 @@ import {Util}                      from '../../common/util';
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+export interface RunnerEvtData {
+  runner:  Runner;   // reference to the current runner
+  id:      string;   // the runner id
+  value:   number;   // the runner value between min & max
+}
+
 export class Runner {
   static cnt_ = 0x1234;           // instance counter
 
@@ -150,3 +156,4 @@ export class Runner {
     this.val_ = this.pos2value(this.pos_);
   }
 }
+

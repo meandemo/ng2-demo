@@ -12,7 +12,8 @@ import {DynSliderService,
         DynSliderEvtData}          from '../slider/slider_dyn_service';
 
 import {Util}                      from '../../common/util';
-import {Runner}                    from './runner';
+import {Runner,
+        RunnerEvtData}             from './runner';
 
 
 
@@ -34,8 +35,8 @@ import {Runner}                    from './runner';
            (window:mouseup)="onMouseup($event)" >
       </div>
 
-      <svg  height="100" preserveAspectRatio="xMinYMin meet"
-            xmlns="http://www.w3.org/2000/svg" viewBox="-60 -40 800 100" version="1.1" >
+      <svg height="120" preserveAspectRatio="xMinYMin meet"
+             xmlns="http://www.w3.org/2000/svg" [attr.viewBox]="'-60 -40 ' + (rl_ + 100) + ' 120'" version="1.1" >
 
         <!-- reference (0,0), no fill, no stroke -->
 
@@ -56,14 +57,15 @@ import {Runner}                    from './runner';
 
         <g *ngFor="#_runner of runners_; #_idx = index"
             [id]="_runner.get_id()"
-            [attr.transform]="'translate(' + _runner.get_pos() + ', 0)'"
+            [attr.transform]="'translate(' + _runner.get_pos() + ', 0)'">
+          <g class="runner"
             (mousedown)="onMousedown(railref, $event, true, _idx)" >
-
-          <path id="panel" d="M 0 0 L 10 -10 L 30 -10 L 30 -35 L -30 -35 L -30 -10 L -10 -10 z"
-          style="color:black;fill:black" />
-          <text id="text" x="0" y="-17" text-anchor="middle"
+            <path id="panel" d="M 0 0 L 10 -10 L 30 -10 L 30 -35 L -30 -35 L -30 -10 L -10 -10 z"
+                  style="color:black;fill:black" />
+            <text id="text" x="0" y="-17" text-anchor="middle"
                 font-family="Verdana" font-size="10" fill="white">{{_runner.get_id()}}
-          </text>
+            </text>
+          </g>
         </g>
 
       </svg>
@@ -74,17 +76,19 @@ import {Runner}                    from './runner';
   directives: [FORM_DIRECTIVES, NgFor]
 })
 export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
-  //@Input() min: any;
+  @Input() min: any;
   @Output() minChange:  EventEmitter<number> = new EventEmitter<number>();
 
-  //@Input() max: any;
+  @Input() max: any;
   @Output() maxChange:  EventEmitter<number> = new EventEmitter<number>();
 
   @Input() length: any;
   @Output() lengthChange:  EventEmitter<number> = new EventEmitter<number>();
 
-  //@Input('values') values: any;
-  @Output('values') emit_values: EventEmitter<any[]> = new EventEmitter<any[]>();
+  @Input() vertical: boolean;
+
+  //@Input('values') values_: any;
+  @Output('values') emit_values_: EventEmitter<RunnerEvtData[]> = new EventEmitter<RunnerEvtData[]>();
 
   private min_: number;
   private max_: number;
@@ -99,6 +103,7 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
   private button_is_down_: boolean = false;
 
   private tick_marks_: number[] = [0, 20, 40, 60, 80, 100];
+  private nb_ticks_: number = 6;
 
   constructor(private dyn_slider_service_: DynSliderService) {
     this.min_ = 0;
@@ -112,7 +117,6 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
       let runner = new Runner(20 + (20 * i), this.min_, this.max_, this.rl_);
       this.runners_.push(runner);
     }
-
 
     //console.log("[TRACE] constructor value = ", this.value_);
     //console.log("[TRACE] pos   = ", this.pos_);
@@ -139,7 +143,6 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
         }
       }
     });
-
   }
 
   // given value between min and max
@@ -151,17 +154,17 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
   }
 
   emit_full() {
-    const str = `emit_values`;
+    const str = `emit_values_`;
     if (str in this) {
-      let datas: any[] = [];
+      let datas: RunnerEvtData[] = [];
       this.runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
-        let data = {};
-        data['name']  = runner.get_id();
-        data['value'] = runner.get_value(true);
+        let data = <RunnerEvtData>{};
         data['runner'] = runner;
+        data['id']  = runner.get_id();
+        data['value'] = runner.get_value(true);
         datas.push(data);
       });
-      console.log('[TRACE] emit* ', datas);
+      //console.log('[TRACE] Dyn emit* ', datas);
       this[str].emit(datas);
     }
   }
@@ -171,6 +174,7 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
   }
 
   ngOnInit() {
+    /*
     if ('length' in this) {
       this.rl_ = Util.clip3(Number(this.length), this.min_rl_, this.max_rl_);
       this.runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
@@ -178,16 +182,40 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
       });
     }
     this.emit_full();
+    */
   }
 
   ngAfterViewInit() {
-    if ('length' in this) {
-      this.rl_ = Util.clip3(Number(this.length), this.min_rl_, this.max_rl_);
-      this.runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
-        runner.update_rail_length(this.rl_);
-      });
-      this.emit_full();
+    if ('min' in this) {
+      this.min_ = Number(this.min);
     }
+
+    if ('max' in this) {
+      this.max_ = Number(this.max);
+    }
+
+    if (this.max_ === this.min_) {
+      this.max_ = this.min_ + 1;
+    } else if (this.max_ < this.min_) {
+      const tmp = this.max_;
+      this.max_ = this.min_;
+      this.min_ = tmp;
+    }
+
+    if ('length' in this) {
+      this.rl_ = Number(this.length);
+    }
+    this.rl_ = Util.clip3(this.rl_, this.min_rl_, this.max_rl_);
+
+    const offset = (this.max_ - this.min_) / (this.runners_.length + 1);
+    this.runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
+      runner.update_rail_length(this.rl_);
+      runner.update_min(this.min_);
+      runner.update_max(this.max_);
+      runner.update_value(this.min_ + ((i + 1) * offset));
+    });
+    this.emit_full();
+    this.tick_marks_ = Util.create_ticks(this.nb_ticks_, this.min_, this.max_);
   }
 
   //

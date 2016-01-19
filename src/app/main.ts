@@ -30,6 +30,7 @@ import {Component,
 import {RouterLink, RouterOutlet, RouteConfig, ROUTER_PROVIDERS }    from 'angular2/router';
 
 
+import {ErrorCmp}            from './error/error';
 import {StickyDivDemoCmp}    from './stickydivdemo/stickydivdemo';
 import {SliderDemoSimpleCmp} from './sliderdemo/sliderdemo_simple';
 import {SliderDemoRgbCmp}    from './sliderdemo/sliderdemo_rgb';
@@ -52,12 +53,13 @@ import {assertionsEnabled}   from 'angular2/src/facade/lang';
         <a [routerLink]="['SliderDemoSimpleCmp']" >SVG Based Slider</a><br>
         <a [routerLink]="['SliderDemoRgbCmp']" >SVG Based Color Selector with full form control</a><br>
         <a [routerLink]="['SliderDemoDynCmp']" >Multi runner slider which can be added and removed</a><br>
+        <a [routerLink]="['ErrorCmp']" >Test 404 error page</a><br>
         <br>
         <br>
       </div>
       <div class="w3-container w3-tiny">
         Using angular2 version {{ng2version_}} in {{mode_str_}}<br>
-        Page last updated 14-Jan-2016<br>
+        Page last updated 18-Jan-2016<br>
         Log log all bugs <a href="https://github.com/meandemo/ng2-demo/issues">here</a><br>
         (c) <a href="http://www.ng2goodies.com">ng2goodies</a><br>
       </div>
@@ -90,7 +92,9 @@ class HomeCmp {
   { path: 'stickydiv' , component: StickyDivDemoCmp,    name: 'StickyDivDemoCmp' },
   { path: 'svgslider',  component: SliderDemoSimpleCmp, name: 'SliderDemoSimpleCmp' },
   { path: 'rgbslider',  component: SliderDemoRgbCmp,    name: 'SliderDemoRgbCmp' },
-  { path: 'dynslider',  component: SliderDemoDynCmp,    name: 'SliderDemoDynCmp' }
+  { path: 'dynslider',  component: SliderDemoDynCmp,    name: 'SliderDemoDynCmp' },
+  { path: 'error',      component: ErrorCmp,            name: 'ErrorCmp' },
+  { path: '**',         redirectTo: ['ErrorCmp'] }
 ])
 export class MainCmp {
 }

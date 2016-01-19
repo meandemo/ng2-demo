@@ -18,8 +18,8 @@
     </p>
 
     <gg-svg-slider-rgb
-        [min]="0"
-        [max]="255"
+        min="0"
+        max="255"
         [(red)]="values_red"
         [(green)]="values_green"
         [(blue)]="values_blue"
@@ -27,7 +27,8 @@
     </gg-svg-slider-rgb>
 
     <p>
-    The numerical values in the control panel can be changed which trigger a change one of the runner position thanks to angular2 bi-directional binding.
+    The numerical values in the control panel can be changed which trigger a change one of 
+    the runner position thanks to angular2 bi-directional property binding.
 
     <h4 #_id_svg_ctrl_panel>RGB Slider Control Panel</h4>
     <form [ngFormModel]="form_ctrl_"> 
@@ -39,7 +40,7 @@
             <input type="number" #_hex id="rail" [(ngModel)]="length_"
                    [min]="100" [max]="800" >
           </td>
-          <td class="color-demo" rowspan="5" [attr.bgcolor]="cell_hex_str_">
+          <td class="color-demo" rowspan="4" [attr.bgcolor]="cell_hex_str_">
           </td>
         </tr>
 
@@ -72,6 +73,9 @@
           <td>
             <input type="text" #_hex id="hex" size="7"
               [(ngModel)]="hex_str_" ngControl="hex_string">
+          </td>
+          <td>
+            {{color_name_}}
           </td>
         </tr>
         </tbody>

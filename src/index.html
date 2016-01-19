@@ -56,6 +56,7 @@
     <script src="https://code.angularjs.org/{{ ng2ver }}/angular2-polyfills.min.js"></script>
     <script src="https://code.angularjs.org/{{ ng2ver }}/Rx.min.js"></script>
     <script src="https://code.angularjs.org/{{ ng2ver }}/angular2.min.js"></script>
+    <script src="https://code.angularjs.org/{{ ng2ver }}/http.min.js"></script>
     <script src="https://code.angularjs.org/{{ ng2ver }}/router.min.js"></script>
     {% elif is_minified %}
     <!-- TODO: investigate impact of minified files with beta.1 -->
@@ -65,11 +66,13 @@
     <script src="lib/angular2-polyfills.min.js"></script>
     <script src="lib/Rx.min.js"></script>
     <script src="lib/angular2.js"></script>
+    <script src="lib/http.js"></script>
     <script src="lib/router.js"></script>
     {% else %}
     <script src="lib/angular2-polyfills.js"></script>
     <script src="lib/Rx.js"></script>
     <script src="lib/angular2.dev.js"></script>
+    <script src="lib/http.dev.js"></script>
     <script src="lib/router.js"></script>
     {% endif %}
 

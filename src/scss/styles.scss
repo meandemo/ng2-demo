@@ -135,7 +135,11 @@ div #slider #rail {
   fill: red;
 }
 
-div #slider #runner {
+g.runner {
+  cursor: pointer; 
+}
+
+g.runner:hover {
   cursor: pointer; 
 }
 
@@ -149,7 +153,6 @@ div #slider #runner #label {
 }
 
 div #slider  #runner:hover {
-  opacity:0.8;
 }
 
 div #slider  #rail:hover {
@@ -162,9 +165,11 @@ div #rail text {
   font-size: 15px;
 }
 
+
 table .color-demo {
   width: 40%;
 }
+
 
 input#hex.ng-valid {
   border-right: 10px solid green;

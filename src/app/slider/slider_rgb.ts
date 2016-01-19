@@ -9,7 +9,8 @@ import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
         RouterOutlet, RouterLink, APP_BASE_HREF, ROUTER_BINDINGS} from 'angular2/router';
 
 import {Util}                      from '../../common/util';
-import {Runner}                    from './runner';
+import {Runner,
+        RunnerEvtData}             from './runner';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -57,8 +58,8 @@ class SvgRunnerRgbCmp {
       <!--              -->
 
       <div *ngIf=!is_vertical_>
-        <svg height="100" preserveAspectRatio="xMinYMin meet"
-          xmlns="http://www.w3.org/2000/svg" viewBox="-60 -40 800 100" version="1.1" >
+        <svg height="120" preserveAspectRatio="xMinYMin meet"
+             xmlns="http://www.w3.org/2000/svg" [attr.viewBox]="'-60 -40 ' + (rl_ + 100) + ' 120'" version="1.1" >
 
           <!-- reference (0,0), no fill, no stroke -->
 
@@ -105,11 +106,13 @@ class SvgRunnerRgbCmp {
           <rect #railref  x="0" y="0" width="1" height="1" style="fill:none;stroke:none"  />
 
           <g id="rail" (mousedown)="onMousedown(railref, $event, false)">
-            <path [attr.d]="'M -5,0 h 10 v' + (rl_) + ' h -10 z'"
+            <path *ngIf="!is_special_" [attr.d]="'M -5,0 h 10 v' + (rl_) + ' h -10 z'"
                 style="stroke-width:2px;stroke:black;fill:violet" />
+            <path *ngIf="is_special_" [attr.d]="'M -0,0 v' + (rl_)"
+                style="stroke-width:2px;stroke:white" />
           </g>
 
-          <g *ngFor="#_val of tick_marks_">
+          <g *ngIf="!is_special_" *ngFor="#_val of tick_marks_">
             <path [attr.d]="'M 5,' + get_pos(_val) + ' h 30'" style="stroke-width:2px;stroke:black" />
             <text [attr.y]="get_pos(_val)" x=35 baseline-shift="-30%" font-size="20">{{_val}}</text>
           </g>
@@ -132,11 +135,36 @@ class SvgRunnerRgbCmp {
       </div>
     </div>
   `,
-  styleUrls: [`./css/slider_rgb.css`
-  ],
+  styles: [`
+    g.rgb-runner#red {
+      opacity: 1.0;
+      stroke: black;
+      stroke-width: 1px;
+      fill: red;
+    }
+
+    g.rgb-runner#green {
+      opacity: 1.0;
+      stroke: black;
+      stroke-width: 1px;
+      fill: green;
+    }
+
+    g.rgb-runner#blue {
+      opacity: 1.0;
+      stroke: black;
+      stroke-width: 1px;
+      fill: blue;
+    }
+
+    g.rgb-runner :hover {
+      stroke-width: 2px;
+    }
+  `],
   directives: [FORM_DIRECTIVES, NgIf, NgFor]
 })
 export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
+  static cnt_ = 0;
   @Input() min: any;
   @Output() minChange:  EventEmitter<number> = new EventEmitter<number>();
 
@@ -148,6 +176,8 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
 
   @Input() vertical: boolean;
 
+  @Input() special: boolean;
+
   @Input('red') value0: any;
   @Output('redChange') emit_value0_: EventEmitter<number> = new EventEmitter<number>();
 
@@ -156,6 +186,8 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
 
   @Input('blue') value2: any;
   @Output('blueChange') emit_value2_: EventEmitter<number> = new EventEmitter<number>();
+
+  @Output('values') emit_values_: EventEmitter<RunnerEvtData[]> = new EventEmitter<RunnerEvtData[]>();
 
   private min_: number;
   private max_: number;
@@ -168,12 +200,17 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
   private active_runners_: Runner[];
   private nb_runners_: number;
   private is_vertical_: boolean = false;
+  private is_special_: boolean = false;
 
   private button_is_down_: boolean = false;
 
   private tick_marks_: number[] = [0, 50, 100, 150, 200, 255];
+  private nb_ticks_: number = 6;
 
   constructor() {
+    SvgSliderRgbCmp.cnt_++;
+    console.log("SLIDER RGB Constructor: ", SvgSliderRgbCmp.cnt_);
+
     const colors  = ['red', 'green', 'blue'];
     this.min_ = 0;
     this.max_ = 255;
@@ -198,6 +235,22 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
     return Util.clip3(pos, 0, this.rl_);
   }
 
+  emit_full() {
+    const str = `emit_values_`;
+    if (str in this) {
+      let datas: RunnerEvtData[] = [];
+      this.runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
+        let data = <RunnerEvtData>{};
+        data['runner'] = runner;
+        data['id']  = runner.get_id();
+        data['value'] = runner.get_value(true);
+        datas.push(data);
+      });
+      //console.log('[TRACE] Rgb emit* ', datas);
+      this[str].emit(datas);
+    }
+  }
+
   get_color(runner: Runner) {
     //console.log("[TRACE] get_color: ", (this.r2name_.get(runner))[0]);
     return (this.r2name_.get(runner))[0];
@@ -212,42 +265,6 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
     }
   }
 
-  ngOnInit() {
-    //console.log("[TRACE] ngOnInit() ");
-    if ('vertical' in this) {
-      this.is_vertical_ = true;
-    }
-
-
-
-    if ('min' in this) {
-      this.min_ = Number(this.min);
-    }
-
-    if ('max' in this) {
-      this.max_ = Number(this.max);
-    }
-
-    if (this.max_ === this.min_) {
-      this.max_ = this.min_ + 1;
-    } else if (this.max_ < this.min_) {
-      const tmp = this.max_;
-      this.max_ = this.min_;
-      this.min_ = tmp;
-    }
-
-    if ('length' in this) {
-      this.rl_ = Number(this.length);
-    } else {
-      this.rl_ = 700;
-    }
-    this.rl_ = Util.clip3(this.rl_, this.min_rl_, this.max_rl_);
-    this.runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
-      runner.set_direction(this.is_vertical_);
-      runner.update_rail_length(this.rl_);
-      this.emit_runner_value(runner);
-    });
-  }
 
   //
   // detecting changes and emit value
@@ -340,8 +357,17 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
     }
   }
 
+  ngOnInit() {
+    //console.log("[TRACE] ngOnInit() ");
+  }
 
-  ngAfterViewInit() {
+  /*
+    //console.log("[TRACE] ngOnInit() ");
+    if ('vertical' in this) {
+      this.is_vertical_ = true;
+    }
+
+
     if ('min' in this) {
       this.min_ = Number(this.min);
     }
@@ -365,12 +391,57 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
     }
     this.rl_ = Util.clip3(this.rl_, this.min_rl_, this.max_rl_);
     this.runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
+      runner.set_direction(this.is_vertical_);
+      runner.update_rail_length(this.rl_);
+      this.emit_runner_value(runner);
+    });
+  }
+  */
+
+  ngAfterViewInit() {
+    //console.log("[TRACE] ngAfterViewInit() ");
+    if ('vertical' in this) {
+      this.is_vertical_ = true;
+    }
+
+    if ('special' in this) {
+     console.log("[TRACE] RGB ngAfterViewInit() special is true");
+      this.is_special_ = true;
+    }
+
+    if ('min' in this) {
+      this.min_ = Number(this.min);
+    }
+
+    if ('max' in this) {
+      this.max_ = Number(this.max);
+    }
+
+    if (this.max_ === this.min_) {
+      this.max_ = this.min_ + 1;
+    } else if (this.max_ < this.min_) {
+      const tmp = this.max_;
+      this.max_ = this.min_;
+      this.min_ = tmp;
+    }
+
+    if ('length' in this) {
+      this.rl_ = Number(this.length);
+    } else {
+      this.rl_ = 700;
+    }
+    this.rl_ = Util.clip3(this.rl_, this.min_rl_, this.max_rl_);
+    this.runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
+      runner.set_direction(this.is_vertical_);
       runner.update_rail_length(this.rl_);
       runner.update_min(this.min_);
       runner.update_max(this.max_);
       this.emit_runner_value(runner);
     });
+    this.emit_full();
+    this.tick_marks_ = Util.create_ticks(this.nb_ticks_, this.min_, this.max_);
   }
+
 
   //
   // Details on the position calculation
@@ -440,6 +511,7 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
       runner.update_mouse_move_position(evt_pos);
       this.emit_runner_value(runner);
     });
+    this.emit_full();
   }
 
   //

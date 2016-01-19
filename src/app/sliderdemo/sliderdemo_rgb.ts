@@ -18,7 +18,8 @@ import {LipsumCmp}                 from '../lipsum/lipsum';
 import {SvgSliderRgbCmp}           from '../slider/slider_rgb';
 import {SliderDemoService}         from '../sliderdemo/sliderdemo_service';
 
-import {Util}                      from '../../common/util';
+import {Util,
+        HexColor2Name}             from '../../common/util';
 
 // Slider Demo RGB
 
@@ -38,6 +39,7 @@ export class SliderDemoRgbCmp implements AfterViewInit, OnActivate, OnDeactivate
   private re_short_hex_: RegExp = /^#([\da-f])([\da-f])([\da-f])$/i;
   private hex_str_: string;
   private cell_hex_str_: string;
+  private color_name_: string;
   private form_ctrl_: ControlGroup = null;
 
   get values_red() {
@@ -50,6 +52,7 @@ export class SliderDemoRgbCmp implements AfterViewInit, OnActivate, OnDeactivate
     this.values_.red = r;
     this.hex_str_ = Util.rgb2str(this.values_.red, this.values_.green, this.values_.blue);
     this.cell_hex_str_ = this.hex_str_;
+    this.color_name_ = HexColor2Name.translate(this.hex_str_);
   }
 
   get values_green() {
@@ -62,6 +65,7 @@ export class SliderDemoRgbCmp implements AfterViewInit, OnActivate, OnDeactivate
     this.values_.green = r;
     this.hex_str_ = Util.rgb2str(this.values_.red, this.values_.green, this.values_.blue);
     this.cell_hex_str_ = this.hex_str_;
+    this.color_name_ = HexColor2Name.translate(this.hex_str_);
   }
   get values_blue() {
     //console.log("TRACE: get blue value", this.values_.blue);
@@ -73,6 +77,7 @@ export class SliderDemoRgbCmp implements AfterViewInit, OnActivate, OnDeactivate
     this.values_.blue = r;
     this.hex_str_ = Util.rgb2str(this.values_.red, this.values_.green, this.values_.blue);
     this.cell_hex_str_ = this.hex_str_;
+    this.color_name_ = HexColor2Name.translate(this.hex_str_);
   }
 
 
@@ -130,6 +135,7 @@ export class SliderDemoRgbCmp implements AfterViewInit, OnActivate, OnDeactivate
       //console.log("CURRENT = ", this.hex_str_);
       //this.hex_str_ = s;
       this.cell_hex_str_ = s;
+      this.color_name_ = HexColor2Name.translate(s);
 
       return null;
     }
@@ -175,6 +181,7 @@ export class SliderDemoRgbCmp implements AfterViewInit, OnActivate, OnDeactivate
               @Inject(forwardRef(() => SliderDemoService)) private slider_demo_service_: SliderDemoService ) {
     this.hex_str_ = Util.rgb2str(this.values_.red, this.values_.green, this.values_.blue);
     this.cell_hex_str_ = this.hex_str_;
+    this.color_name_ = HexColor2Name.translate(this.hex_str_);
 
     this.form_ctrl_ = this.fb_.group({
       hex_string: [ '', (c: Control): {[key: string]: any} => { return this.hex_string_validator(c); } ]

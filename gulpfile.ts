@@ -32,7 +32,7 @@ const fs             = require('fs');
 const cp             = require('child_process');
 const gulp           = require('gulp');
 const nunjucksRender = require('gulp-nunjucks-render');
-const nodemon        = require('gulp-nodemon');
+const forever        = require('gulp-forever-monitor');
 const livereload     = require('livereload');
 const gasync         = require('async');            // from nodejs.org/api/async.html
 const wget           = require('wgetjs');
@@ -208,6 +208,10 @@ function init_lib(dest: string) {
   gulp.src('node_modules/angular2/bundles/router.dev.js').pipe(gulp.dest(dest_lib));
   gulp.src('node_modules/angular2/bundles/router.js').pipe(gulp.dest(dest_lib));
 
+  gulp.src('node_modules/angular2/bundles/http.min.js').pipe(gulp.dest(dest_lib));
+  gulp.src('node_modules/angular2/bundles/http.dev.js').pipe(gulp.dest(dest_lib));
+  gulp.src('node_modules/angular2/bundles/http.js').pipe(gulp.dest(dest_lib));
+
   filtered_log(1, '[TRACE] Gulpfile - lib files copied in:   ', dest_lib);
 }
 
@@ -257,7 +261,7 @@ gulp.task('init', () => {
   gulp.src('src/**/favicon.ico', {base : 'src'}).pipe(gulp.dest('dist/client'));
 
   nunjucks_html_file('src/index.html', 'src', 'dist/client');
-  scss_to_css('src/**/*.scss', 'src', 'dist/client');
+  scss_to_css('src/scss/*.scss', 'src', 'dist/client');
   transpile_ts_files('src/**/*.ts', 'src', 'dist/client');
   lint_ts_files(['src/**/*.ts', 'gulpfile.ts', 'server/**/*.ts']);
 });
@@ -302,7 +306,7 @@ gulp.task('watch.copy', () => {
 
 gulp.task('watch.scss', () => {
   filtered_log(1, '[INFO] Launching watch on the .scss files');
-  gulp.watch(['src/**/*.scss'], (event: any) => {
+  gulp.watch(['src/scss/*.scss'], (event: any) => {
     filtered_log(2, '[INFO] File ' + event.path + ' event: ' + event.type);
     if (event.type !== 'deleted') {
       scss_to_css(event.path, 'src', 'dist/client');
@@ -318,29 +322,63 @@ gulp.task('watch.livereload', () => {
 });
 
 
+// using forever
+//
 gulp.task('http.server', () => {
   filtered_log(1, '[INFO] Launching express http server');
 
   //
   // prepare process options
   //
-  let exec_str = 'ts-node server/bootstrap.ts';
 
-  process.argv.forEach( (val: string, index: number) => {
-    if (index >= 3) {
-      exec_str += ` ${val}`;
-    }
+  let largs: string[]  = [];
+  process.argv.forEach( (val: string) => {
+    largs.push(val);
   });
-  console.log(`[INFO] Exec: ${exec_str}`);
-  nodemon({
-    verbose: false,
-    watch: 'server',
-    ext: 'ts',
-    exec: exec_str
-  }).on('restart', () => {
+
+  let cmd = 'ts-node';
+  if (process.platform === 'win32') {
+    largs.push('<');
+    largs.push('nul');
+    cmd = cmd + '.cmd';
+  }
+
+
+  // note: the parser entry is needed to avoid error when using ts-node
+  // https://github.com/foreverjs/forever-monitor/issues/117
+
+  forever('./server/bootstrap.ts', {
+    'silent': false,
+    'command':  cmd,
+    'parser': ((command: any, args: any) => { return {command: command, args: args}; }),
+    'args': largs,
+    'watch': false,
+    'max': 5,
+    'watchDirectory': 'server'
+  })
+  .on('exit', () => {
+    console.log('bootstrap has exited after 5 restarts');
+    process.exit();
+  })
+  .on('start', () => {
     process.env.RESTART = true;
+    console.log('bootstrap has started');
+  })
+  .on('watch:restart', (info: any) => {
+    console.log('bootstrap restarted due to change in ', info.stat);
+  })
+  .on('restart', () => {
+    console.log('bootstrap restarted');
   });
+  // 
+  //.on('stdout', (data: any) => {
+  //  console.log('bootstrap stdout', data);
+  //}) 
+  //.on('stderr', (data: any) => {
+  //  console.log('bootstrap stderr', data);
+  //});
 });
+
 
 //////////////////////////////////////////////////
 //
