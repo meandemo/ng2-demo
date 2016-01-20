@@ -27,7 +27,7 @@ import {Runner,
 @Component ({
   selector: 'gg-svg-slider-dyn',
   template: `
-    <div id="slider" style="margin:5px">
+    <div id="slider" style="margin:0px">
 
       <!-- special div which disables mousemove and mouseup event -->
       <div *ngIf="button_is_down_" style="position:relative"
@@ -35,8 +35,9 @@ import {Runner,
            (window:mouseup)="onMouseup($event)" >
       </div>
 
-      <svg height="120" preserveAspectRatio="xMinYMin meet"
-             xmlns="http://www.w3.org/2000/svg" [attr.viewBox]="'-60 -40 ' + (rl_ + 100) + ' 120'" version="1.1" >
+      <svg [attr.height]="is_special_  ? 80 : 120" preserveAspectRatio="xMinYMin meet"
+             xmlns="http://www.w3.org/2000/svg"
+             [attr.viewBox]="(is_special_ ? -40 : -60) + ' -40 ' + (rl_ + 80) + ' ' + (is_special_ ? 80: 120)" version="1.1" >
 
         <!-- reference (0,0), no fill, no stroke -->
 
@@ -44,30 +45,44 @@ import {Runner,
 
         <!-- rail group -->
 
-        <g id="rail" (mousedown)="onMousedown(railref, $event, false)">
-          <path [attr.d]="'M 0,-5 v 10 h' + (rl_) + ' v -10 z'" style="stroke-width:2px;stroke:black;fill:violet" />
-        </g>
+        <g *ngIf="!hide_rail_" >
+          <g id="rail" (mousedown)="onMousedown(railref, $event, false)">
+            <path *ngIf="is_special_"  [attr.d]="'M 0,-5 v 6  h' + (rl_) + ' v -6 z'" style="fill:white" />
+            <path *ngIf="!is_special_" [attr.d]="'M 0,-5 v 10 h' + (rl_) + ' v -10 z'" style="stroke-width:2px;stroke:black;fill:violet" />
+          </g>
 
-        <!-- tick marks -->
-
-        <g *ngFor="#_val of tick_marks_">
-          <path [attr.d]="'M' + get_pos(_val) + ',5 v 30'" style="stroke-width:2px;stroke:black" />
-          <text [attr.x]="get_pos(_val)" y=50 text-anchor="middle" font-size="20">{{_val}}</text>
-        </g>
-
-        <g *ngFor="#_runner of runners_; #_idx = index"
-            [id]="_runner.get_id()"
-            [attr.transform]="'translate(' + _runner.get_pos() + ', 0)'">
-          <g class="runner"
-            (mousedown)="onMousedown(railref, $event, true, _idx)" >
-            <path id="panel" d="M 0 0 L 10 -10 L 30 -10 L 30 -35 L -30 -35 L -30 -10 L -10 -10 z"
-                  style="color:black;fill:black" />
-            <text id="text" x="0" y="-17" text-anchor="middle"
-                font-family="Verdana" font-size="10" fill="white">{{_runner.get_id()}}
-            </text>
+          <!-- tick marks -->
+          <g *ngIf="!is_special_" *ngFor="#_val of tick_marks_">
+            <path [attr.d]="'M' + get_pos(_val) + ',5 v 30'" style="stroke-width:2px;stroke:black" />
+            <text [attr.x]="get_pos(_val)" y=50 text-anchor="middle" font-size="20">{{_val}}</text>
           </g>
         </g>
 
+        <!-- runners group -->
+        <g *ngIf="!hide_runners_">
+          <g *ngFor="#_runner of runners_; #_idx = index"
+              [id]="_runner.get_id()"
+              [attr.transform]="'translate(' + _runner.get_pos() + ', 0)'">
+            <g class="runner"
+              (mousedown)="onMousedown(railref, $event, true, _idx)" >
+              <path *ngIf="!is_special_" id="panel" d="M 0 0 L 10 -10 L 30 -10 L 30 -35 L -30 -35 L -30 -10 L -10 -10 z"
+                    style="color:black;fill:black" />
+              <text *ngIf="!is_special_" id="text" x="0" y="-17" text-anchor="middle"
+                  font-family="Verdana" font-size="10" fill="white">{{_runner.get_id()}}
+              </text>
+              <path *ngIf="is_special_" id="panel" d="M 0 0 L 10  10 L 20  10 L 20  35 L -20  35 L -20  10 L -10  10 z"
+                    style="color:black;fill:black;stroke:white;stroke-width:1px" />
+
+              <g *ngIf="is_special_" (click)="onMouseclick(railref, $event, _runner)">
+                <rect x="10" y="25" width="9" height="9" style="fill:white"  />
+                <path d="M 12 27 L 18 33"
+                    style="stroke:black;stroke-width:1px" />
+                <path d="M 18 27 L 12 33"
+                    style="stroke:black;stroke-width:1px" />
+              </g>
+            </g>
+          </g>
+        </g>
       </svg>
     </div>
   `,
@@ -86,6 +101,9 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
   @Output() lengthChange:  EventEmitter<number> = new EventEmitter<number>();
 
   @Input() vertical: boolean;
+  @Input() special: boolean;
+  @Input() hiderail: boolean;
+  @Input() hiderunners: boolean;
 
   //@Input('values') values_: any;
   @Output('values') emit_values_: EventEmitter<RunnerEvtData[]> = new EventEmitter<RunnerEvtData[]>();
@@ -105,6 +123,11 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
   private tick_marks_: number[] = [0, 20, 40, 60, 80, 100];
   private nb_ticks_: number = 6;
 
+  private is_vertical_: boolean = false;
+  private is_special_: boolean = false;
+  private hide_rail_: boolean = false;
+  private hide_runners_: boolean = false;
+
   constructor(private dyn_slider_service_: DynSliderService) {
     this.min_ = 0;
     this.max_ = 100;
@@ -118,19 +141,19 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
       this.runners_.push(runner);
     }
 
-    //console.log("[TRACE] constructor value = ", this.value_);
-    //console.log("[TRACE] pos   = ", this.pos_);
-    //console.log("[TRACE] trans = ", this.trans_pos_);
+    // console.log("[TRACE] constructor value = ", this.value_);
+    // console.log("[TRACE] pos   = ", this.pos_);
+    // console.log("[TRACE] trans = ", this.trans_pos_);
 
     dyn_slider_service_.subscribe({
       next: (data: DynSliderEvtData) => {
         if (data.add) {
-          //console.log('[TRACE] Receive add slider request');
+          // console.log('[TRACE] Receive add slider request');
           let runner = new Runner(0, this.min_, this.max_, this.rl_);
           this.runners_.push(runner);
           this.emit_full();
         } else if (data.del) {
-          console.log('[TRACE] Receive remove slider request:', data.runner);
+          // console.log('[TRACE] Receive remove slider request:', data.runner);
           let idx: number;
           idx = this.runners_.findIndex((runner: Runner) => {
             return (runner === data.runner);
@@ -138,12 +161,13 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
           this.runners_.splice(idx, 1);
           this.emit_full();
         } else {
-          //console.log('[TRACE] Receive update slider request:', data.idx, ' with value ', data.val);
+          // console.log('[TRACE] Receive update slider request:', data.idx, ' with value ', data.val);
           data.runner.update_value(data.val);
         }
       }
     });
   }
+
 
   // given value between min and max
   // converted into a pixel position between 0 and rail length
@@ -164,14 +188,27 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
         data['value'] = runner.get_value(true);
         datas.push(data);
       });
-      //console.log('[TRACE] Dyn emit* ', datas);
+      // console.log('[TRACE] Dyn emit* ', datas);
       this[str].emit(datas);
     }
   }
 
-  ngOnChanges() {
-    console.log('[TRACE] ngOnChanges');
+  ngOnChanges(changes: {[propName: string]: SimpleChange}) {
+    if (this.button_is_down_) {
+      return;
+    }
+
+    if (changes['hiderail']) {
+      let v = changes['hiderail'].currentValue;
+      this.hide_rail_ = (v === true);
+    }
+
+    if (changes['hiderunners']) {
+      let v = changes['hiderunners'].currentValue;
+      this.hide_runners_ = (v === true);
+    }
   }
+
 
   ngOnInit() {
     /*
@@ -193,6 +230,13 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
     if ('max' in this) {
       this.max_ = Number(this.max);
     }
+
+    if ('special' in this) {
+      // console.log("[TRACE] RGB ngAfterViewInit() special is true");
+      this.is_special_ = true;
+    }
+
+
 
     if (this.max_ === this.min_) {
       this.max_ = this.min_ + 1;
@@ -216,6 +260,15 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
     });
     this.emit_full();
     this.tick_marks_ = Util.create_ticks(this.nb_ticks_, this.min_, this.max_);
+  }
+
+
+  onMouseclick(elm: any, evt: any, drunner: Runner) {
+    let idx = this.runners_.findIndex((runner: Runner) => {
+            return (runner === drunner);
+    });
+    this.runners_.splice(idx, 1);
+    this.emit_full();
   }
 
   //
@@ -256,7 +309,7 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
     this.active_runners_ = [];
     if (!on_button) {
       // special case when the mouse down occur on the slide zone
-      // and not on the slider button: 
+      // and not on the slider button:
       // we add a slider here
       let runner = new Runner(0, this.min_, this.max_, this.rl_);
       let delta = elm.getBoundingClientRect().left;

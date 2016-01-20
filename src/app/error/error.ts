@@ -32,7 +32,9 @@ import {NgFor, DecimalPipe, NgIf, NgModel, FormBuilder, NgClass,
 import {RouteConfig, RouteDefinition, Router, Route, RouteParams, Location, LocationStrategy,
         ROUTER_PROVIDERS, OnActivate, CanReuse, OnDeactivate, ComponentInstruction,
         RouterOutlet, RouterLink, APP_BASE_HREF, ROUTER_BINDINGS} from 'angular2/router';
-import {HTTP_BINDINGS, HTTP_PROVIDERS, Http} from 'angular2/http';
+import {HTTP_BINDINGS, Http} from 'angular2/http';
+
+//import 'rxjs/add/operator/map';
 
 
 
@@ -45,10 +47,11 @@ import {HTTP_BINDINGS, HTTP_PROVIDERS, Http} from 'angular2/http';
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+import {CustomHttp} from '../http';
 
+@Injectable()
 @Component({
   selector: 'gg-error',
-  bindings: [HTTP_BINDINGS],
   template: `
   <div *ngIf="is_error_">
     Error,<br>
@@ -66,12 +69,25 @@ import {HTTP_BINDINGS, HTTP_PROVIDERS, Http} from 'angular2/http';
   `],
   directives: [RouterLink, NgIf]
 })
+
 export class ErrorCmp {
-  private error_url_: string;
+  private error_url_: any;
   private is_error_ = false;
 
-  constructor(private http_: Http) {
-    http_.get('api/public/v1/errorurl').subscribe(
+
+  constructor(private http_: CustomHttp, private location_: Location) {
+
+    http_.get_error_url('api/public/v1/errorurl');
+
+    http_.subscribe({
+      next: (data: any) => {
+        this.error_url_ = data.url;
+        this.is_error_ = data.flag;
+      }
+    });
+
+    /*
+    .subscribe(
       (response: any) => {
         this.error_url_ = response.text();
         this.is_error_ = (this.error_url_ !== '/error');
@@ -81,6 +97,7 @@ export class ErrorCmp {
         console.log('ERR =', error.text());
       }
     );
+    */
   }
 
 

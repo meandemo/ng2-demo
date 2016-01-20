@@ -50,7 +50,7 @@ app.get('/api/public/v1/errorurl', (req: any, res: any) => {
   if (error_url) {
     res.send(error_url);
   } else {
-    res.send(null);
+    res.send('Error: the previous request from server did not trigger a 404 response');
   }
   error_url = '';
 });
@@ -58,7 +58,7 @@ app.get('/api/public/v1/errorurl', (req: any, res: any) => {
 
 //
 // 404 catch
-// 
+//
 app.all('*', (req: any, res: any) => {
   console.log(`[INFO] Server 404 request: ${req.originalUrl}`);
   //res.set({'Warning': req.originalUrl});

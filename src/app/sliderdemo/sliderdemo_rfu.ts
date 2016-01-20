@@ -14,8 +14,7 @@ import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-import {LipsumCmp}          from '../lipsum/lipsum';
-
+import {LipsumCmp}                 from '../lipsum/lipsum';
 
 
 // Slider: 001
@@ -26,17 +25,16 @@ import {LipsumCmp}          from '../lipsum/lipsum';
     <p>This is slider {{id_}}
     </p>
     <form>
-      <input type="range" name="points0" min="0" max="100" style="width: 100px;">
+      <input type="range" name="points0" min="0" max="100" style="width: 50px;">
     </form>
     <form>
-      <input type="range" name="points1" min="0" max="100" style="width: 100px;">
+      <input type="range" name="points1" min="0" max="100" style="width: 50px;">
     </form>
-    <gg-lipsum></gg-lipsum>
   `,
   directives: [LipsumCmp]
 })
 export class Slider001Cmp {
-  public id_ = '001';
+  public id_ = '002';
 }
 
 
@@ -62,6 +60,7 @@ export class Slider001Cmp {
 })
 export class Slider002Cmp {
   public id_ = '002';
+
 }
 
 

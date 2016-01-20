@@ -18,7 +18,9 @@ import {Runner}                    from './runner';
 
 export interface DynSliderEvtData {
   add?:     boolean;  // if true: a new slider must be added, all other data is ignored
-  del?:     boolean;   // if true: slider[idx] must be removed
+  del?:     boolean;  // if true: slider[idx] must be removed
+  hideRail?: boolean;  // if true: slider must be hidden 
+  hideRunners?: boolean;  // if true: runners must be hidden 
   runner?: Runner;    // Runner to operate on
   val?:    number;    // otherwise slider[idx] value must be updated with val 
 }

@@ -14,9 +14,13 @@ import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-import {SliderDemoSimpleCmp}  from '../sliderdemo/sliderdemo_simple';
-import {Slider001Cmp, Slider002Cmp,
-        Slider003Cmp }  from '../sliderdemo/sliderdemo_rfu';
+import {SliderDemoSimpleCmp}   from '../sliderdemo/sliderdemo_simple';
+import {SliderDemoRgbCmp}      from '../sliderdemo/sliderdemo_rgb';
+import {SliderDemoDynCmp}      from '../sliderdemo/sliderdemo_dyn';
+import {SliderDemoGradientCmp} from '../sliderdemo/sliderdemo_gradient';
+import {Slider001Cmp,
+        Slider002Cmp,
+        Slider003Cmp }         from '../sliderdemo/sliderdemo_rfu';
 
 const views_ = [
     {
@@ -27,25 +31,46 @@ const views_ = [
       linkIndex: 1
     },
     {
+      component: SliderDemoRgbCmp,
+      name:      'SliderDemoRgbCmp',
+      pathName:  'rgbslider',
+      linkName:  'Rgb Sliders',
+      linkIndex: 2
+    },
+    {
+      component: SliderDemoDynCmp,
+      name:      'SliderDemoDynCmp',
+      pathName:  'dynslider',
+      linkName:  'Dynamic Sliders',
+      linkIndex: 3
+    },
+    {
+      component: SliderDemoGradientCmp,
+      name:      'SliderDemoGradientCmp',
+      pathName:  'gradientlider',
+      linkName:  'Gradient with Sliders',
+      linkIndex: 4
+    },
+    {
       component: Slider001Cmp,
       name:      'Slider001Cmp',
       pathName:  'multisliders',
-      linkName:  'Multiple Sliders',
-      linkIndex: 2
+      linkName:  'RFU Multiple Sliders',
+      linkIndex: 5
     },
     {
       component: Slider002Cmp,
       name:      'Slider002Cmp',
       pathName:  'verticalslider',
-      linkName:  'Vertical Sliders',
-      linkIndex: 3
+      linkName:  'RFU Vertical Sliders',
+      linkIndex: 6
     },
     {
       component: Slider003Cmp,
       name:      'Slider003Cmp',
       pathName:  'linkedslider',
-      linkName:  'Linked Sliders',
-      linkIndex: 4
+      linkName:  'RFU Linked Sliders',
+      linkIndex: 7
     }
   ];
 

@@ -16,13 +16,22 @@ A live demo is available here: http://meandemo.github.io.
    We present horizontal and vertical sliders
 3. In the third demo, the runners can be added and removed dynamically. We use a different way to communicate between
    components: instead of the bi-directional property binding, the slider subscribes to a service. 
+4. The gradient demo combines all the components seen so far: sliders, vertical sliders, dynamic sliders, services.
+   This demo also uses html5 canvas.  
+   ![gradient](./mdassets/gradient.png)
 
 # Changes
+
+### 20-jan-2016:
+Added a gradient demo, works fine.
+We have also updated the error handling: an API allows the error page to display in the url with triggered the 404 error.   
+
 
 ### 18-jan-2016:
 Further refactoring to prepare the fourth demo.
 Addition of error page to catch 404 errors.
 This does not work on githup.io as it's a fully static server.
+Replaced nodemon by forever. 
 
 ### 14-jan-2016:
 Refactoring  part of the code for to facilitate  reuse.
@@ -86,7 +95,7 @@ We are using a service to communicate between parent and child.
 
 Tested ok on Chrome 47.0.2526.80 m & win7 
 
-## Beware
+## Warning
 
 If you are using cygwin, you will have to open a powershell terminal for all the above steps.
 I ran into trouble with nodemon when launching from patty.  

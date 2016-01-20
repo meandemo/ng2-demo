@@ -1,0 +1,82 @@
+<div class="w3-row">
+  <div class="w3-container w3-padding w3-col w3-text-theme" style="width:10%">
+    <div hidden>Reserved for future use</div>
+  </div>
+  <div class="w3-container w3-padding w3-col w3-text-theme" style="width:80%">
+    <br>
+    <br>
+    <h2 >Gradient Demo Using Nested Sliders</h2>
+
+
+    <div id="container">
+      <div id="hslider">
+        <gg-svg-slider-dyn
+            [min]="0"
+            [max]="hrail_length_"
+            (values)="_datas = $event; hrunner_changes($event)"
+            [hiderail]="cfg_.hide_horizontal_rail"
+            [hiderunners]="cfg_.hide_horizontal_runners"
+            special
+            [length]="hrail_length_">
+        </gg-svg-slider-dyn>
+      </div>
+      <!--
+      <canvas id="canvas">You browser does not support canvas</canvas>
+        <canvas id="canvas" width="947" height="473">You browser does not support canvas</canvas>
+      -->
+      <div id="canvas-enclosure">
+        <canvas id="canvas">You browser does not support canvas</canvas>
+      </div>
+
+      <div *ngFor="#_idx of indexes_">
+        <div *ngIf="are_enabled_[_idx]"
+             id="vslider" [ngStyle]="{'left': (xs_[_idx]) + 'px'}" >
+          <gg-svg-slider-rgb
+            [min]="0"
+            [max]="vrail_length_"
+            (values)="rgb_value_changes(_idx, xs_[_idx], $event)"
+            [hiderail]="cfg_.hide_vertical_rails"
+            [hiderunners]="cfg_.hide_vertical_runners"
+            vertical
+            special
+            [length]="vrail_length_">
+          </gg-svg-slider-rgb>
+        </div>     
+      </div>     
+    </div>     
+
+    <div id="container-control">
+      <table>
+        <tr>
+          <td>
+            <input #_inst1 type="checkbox"  value="false" (change)="cfg_.hide_vertical_runners = _inst1.checked">
+            <label>Hide vertical runners</label>
+          </td>  
+          <td>
+            <input #_inst2 type="checkbox" value="false" (change)="cfg_.hide_horizontal_runners = _inst2.checked">
+            <label>Hide horizontal runners</label>
+          </td>  
+        </tr>
+        <tr>
+          <td>
+            <input #_inst3 type="checkbox"  value="false" (change)="cfg_.hide_vertical_rails = _inst3.checked">
+            <label>Hide vertical rails</label>
+          </td>  
+          <td>
+            <input #_inst4 type="checkbox"  value="false" (change)="cfg_.hide_horizontal_rail = _inst4.checked">
+            <label>Hide horizontal rail</label>
+          </td>  
+        </tr>
+        <tr>
+          <td>
+            <input type="checkbox" value="false" (change)="onCheckboxChange('hide_colored_lines', $event)">
+            <label>Hide colored RGB lines</label>
+          </td>  
+        </tr>
+      </table>
+    </div>  
+    <br>
+  </div>
+  <div class="w3-container w3-padding w3-col w3-text-theme" style="width:10%">
+  </div>
+</div>

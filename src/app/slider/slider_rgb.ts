@@ -45,7 +45,7 @@ class SvgRunnerRgbCmp {
 @Component ({
   selector: 'gg-svg-slider-rgb',
   template: `
-    <div  id="slider" style="margin:5px">
+    <div  id="slider" style="margin:0px">
 
       <!-- special div which disables mousemove and mouseup event -->
       <div *ngIf="button_is_down_" style="position:relative"
@@ -100,37 +100,43 @@ class SvgRunnerRgbCmp {
       <!--              -->
 
       <div *ngIf=is_vertical_>
+        <!--
         <svg width="120" preserveAspectRatio="xMinYMin meet"
              xmlns="http://www.w3.org/2000/svg" [attr.viewBox]="'-40 -60 120 ' + (rl_ + 100)" version="1.1" >
+        -->
+        <svg  [attr.width]="is_special_ ? 80 : 120" preserveAspectRatio="xMinYMin meet"
+             xmlns="http://www.w3.org/2000/svg" [attr.viewBox]="'-40 -40 ' + (is_special_ ? 80 : 120) + ' ' + (rl_ + 80)" version="1.1" >
 
           <rect #railref  x="0" y="0" width="1" height="1" style="fill:none;stroke:none"  />
 
-          <g id="rail" (mousedown)="onMousedown(railref, $event, false)">
+          <g *ngIf="!hide_rail_" id="rail" (mousedown)="onMousedown(railref, $event, false)">
             <path *ngIf="!is_special_" [attr.d]="'M -5,0 h 10 v' + (rl_) + ' h -10 z'"
                 style="stroke-width:2px;stroke:black;fill:violet" />
             <path *ngIf="is_special_" [attr.d]="'M -0,0 v' + (rl_)"
                 style="stroke-width:2px;stroke:white" />
           </g>
 
-          <g *ngIf="!is_special_" *ngFor="#_val of tick_marks_">
-            <path [attr.d]="'M 5,' + get_pos(_val) + ' h 30'" style="stroke-width:2px;stroke:black" />
-            <text [attr.y]="get_pos(_val)" x=35 baseline-shift="-30%" font-size="20">{{_val}}</text>
-          </g>
-          <g *ngFor="#_runner of runners_; #_idx = index"
-              [id]="get_color(_runner)" class="rgb-runner"
-              [attr.transform]="'translate(0, ' + _runner.get_pos() + ')'"
-              (mousedown)="onMousedown(railref, $event, true, _idx)" >
+          <g *ngIf="!hide_runners_">
+            <g *ngIf="!is_special_" *ngFor="#_val of tick_marks_">
+              <path [attr.d]="'M 5,' + get_pos(_val) + ' h 30'" style="stroke-width:2px;stroke:black" />
+              <text [attr.y]="get_pos(_val)" x=35 baseline-shift="-30%" font-size="20">{{_val}}</text>
+            </g>
+            <g *ngFor="#_runner of runners_; #_idx = index"
+                [id]="get_color(_runner)" class="rgb-runner"
+                [attr.transform]="'translate(0, ' + _runner.get_pos() + ')'"
+                (mousedown)="onMousedown(railref, $event, true, _idx)" >
 
-            <g id="circle" [attr.transform]="'rotate(' + (-110 + (_idx * 40)) + ')' " >
-              <path id="pie" d="M 0 0 h 20 A 20,20 0 0,1 14.321 12.855 Z" />
-              <g transform="rotate(120)">
+              <g id="circle" [attr.transform]="'rotate(' + (-110 + (_idx * 40)) + ')' " >
                 <path id="pie" d="M 0 0 h 20 A 20,20 0 0,1 14.321 12.855 Z" />
                 <g transform="rotate(120)">
                   <path id="pie" d="M 0 0 h 20 A 20,20 0 0,1 14.321 12.855 Z" />
+                  <g transform="rotate(120)">
+                    <path id="pie" d="M 0 0 h 20 A 20,20 0 0,1 14.321 12.855 Z" />
+                  </g>
                 </g>
               </g>
             </g>
-          </g>
+          </g>    
         </svg>
       </div>
     </div>
@@ -175,8 +181,9 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
   @Output() lengthChange:  EventEmitter<number> = new EventEmitter<number>();
 
   @Input() vertical: boolean;
-
   @Input() special: boolean;
+  @Input() hiderail: boolean;
+  @Input() hiderunners: boolean;
 
   @Input('red') value0: any;
   @Output('redChange') emit_value0_: EventEmitter<number> = new EventEmitter<number>();
@@ -201,6 +208,8 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
   private nb_runners_: number;
   private is_vertical_: boolean = false;
   private is_special_: boolean = false;
+  private hide_rail_: boolean = false;
+  private hide_runners_: boolean = false;
 
   private button_is_down_: boolean = false;
 
@@ -209,7 +218,7 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
 
   constructor() {
     SvgSliderRgbCmp.cnt_++;
-    console.log("SLIDER RGB Constructor: ", SvgSliderRgbCmp.cnt_);
+    // console.log("SLIDER RGB Constructor: ", SvgSliderRgbCmp.cnt_);
 
     const colors  = ['red', 'green', 'blue'];
     this.min_ = 0;
@@ -246,7 +255,7 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
         data['value'] = runner.get_value(true);
         datas.push(data);
       });
-      //console.log('[TRACE] Rgb emit* ', datas);
+      // console.log('[TRACE] Rgb emit* ', datas);
       this[str].emit(datas);
     }
   }
@@ -257,6 +266,9 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
   }
 
   emit_runner_value(runner: Runner) {
+    if (this.is_special_)  {
+      return;
+    }
     const idx = (this.r2name_.get(runner))[1];
     const str = `emit_value${idx}_`;
     if (str in this) {
@@ -355,14 +367,26 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
         });
       }
     }
+
+    if (changes['hiderail']) {
+      let v = changes['hiderail'].currentValue;
+      this.hide_rail_ = (v === true);
+    }
+
+    if (changes['hiderunners']) {
+      let v = changes['hiderunners'].currentValue;
+      this.hide_runners_ = (v === true);
+    }
+
+
   }
 
   ngOnInit() {
-    //console.log("[TRACE] ngOnInit() ");
+    // console.log("[TRACE] ngOnInit() ");
   }
 
   /*
-    //console.log("[TRACE] ngOnInit() ");
+    // console.log("[TRACE] ngOnInit() ");
     if ('vertical' in this) {
       this.is_vertical_ = true;
     }
@@ -399,13 +423,13 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
   */
 
   ngAfterViewInit() {
-    //console.log("[TRACE] ngAfterViewInit() ");
+    // console.log("[TRACE] ngAfterViewInit() ");
     if ('vertical' in this) {
       this.is_vertical_ = true;
     }
 
     if ('special' in this) {
-     console.log("[TRACE] RGB ngAfterViewInit() special is true");
+     // console.log("[TRACE] RGB ngAfterViewInit() special is true");
       this.is_special_ = true;
     }
 
@@ -492,6 +516,7 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
         this.active_runners_.push(runner);
         this.emit_runner_value(runner);
       });
+      this.emit_full();
     } else {
       this.active_runners_.push(this.runners_[idx]);
       this.runners_[idx].init_mouse_down_evt(evt_pos);

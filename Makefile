@@ -5,12 +5,9 @@ update:
 	cp ../ng2goodies/src/app/stickydivdemo/stickydivdemo.ts    ./src/app/stickydivdemo
 	cp ../ng2goodies/src/app/slider/*.ts                       ./src/app/slider
 	cp ../ng2goodies/src/app/error/*.ts                        ./src/app/error
-	cp ../ng2goodies/src/app/sliderdemo/sliderdemo_dyn.html    ./src/app/sliderdemo
-	cp ../ng2goodies/src/app/sliderdemo/sliderdemo_dyn.ts      ./src/app/sliderdemo
-	cp ../ng2goodies/src/app/sliderdemo/sliderdemo_rgb.html    ./src/app/sliderdemo
-	cp ../ng2goodies/src/app/sliderdemo/sliderdemo_rgb.ts      ./src/app/sliderdemo
-	cp ../ng2goodies/src/app/sliderdemo/sliderdemo_simple.html ./src/app/sliderdemo
-	cp ../ng2goodies/src/app/sliderdemo/sliderdemo_simple.ts   ./src/app/sliderdemo
+	cp ../ng2goodies/src/app/sliderdemo/*.*                    ./src/app/sliderdemo
+	cp ../ng2goodies/src/app/boot.ts                           ./src/app
+	cp ../ng2goodies/src/app/http.ts                           ./src/app
 	cp ../ng2goodies/src/scss/*.scss                           ./src/scss
 	cp ../ng2goodies/src/index.html                            ./src
 	cp ../ng2goodies/src/images/*.png                          ./src/images
