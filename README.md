@@ -22,6 +22,11 @@ A live demo is available here: http://meandemo.github.io.
 
 # Changes
 
+### 21-jan-2016:
+Update the gradient demo with an animated control panel, to demonstrate how animations
+can be easily done with ng2
+
+
 ### 20-jan-2016:
 Added a gradient demo, works fine.
 We have also updated the error handling: an API allows the error page to display in the url with triggered the 404 error.   
