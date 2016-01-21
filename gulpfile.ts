@@ -277,7 +277,7 @@ gulp.task('watch.transpile', () => {
   filtered_log(1, '[INFO] Launching watch on the .ts files');
   gulp.watch('src/**/*.ts', (event: any) => {
     filtered_log(2, '[INFO] File ' + event.path + ' event: ' + event.type);
-    if (event.type !== 'deleted') {
+    if ((event.type !== 'deleted') && fs.statSync(event.path).isFile()) {
       lint_ts_files(event.path);
       transpile_ts_files(event.path, 'src', 'dist/client');
     }
@@ -288,7 +288,7 @@ gulp.task('watch.index', () => {
   filtered_log(1, '[INFO] Launching watch on index.html');
   gulp.watch('src/index.html', (event: any) => {
     filtered_log(2, '[INFO] File ' + event.path + ' event: ' + event.type);
-    if (event.type !== 'deleted') {
+    if ((event.type !== 'deleted') && fs.statSync(event.path).isFile()) {
       nunjucks_html_file(event.path, 'src', 'dist/client');
     }
   });
@@ -298,7 +298,7 @@ gulp.task('watch.copy', () => {
   filtered_log(1, '[INFO] Launching watch on app/**/*.html, *.svg, favicon.ico files');
   gulp.watch(['src/app/**/*.html', 'src/**/*.png', 'src/**/*.svg', 'src/favion.ico'], (event: any) => {
     filtered_log(2, '[INFO] File ' + event.path + ' event: ' + event.type);
-    if (event.type !== 'deleted') {
+    if ((event.type !== 'deleted') && fs.statSync(event.path).isFile()) {
       gulp.src(event.path, {base : 'src'}).pipe(gulp.dest('dist/client'));
     }
   });
@@ -308,7 +308,7 @@ gulp.task('watch.scss', () => {
   filtered_log(1, '[INFO] Launching watch on the .scss files');
   gulp.watch(['src/scss/*.scss'], (event: any) => {
     filtered_log(2, '[INFO] File ' + event.path + ' event: ' + event.type);
-    if (event.type !== 'deleted') {
+    if ((event.type !== 'deleted') && fs.statSync(event.path).isFile()) {
       scss_to_css(event.path, 'src', 'dist/client');
     }
   });

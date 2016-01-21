@@ -6,6 +6,7 @@ update:
 	cp ../ng2goodies/src/app/slider/*.ts                       ./src/app/slider
 	cp ../ng2goodies/src/app/error/*.ts                        ./src/app/error
 	cp ../ng2goodies/src/app/sliderdemo/*.*                    ./src/app/sliderdemo
+	cp ../ng2goodies/src/app/animation/**                      ./src/app/animation
 	cp ../ng2goodies/src/app/boot.ts                           ./src/app
 	cp ../ng2goodies/src/app/http.ts                           ./src/app
 	cp ../ng2goodies/src/scss/*.scss                           ./src/scss

@@ -45,8 +45,8 @@
       </div>     
     </div>     
 
-    <div id="container-control">
-      <table>
+    <div gg-animate-height="70px" #_anim="ah" id="container-control" style="height:0; overflow: hidden">
+      <table style="margin:12px">
         <tr>
           <td>
             <input #_inst1 type="checkbox"  value="false" (change)="cfg_.hide_vertical_runners = _inst1.checked">
@@ -75,7 +75,25 @@
         </tr>
       </table>
     </div>  
+    <div id="animate-control">
+      <div id="svg-container" style="height:20px;width:50px;margin-left:auto;margin-right:auto" >
+        <svg height="20" preserveAspectRatio="xMinYMin meet"
+             xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 50 20" version="1.1" >
+          <g (click)="_anim.toggle()">
+            <rect id="pullhandle" x="5" y="5" rx="5" width="40" height="10" style="fill:grey" />
+          </g>      
+        </svg>  
+      </div>
+    </div>
     <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    End of demo!
   </div>
   <div class="w3-container w3-padding w3-col w3-text-theme" style="width:10%">
   </div>

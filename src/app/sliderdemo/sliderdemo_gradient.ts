@@ -8,6 +8,7 @@ import {RouteConfig, RouteDefinition, Router, Route, RouteParams, Location, Loca
         ROUTER_PROVIDERS, OnActivate, OnDeactivate, ComponentInstruction,
         RouterOutlet, RouterLink, APP_BASE_HREF, ROUTER_BINDINGS} from 'angular2/router';
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Slider Demo: Gradient
@@ -26,6 +27,10 @@ import {Runner,
         RunnerEvtData}             from '../slider/runner';
 
 
+import {AnimateHeightDrctv}        from '../animation/animations';
+
+
+
 @Component ({
   selector: 'gg-slider-demo-gradient',
   templateUrl: 'app/sliderdemo/sliderdemo_gradient.html',
@@ -39,9 +44,14 @@ import {Runner,
     }
     div#container-control {
       font-size: 12px;
-      padding: 12px;
       width: 100%;
-      height: 100px;
+      background: black;
+      color: white;
+    }
+    div#animate-control {
+      font-size: 12px;
+      width: 100%;
+      height: 20px;
       background: black;
       color: white;
     }
@@ -88,7 +98,7 @@ import {Runner,
 }
   `],
   //styleUrls: ['css/sliderdemo_gradient.css'],
-  directives: [LipsumCmp, SvgSliderRgbCmp, SvgSliderDynCmp]
+  directives: [AnimateHeightDrctv, LipsumCmp, SvgSliderRgbCmp, SvgSliderDynCmp]
 })
 export class SliderDemoGradientCmp implements OnInit, OnChanges, AfterViewInit, OnActivate, OnDeactivate {
   private nb_points_ = 10;
