@@ -1,0 +1,47 @@
+div#slider #s0.rail {
+  stroke: black;
+  fill: red;
+}
+
+div#slider #s1.rail {
+  stroke: black;
+  fill: blue;
+}
+
+div#slider .rail {
+  cursor: pointer; 
+  fill: none;
+  opacity: 0.6;
+}
+
+div#slider .rail:hover {
+  opacity: 0.8;
+}
+
+div#slider #circle.runner {
+  stroke: black;
+  fill: red;
+}
+
+div#slider .runner {
+  opacity:0.6;
+  cursor: pointer; 
+}
+
+div#slider .runner:hover {
+  cursor: pointer; 
+  opacity:0.8;
+}
+
+div#slider #label.runner {
+  cursor: pointer; 
+  opacity: 0.6;
+  stroke: black;
+  fill: yellow;
+}
+
+div #rail text {
+  opacity: 1.0;
+  font-family: Consolas, monospace, sans-serif;
+  font-size: 15px;
+}
