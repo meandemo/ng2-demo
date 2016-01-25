@@ -129,47 +129,14 @@ form {
 //  position:absolute; top:5%; left:5%; width:90%; height:90%;
 //  background:#fff; border:1px solid #ccc
 //}
-div #slider #rail {
-  opacity:0.6;
-  stroke: black;
-  fill: red;
-}
-
-g.runner {
-  cursor: pointer; 
-}
-
-g.runner:hover {
-  cursor: pointer; 
-}
-
-div #slider #runner #circle {
-  opacity:0.6;
-  stroke: black;
-  fill: yellow;
-}
-
-div #slider #runner #label {
-}
-
-div #slider  #runner:hover {
-}
-
-div #slider  #rail:hover {
-  opacity:0.8;
-}
-
-div #rail text {
-  opacity: 1.0;
-  font-family: Consolas, monospace, sans-serif;
-  font-size: 15px;
-}
-
 
 table .color-demo {
   width: 40%;
 }
 
+#circle.runner {
+  fill: #556B2F !important;
+}
 
 input#hex.ng-valid {
   border-right: 10px solid green;

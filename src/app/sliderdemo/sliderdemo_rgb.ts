@@ -30,7 +30,7 @@ import {Util,
 })
 export class SliderDemoRgbCmp implements AfterViewInit, OnActivate, OnDeactivate {
   private values_: any = { 'red': 55, 'green': 105, 'blue': 155 };
-  private length_: number = 600;
+  private length_: number = 500;
 
   // Note: I could not find a way to capture the 3 fields
   // with /^#([\da-f]{2}){3}$/i  => so I unrolled the 3 captures

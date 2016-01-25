@@ -50,7 +50,8 @@ app.get('/api/public/v1/errorurl', (req: any, res: any) => {
   if (error_url) {
     res.send(error_url);
   } else {
-    res.send('Error: the previous request from server did not trigger a 404 response');
+    // 403: forbidden
+    res.status(403).send('Error: the previous request from server did not trigger a 404 response');
   }
   error_url = '';
 });

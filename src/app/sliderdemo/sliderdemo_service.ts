@@ -47,7 +47,7 @@ const views_ = [
     {
       component: SliderDemoGradientCmp,
       name:      'SliderDemoGradientCmp',
-      pathName:  'gradientlider',
+      pathName:  'gradientslider',
       linkName:  'Gradient with Sliders',
       linkIndex: 4
     },

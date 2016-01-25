@@ -22,8 +22,11 @@ A live demo is available here: http://meandemo.github.io.
 
 # Changes
 
+### 25-jan-2016:
+Improved 404 Error reporting. Switched to native gradient on canvas drawing.
+
 ### 21-jan-2016:
-Update the gradient demo with an animated control panel, to demonstrate how animations
+Updated the gradient demo with an animated control panel, to demonstrate how animations
 can be easily done with ng2
 
 

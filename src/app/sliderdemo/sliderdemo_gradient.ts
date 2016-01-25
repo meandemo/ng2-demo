@@ -19,8 +19,8 @@ import {LipsumCmp}                 from '../lipsum/lipsum';
 import {SvgSliderRgbCmp}           from '../slider/slider_rgb';
 import {SvgSliderDynCmp}           from '../slider/slider_dyn';
 import {SliderDemoService}         from '../sliderdemo/sliderdemo_service';
-import {DynSliderService,
-        DynSliderEvtData}          from '../slider/slider_dyn_service';
+import {SliderService,
+        SliderEvtData}          from '../slider/slider_service';
 
 import {Util}                      from '../../common/util';
 import {Runner,
@@ -109,8 +109,11 @@ export class SliderDemoGradientCmp implements OnInit, OnChanges, AfterViewInit, 
   private ids_: string[] = []; //= [null, null, null, null];
   private are_enabled_: boolean[] = []; // = [false, false, false, false];
   private r2i_table_: Map<string, number>;
+  private i2rgb_table_: Map<number, any>;
   private hrail_length_: number;
   private vrail_length_: number;
+  private runners_: Runner[] = [];
+  private idx_last_enabled_vslider_: number;
 
   // canvas variables
   private canvas_: any;
@@ -120,19 +123,27 @@ export class SliderDemoGradientCmp implements OnInit, OnChanges, AfterViewInit, 
 
   private dx_ = 40;
   private dy_ = 40 + this.vrail_length_;
+  //private notifier_: any = { 'toggle': true};
 
   private cfg_ = {
     hide_colored_lines: false,
     hide_vertical_bars: false,
     hide_vertical_runners: false,
     hide_horizontal_bar: false,
+    use_spline_interpolation: false,
     hide_horizontal_runners: false
   };
+
+  private txt_configuration_: string;
 
 
   onCheckboxChange(name: string, evt: any) {
     if (name === 'hide_colored_lines') {
       this.cfg_.hide_colored_lines = !this.cfg_.hide_colored_lines;
+      this.update_curves();
+    }
+    if (name === 'use_spline_interpolation') {
+      this.cfg_.use_spline_interpolation = !this.cfg_.use_spline_interpolation;
       this.update_curves();
     }
   }
@@ -171,47 +182,52 @@ export class SliderDemoGradientCmp implements OnInit, OnChanges, AfterViewInit, 
 
 
   routerOnActivate(next: ComponentInstruction, prev: ComponentInstruction) {
-    //console.log('Activate:   navigating from ', prev);
-    //console.log('            navigating to ', next);
-    //console.log('            router state', this.location_);
-    //console.log('            router url() ', this.location_.normalize());
+    // console.log('Activate:   navigating from ', prev);
+    // console.log('            navigating to ', next);
+    // console.log('            router state', this.location_);
+    // console.log('            router url() ', this.location_.normalize());
     if (prev === null) {
-      //console.log('[DEBUG] Navigating to ', next);
-      //console.log('[DEBUG] Location is ', this.location_);
-      //console.log('[DEBUG] Hum! navigation to ', window.location.pathname, ' without navigate() or routerLink');
+      // console.log('[DEBUG] Navigating to ', next);
+      // console.log('[DEBUG] Location is ', this.location_);
+      // console.log('[DEBUG] Hum! navigation to ', window.location.pathname, ' without navigate() or routerLink');
       // need to notify the side navigation panel that we are on page 1
       this.slider_demo_service_.emit(4);
     }
   }
 
   routerOnDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
-    //console.log('Deactivate: navigating from ', prev);
-    //console.log('            navigating to ', next);
+    // console.log('Deactivate: navigating from ', prev);
+    // console.log('            navigating to ', next);
   }
 
+
+  click_add_char(elm: any, evt: any) {
+    // console.log('[TRACE] add char', elm);
+    // console.log('[TRACE] add char', evt);
+  }
 
   click_delete_runner(runner: Runner) {
-    //console.log('[TRACE] Requesting delete of runner ', runner);
-    let evt_data: DynSliderEvtData = {'del': true, 'runner': runner};
-    this.dyn_slider_service_.next(evt_data);
+    // console.log('[TRACE] Requesting delete of runner ', runner);
+    let evt_data: SliderEvtData = {'del': true, 'runner': runner};
+    this.slider_service_.next(evt_data);
   }
 
-  click_add_runner() {
-    //console.log('[TRACE] Requesting addition of a runner');
-    let evt_data: DynSliderEvtData = {'add': true};
-    this.dyn_slider_service_.next(evt_data);
+  click_add_runner(val: number) {
+    // console.log('[TRACE] Requesting addition of a runner');
+    let evt_data: SliderEvtData = {'add': true, 'val': val};
+    this.slider_service_.next(evt_data);
   }
 
   runner_pos_change(runner: Runner, evt: any ) {
     const val = evt.target.valueAsNumber;
-    //console.log('[TRACE] Runner[', runner, '] has changed to', val);
-    let evt_data: DynSliderEvtData = {'runner': runner, 'val': val};
-    this.dyn_slider_service_.next(evt_data);
+    // console.log('[TRACE] Runner[', runner, '] has changed to', val);
+    let evt_data: SliderEvtData = {'runner': runner, 'val': val};
+    this.slider_service_.next(evt_data);
   }
 
 
-  rgb_value_changes(idx: number, x: number, rgb_datas: RunnerEvtData[]) {
-    //console.log('[TRACE] RGB[', idx, '] x = ', x, ' has changed to',
+  rgb_value_changes(idx: number, x: number, rgb_datas: RunnerEvtData[], comp: any) {
+    // console.log('[TRACE] RGB[', idx, '] x = ', x, ' has changed to',
     //            rgb_datas[0].value, rgb_datas[1].value, rgb_datas[2].value);
 
     this.rgbs_[idx][0] = rgb_datas[0].value;
@@ -219,6 +235,11 @@ export class SliderDemoGradientCmp implements OnInit, OnChanges, AfterViewInit, 
     this.rgbs_[idx][2] = rgb_datas[2].value;
 
     this.update_curves();
+
+    let compi = this.i2rgb_table_.get(idx);
+    if (compi === undefined) {
+      this.i2rgb_table_.set(idx, comp);
+    }
   }
 
   //
@@ -248,10 +269,15 @@ export class SliderDemoGradientCmp implements OnInit, OnChanges, AfterViewInit, 
 
   hrunner_changes(rdatas: RunnerEvtData[]) {
     // Phase #0
+    // console.log('[TRACE] Runner have changed ', rdatas.length);
+
     // Initialize a mapping 'ID' -> idx f
+    this.idx_last_enabled_vslider_ = -1;
+    this.runners_ = [];
     let rmaps = new Map<string, number>();
     rdatas.forEach((rdata: RunnerEvtData, i: number) => {
       rmaps.set(rdata.id, rdata.value);
+      this.runners_.push(rdata.runner);
     });
 
     let has_changed = false;
@@ -282,6 +308,7 @@ export class SliderDemoGradientCmp implements OnInit, OnChanges, AfterViewInit, 
           has_changed = true;
           this.r2i_table_.set(id, idx);
           this.ids_[idx] = id;
+          this.idx_last_enabled_vslider_ = idx;
         }
       }
     });
@@ -291,7 +318,7 @@ export class SliderDemoGradientCmp implements OnInit, OnChanges, AfterViewInit, 
     // we can populate xs_ and are_enable_
     //
     this.ids_.forEach((id: string, i: number) => {
-      if (id) {
+      if (id !== null) {
         this.are_enabled_[i] = true;
         this.xs_[i] = rmaps.get(id);
       } else {
@@ -299,6 +326,8 @@ export class SliderDemoGradientCmp implements OnInit, OnChanges, AfterViewInit, 
       }
       this.update_curves();
     });
+
+    //this.notifier_.toggle = !this.notifier_.toggle;
   }
 
 
@@ -310,7 +339,7 @@ export class SliderDemoGradientCmp implements OnInit, OnChanges, AfterViewInit, 
   // step2: prepare the x, yr, yg, yb array
 
   update_curves() {
-    //console.log('[TRACE] update_curves()');
+    // console.log('[TRACE] update_curves()');
 
     // step 1: sort
 
@@ -381,42 +410,15 @@ export class SliderDemoGradientCmp implements OnInit, OnChanges, AfterViewInit, 
 
 
     this.draw_canvas(xs, [yrs, ygs, ybs]);
+    this.update_configuration(xs, [yrs, ygs, ybs]);
   }
 
-  //  let wt = this.canvas_.clientWidth;
-  //  let ht = this.canvas_.clientHeight;
-  //  console.log('CANVAS width  = ', wt);
-  //  console.log('CANVAS height = ', ht);
-  //  console.log('CANVAS width  = ', this.canvas_.getBoundingClientRect().width);
-  //  console.log('CANVAS height = ', this.canvas_.getBoundingClientRect().height);
-  //  this.ctx_.scale(100/315, 100/315);
 
-  draw_canvas(xs: number[], yys: any[]) {
-    //  console.log('CANVAS width  = ', this.canvas_.getBoundingClientRect().width);
-    //  console.log('CANVAS height = ', this.canvas_.getBoundingClientRect().height);
+  // draw background using
+  // painfull line by line draw
+
+  draw_background_slow(xs: number[], yys: any[]) {
     let ctx = this.ctx_;
-    ctx.save();
-    ctx.moveTo(0, 0);
-    ctx.fillStyle = 'black';
-    ctx.fillRect(0, 0, this.canvas_.width, this.canvas_.height);
-
-    const colors = ['red', 'green', 'blue'];
-
-    /*
-    ctx.fillStyle = '#FF0000';
-    ctx.strokeStyle = '#FF0000';
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(100, 100);
-    ctx.stroke();
-    */
-
-    ctx.save();
-    ctx.translate(40, 40 + this.vrail_length_);
-    ctx.scale(1, -1);
-
-    // draw background
-
     let x0: number;
     let ys0: number[];
 
@@ -449,11 +451,170 @@ export class SliderDemoGradientCmp implements OnInit, OnChanges, AfterViewInit, 
       ctx.lineTo(x, this.vrail_length_);
       ctx.strokeStyle = Util.rgb2str(cs[0], cs[1], cs[2]);
       ctx.stroke();
-
-      //if (x >= 175 && x <= 185) {
-      //  console.log('DEBUG Value x = ', x, ' RGB = ', ctx.strokeStyle);
-      //}
     }
+  }
+
+  //
+  // We have received a json configuration
+  // { "data": [ [0.2497, "#2b5680" ], [0.5006, "#b56801" ], [0.7503, "#2b5681" ] ] }
+  // step1: update the gradient to reflect these new values
+  // step2: remove all runners
+
+  update_configuration_from_json(obj: any) {
+
+    // delete all existing runners we have to do it
+    // in two steps, as the runners_ array is updated
+    // by the change event from the slider_dyn
+    //
+
+    let deleted_runners: Runner[] = [];
+    this.runners_.forEach((runner: Runner, i: number) => {
+      deleted_runners.push(runner);
+    });
+
+    deleted_runners.forEach((runner: Runner, i: number) => {
+      //let v = this.notifier_.toggle;
+      // we have a major issue here as the change event is asynchronous
+      // we have to wait util the runner is effectively removed
+      //
+      // let p = new Promise((resolve: any, reject: any) => {
+      // console.log('Init promise');
+      //  this.notifier_.watch('toggle', () => {
+      //    console.log('notified has toggled');
+      //    resolve(true); });
+      //});
+      this.click_delete_runner(runner);
+
+      //p.then((val: any) => { console.log('Promise fulfilled', val); })
+      // .catch((reason: any) => { console.log('Reject promise ', reason); });
+    });
+
+    // console.log('[TRACE] are enabled_ ', this.are_enabled_);
+
+
+    // add runners at the x offset
+    // we must get the vertical RGB slider
+    // which has been added
+    // to set the color
+    //
+
+    let res = '';
+    obj['data'].forEach((pair: any[], i: number) => {
+      let x = pair[0];
+      let sxi = x.toFixed(4);
+      let colori = pair[1];
+      res +=  `${sxi} ${colori}\n`;
+
+      this.click_add_runner(x * this.hrail_length_);
+      // console.log('[TRACE] add runner ', this.idx_last_enabled_vslider_);
+
+      if (this.idx_last_enabled_vslider_ !== -1) {
+        let colors = Util.str2rgb(pair[1]).map((c: number) => { return this.vrail_length_ * c / 255; });
+        let comp = this.i2rgb_table_.get(this.idx_last_enabled_vslider_);
+        comp.set_values(colors);
+      }
+    });
+
+    this.txt_configuration_ = res;
+  }
+
+
+  update_configuration(xs: number[], yys: any[]) {
+    let vscale = 255 / this.vrail_length_;
+    let res = '';
+    xs.forEach((xi: number, i: number) => {
+      if ((i !== 0) && (i !== (xs.length - 1))) {
+        let sxi = (xi / this.hrail_length_).toFixed(4);
+        let ysi = yys.map((yy: any) => { return vscale * yy[i]; });
+        let colori  = Util.rgb2str(ysi[0], ysi[1], ysi[2]);
+        res +=  `${sxi} ${colori}\n`;
+        }
+    });
+
+    this.txt_configuration_ = res;
+  }
+
+
+  // we need a bit of tinkering to covert into a JSON IsObject
+  // 1. remove the trailing \n
+  // 2.
+  clicked_apply_config() {
+    let msg0 = this.txt_configuration_ + '\n';
+    let msg1 = msg0.replace(/^#.*?\n/g, '');
+    let msg2 = msg1.replace(/^\n#.*?\n/g, '\n');
+    let msg3 = msg2.replace(/\n*$/, ' ] ] }');
+    msg3 = msg3.replace(/\n/g, ' ], [');
+    msg3 = msg3.replace(/^/, '{ "data": [ [');
+    msg3 = msg3.replace(/ (#\w+) /g, ', "$1" ');
+
+    // console.log("APPLY config[2] = ", msg2);
+    // console.log("APPLY config[3] = ", msg3);
+    try {
+      let obj = JSON.parse(msg3);
+      // check the indexes 0 <=  idx <= 1
+      // check correct hex string (6 digit)
+      obj['data'].forEach((pair: any[], i: number) => {
+        let v = pair[0];
+        if (v < 0 || v > 1) {
+          throw (`ValueError: the ${i}th number must be been 0 and 1 inclusive but got ${v}`);
+        }
+        let hex = pair[1];
+        if (!hex.match(/^#(\d|[A-F]){6}$/i)) {
+          throw (`ColorError: the ${i}th color must have 6 hexadecimal digits but got ${hex}`);
+        }
+      });
+      this.update_configuration_from_json(obj);
+    } catch (e) {
+      console.log('Error: ', e);
+      this.txt_configuration_ = '# Error: could not understand the text field\n' +
+                                 this.txt_configuration_;
+    }
+  }
+
+  clicked_save_config() {
+    console.log('INFO: save configuration not implemented yet!');
+  }
+
+
+  // draw background using canvas native gradient facilities
+  //
+
+  draw_background_with_gradient(xs: number[], yys: any[]) {
+    let ctx = this.ctx_;
+    let vscale = 255 / this.vrail_length_;
+    ctx.save();
+
+    let grd = ctx.createLinearGradient(0, 0, this.hrail_length_, 0);
+    xs.forEach((xi: number, i: number) => {
+      let ysi = yys.map((yy: any) => { return vscale * yy[i]; });
+      let colori  = Util.rgb2str(ysi[0], ysi[1], ysi[2]);
+      grd.addColorStop(xi / this.hrail_length_, colori);
+    });
+
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, this.hrail_length_, this.vrail_length_);
+    ctx.restore();
+  }
+
+
+  draw_canvas(xs: number[], yys: any[]) {
+    //  console.log('CANVAS width  = ', this.canvas_.getBoundingClientRect().width);
+    //  console.log('CANVAS height = ', this.canvas_.getBoundingClientRect().height);
+    let ctx = this.ctx_;
+    ctx.save();
+    ctx.moveTo(0, 0);
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, this.canvas_.width, this.canvas_.height);
+
+    const colors = ['red', 'green', 'blue'];
+
+    ctx.save();
+    ctx.translate(40, 40 + this.vrail_length_);
+    ctx.scale(1, -1);
+
+    // draw background
+
+    this.draw_background_with_gradient(xs, yys);
 
     // draw RGB lines
 
@@ -482,9 +643,10 @@ export class SliderDemoGradientCmp implements OnInit, OnChanges, AfterViewInit, 
     //  }
 
 
-  constructor(private location_: Location, private dyn_slider_service_: DynSliderService,
+  constructor(private location_: Location, private slider_service_: SliderService,
               @Inject(forwardRef(() => SliderDemoService)) private slider_demo_service_: SliderDemoService ) {
     this.r2i_table_ = new Map<string, number>();
+    this.i2rgb_table_ = new Map<number, any>();
     //this.indexes_ = Array.from({length: this.nb_points_}, ((v, k) => k));
     //console.log('[DEBUG] Indexes = ', this.indexes_);
     for (let  i = 0; i < this.nb_points_; i++) {
@@ -494,6 +656,7 @@ export class SliderDemoGradientCmp implements OnInit, OnChanges, AfterViewInit, 
       this.are_enabled_.push(false);
       let rgb = [0, 0, 0];
       this.rgbs_.push(rgb);
+      this.runners_.push(null);
     }
   }
 }

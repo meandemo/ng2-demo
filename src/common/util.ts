@@ -1,6 +1,3 @@
-
-
-
 //
 // Util functions in a static class
 // Can't use isNaN
@@ -41,6 +38,20 @@ export class Util {
     return '#' + Util.to_hex(r) + Util.to_hex(g) + Util.to_hex(b);
   }
 
+  static str2rgb(hex: string): number[] {
+    let re_long_hex_: RegExp = /^#([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i;
+    let re_short_hex_: RegExp = /^#([\da-f])([\da-f])([\da-f])$/i;
+
+    let res = [0, 0, 0];
+    let tokens = hex.match(re_long_hex_);
+    if (tokens) {
+      res[0] = parseInt(tokens[1], 16);
+      res[1] = parseInt(tokens[2], 16);
+      res[2] = parseInt(tokens[3], 16);
+    }
+    return res;
+  }
+
   static clip3(v: number, min: number, max: number): number {
     v = isNaN(v) ? 0 : v;
     if (v < min) { return min; }
@@ -48,6 +59,14 @@ export class Util {
     return v;
   }
 
+  // create a vector of nb_ticks values 
+  // evenly spaced which includes min and max
+  // nb_ticks must be >= 2
+  // example with 5 values
+  //  min                         max
+  //   +======+======+======+======+
+  // v[0]   v[1]   v[2]   v[3]    v[4]
+  //
   static create_ticks(nb_ticks: number, min: number, max: number): number[] {
     const delta = (max - min) / (nb_ticks - 1);
     let res = [min];
@@ -57,6 +76,25 @@ export class Util {
       res.push(Math.round(data));
     }
     res.push(max);
+    return res;
+  }
+
+  // create a vector of nb_values values 
+  // evenly spaced between min and max
+  // example with 3 values
+  // nb_values >= 1
+  //  min                         max
+  //   +======+======+======+======+
+  //         v[0]   v[1]   v[2]
+  //
+  static create_values(nb_values: number, min: number, max: number): number[] {
+    const delta = (max - min) / (nb_values + 1);
+    let res: number[] = [];
+    let data = min;
+    for (let i = 0; i < nb_values; i++) {
+      data += delta;
+      res.push(Math.round(data));
+    }
     return res;
   }
 }

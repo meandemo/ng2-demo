@@ -42,7 +42,7 @@ export class CustomHttp extends Http {
 //              @Inject(forwardRef(() => SliderDemoService)) private slider_demo_service_: SliderDemoService ) {
 
 @Injectable()
-export class CustomHttp extends EventEmitter<any> {
+export class CustomHttp {
   //private str_: string;
 
   //get str_() {
@@ -51,8 +51,8 @@ export class CustomHttp extends EventEmitter<any> {
   //}
 
   constructor(private http_: Http) {
-    super();
-     //@Inject(forwardRef(() => Http)) private http_: Http) {
+    // super();
+    // @Inject(forwardRef(() => Http)) private http_: Http) {
     console.log('CustomHTTP constructor');
   }
 
@@ -68,47 +68,27 @@ export class CustomHttp extends EventEmitter<any> {
   }
 
   public get(url: string, options?: RequestOptionsArgs) {
-    console.log('CustomHTTP GET1 ', url);
-    console.log('CustomHTTP GET2 ', options);
+    // console.log('CustomHTTP GET1 ', url);
+    // console.log('CustomHTTP GET2 ', options);
   //  let res = this.http_.get(url, options);
   //  console.log('GET res()', res);
   //  return res;
   //    console.log('GET subscribe()');
 
      return this.http_.get(url, options).subscribe((res: Response) => {
-      console.log('GET subscribe()');
+      // console.log('GET subscribe()');
       const warn: string = res.headers.get('Warning');
       if (warn) {
-        console.log('Received: Warning = ', warn);
+        // console.log('Received: Warning = ', warn);
       }
     });
   }
 
-  //
-  // when the server request has completed
-  // we emit the string answer
-  //
 
-  public get_error_url(url: string, options?: RequestOptionsArgs) {
-    console.log('CustomHTTP GET*1 ', url);
-    console.log('CustomHTTP GET*2 ', options);
-    this.http_.get(url, options).subscribe(
-      (res: Response) => {
-        const str = res.text();
-        const is_error = (str === '') || (str === null) || (str !== '/error');
-        this.emit({url: str, flag: is_error});
-      console.log('CustomHTTP GET*3 ', res.text());
-    });
-
-  //    next: (res: Response) => {
-  //      console.log('NEXT ACTIVATED =', data);
-  //      this.error_url_ = data;
-  //      if (this.error_url_ === null) {
-  //        this.is_error_ = true;
-  //      } else {
-  //        this.is_error_ = (this.error_url_ !== '/error');
-  //      }
-  //    }
+  public get_error_url() {
+    let error_api = 'api/public/v1/errorurl';
+    // console.log('CustomHTTP GET*1 ', error_api);
+    return this.http_.get(error_api, null);
   }
 
   public post(url: string, body: string, options?: RequestOptionsArgs) {

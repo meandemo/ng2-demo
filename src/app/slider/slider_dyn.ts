@@ -3,13 +3,14 @@ import {Component, Directive, ViewChild,
         OnChanges, Input, SimpleChange, Output, EventEmitter, OnInit,
         View} from 'angular2/core';
 import {NgFor, DecimalPipe, NgIf, NgModel, FormBuilder, NgClass,
+        CORE_DIRECTIVES,
         NgControl, NgForm, Control, ControlGroup, FORM_DIRECTIVES } from  'angular2/common';
 import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
         ROUTER_PROVIDERS,
         RouterOutlet, RouterLink, APP_BASE_HREF, ROUTER_BINDINGS} from 'angular2/router';
 
-import {DynSliderService,
-        DynSliderEvtData}          from '../slider/slider_dyn_service';
+import {SliderService,
+        SliderEvtData}          from '../slider/slider_service';
 
 import {Util}                      from '../../common/util';
 import {Runner,
@@ -88,9 +89,10 @@ import {Runner,
   `,
   styles: [`
   `],
-  directives: [FORM_DIRECTIVES, NgFor]
+  directives: [CORE_DIRECTIVES]
 })
 export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
+  static cnt_ = 0;
   @Input() min: any;
   @Output() minChange:  EventEmitter<number> = new EventEmitter<number>();
 
@@ -106,7 +108,7 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
   @Input() hiderunners: boolean;
 
   //@Input('values') values_: any;
-  @Output('values') emit_values_: EventEmitter<RunnerEvtData[]> = new EventEmitter<RunnerEvtData[]>();
+  @Output('values') emit_values_: EventEmitter<RunnerEvtData[]> = new EventEmitter<RunnerEvtData[]>(false);
 
   private min_: number;
   private max_: number;
@@ -117,18 +119,18 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
   private runners_: Runner[] = [];
   private active_runners_: Runner[];
   private nb_runners_: number;
+  private is_vertical_: boolean = false;
+  private is_special_: boolean = false;
+  private hide_rail_: boolean = false;
+  private hide_runners_: boolean = false;
 
   private button_is_down_: boolean = false;
 
   private tick_marks_: number[] = [0, 20, 40, 60, 80, 100];
   private nb_ticks_: number = 6;
 
-  private is_vertical_: boolean = false;
-  private is_special_: boolean = false;
-  private hide_rail_: boolean = false;
-  private hide_runners_: boolean = false;
 
-  constructor(private dyn_slider_service_: DynSliderService) {
+  constructor(private slider_service_: SliderService) {
     this.min_ = 0;
     this.max_ = 100;
     this.nb_runners_ = 3;
@@ -136,21 +138,25 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
     this.min_rl_ = 10;
     this.max_rl_ = 4096;
 
-    for (let i = 0; i < this.nb_runners_; ++i) {
-      let runner = new Runner(20 + (20 * i), this.min_, this.max_, this.rl_);
+
+    let initial_values = Util.create_values(this.nb_runners_, this.min_, this.max_);
+
+    initial_values.forEach((val: number, i: number) => {
+      let runner = new Runner(val, this.min_, this.max_, this.rl_);
       this.runners_.push(runner);
-    }
+    });
 
     // console.log("[TRACE] constructor value = ", this.value_);
     // console.log("[TRACE] pos   = ", this.pos_);
     // console.log("[TRACE] trans = ", this.trans_pos_);
 
-    dyn_slider_service_.subscribe({
-      next: (data: DynSliderEvtData) => {
+    slider_service_.subscribe({
+      next: (data: SliderEvtData) => {
         if (data.add) {
           // console.log('[TRACE] Receive add slider request');
           let runner = new Runner(0, this.min_, this.max_, this.rl_);
           this.runners_.push(runner);
+          runner.update_value(data.val);
           this.emit_full();
         } else if (data.del) {
           // console.log('[TRACE] Receive remove slider request:', data.runner);
@@ -251,12 +257,12 @@ export class SvgSliderDynCmp implements OnInit, AfterViewInit, OnChanges {
     }
     this.rl_ = Util.clip3(this.rl_, this.min_rl_, this.max_rl_);
 
-    const offset = (this.max_ - this.min_) / (this.runners_.length + 1);
+    const initial_values = Util.create_values(this.nb_runners_, this.min_, this.max_);
     this.runners_.forEach((runner: Runner, i: number, runners: Runner[]) => {
       runner.update_rail_length(this.rl_);
       runner.update_min(this.min_);
       runner.update_max(this.max_);
-      runner.update_value(this.min_ + ((i + 1) * offset));
+      runner.update_value(initial_values[i]);
     });
     this.emit_full();
     this.tick_marks_ = Util.create_ticks(this.nb_ticks_, this.min_, this.max_);

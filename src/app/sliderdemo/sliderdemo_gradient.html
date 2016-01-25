@@ -13,7 +13,7 @@
         <gg-svg-slider-dyn
             [min]="0"
             [max]="hrail_length_"
-            (values)="_datas = $event; hrunner_changes($event)"
+            (values)="hrunner_changes($event)"
             [hiderail]="cfg_.hide_horizontal_rail"
             [hiderunners]="cfg_.hide_horizontal_runners"
             special
@@ -23,6 +23,7 @@
       <!--
       <canvas id="canvas">You browser does not support canvas</canvas>
         <canvas id="canvas" width="947" height="473">You browser does not support canvas</canvas>
+      #="'ID' + _idx"
       -->
       <div id="canvas-enclosure">
         <canvas id="canvas">You browser does not support canvas</canvas>
@@ -31,10 +32,10 @@
       <div *ngFor="#_idx of indexes_">
         <div *ngIf="are_enabled_[_idx]"
              id="vslider" [ngStyle]="{'left': (xs_[_idx]) + 'px'}" >
-          <gg-svg-slider-rgb
+          <gg-svg-slider-rgb #_inst
             [min]="0"
             [max]="vrail_length_"
-            (values)="rgb_value_changes(_idx, xs_[_idx], $event)"
+            (values)="rgb_value_changes(_idx, xs_[_idx], $event, _inst)"
             [hiderail]="cfg_.hide_vertical_rails"
             [hiderunners]="cfg_.hide_vertical_runners"
             vertical
@@ -72,6 +73,10 @@
             <input type="checkbox" value="false" (change)="onCheckboxChange('hide_colored_lines', $event)">
             <label>Hide colored RGB lines</label>
           </td>  
+          <td>
+            <input type="checkbox" value="false" (change)="onCheckboxChange('use_spline_interpolation', $event)">
+            <label>Use spline interpolation (tbd)</label>
+          </td>  
         </tr>
       </table>
     </div>  
@@ -88,7 +93,12 @@
     </div>
     <br>
     <br>
+     <button (click)="clicked_save_config()" class="w3-btn w3-border w3-round-large">Save Configuration</button>
+     <button (click)="clicked_apply_config()" class="w3-btn w3-border w3-round-large">Apply Configuration</button>
     <br>
+    <br>
+    <textarea #_textarea rows="10" cols="50" [(ngModel)]="txt_configuration_" 
+              style="font-family: Consolas, monospace, sans-serif;"></textarea>
     <br>
     <br>
     <br>

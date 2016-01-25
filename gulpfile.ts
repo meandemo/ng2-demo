@@ -33,7 +33,7 @@ const cp             = require('child_process');
 const gulp           = require('gulp');
 const nunjucksRender = require('gulp-nunjucks-render');
 const forever        = require('gulp-forever-monitor');
-const livereload     = require('livereload');
+const livereload     = require('gulp-livereload');
 const gasync         = require('async');            // from nodejs.org/api/async.html
 const wget           = require('wgetjs');
 const rename         = require('gulp-rename');
@@ -261,7 +261,7 @@ gulp.task('init', () => {
   gulp.src('src/**/favicon.ico', {base : 'src'}).pipe(gulp.dest('dist/client'));
 
   nunjucks_html_file('src/index.html', 'src', 'dist/client');
-  scss_to_css('src/scss/*.scss', 'src', 'dist/client');
+  scss_to_css('src/**/*.scss', 'src', 'dist/client');
   transpile_ts_files('src/**/*.ts', 'src', 'dist/client');
   lint_ts_files(['src/**/*.ts', 'gulpfile.ts', 'server/**/*.ts']);
 });
@@ -306,7 +306,7 @@ gulp.task('watch.copy', () => {
 
 gulp.task('watch.scss', () => {
   filtered_log(1, '[INFO] Launching watch on the .scss files');
-  gulp.watch(['src/scss/*.scss'], (event: any) => {
+  gulp.watch(['src/**/*.scss'], (event: any) => {
     filtered_log(2, '[INFO] File ' + event.path + ' event: ' + event.type);
     if ((event.type !== 'deleted') && fs.statSync(event.path).isFile()) {
       scss_to_css(event.path, 'src', 'dist/client');
@@ -316,9 +316,14 @@ gulp.task('watch.scss', () => {
 
 
 gulp.task('watch.livereload', () => {
-  let server = livereload.createServer();
-  filtered_log(1, '[INFO] Launching liveserver at https://localhost:' + server.config.port);
-  server.watch(__dirname + '/dist/client');
+  livereload.listen();
+  gulp.watch(__dirname + '/dist/client/**/*.{html,css,js}', (event: any) => {
+    gulp.src(event.path).pipe(livereload());
+  });
+
+//  let server = livereload.createServer();
+//  filtered_log(1, '[INFO] Launching liveserver at https://localhost:' + server.config.port);
+//  server.watch(__dirname + '/dist/client');
 });
 
 

@@ -22,7 +22,7 @@ import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
 @Component ({
   selector: 'gg-svg-slider',
   template: `
-    <div  id="slider" style="margin:5px">
+    <div tabindex="1"  id="slider" style="margin:5px">
 
       <!-- special div which disables mousemove and mouseup event -->
 
@@ -39,32 +39,32 @@ import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
 
         <!-- rail group -->
 
-        <g id="rail" (mousedown)="onMousedown(railref, $event, false)">
-          <rect id="default-rail" x="0" y="-10" [attr.width]="rail_length_" height="20" />
-          <!--
-          <rect id="default-rail" x="0" y="-10" width="180" height="20" />
-          <path id="default-rail" d="M 0 -10 v 20 h 180 v -20 z" />
-          -->
+        <g  id="rail-group" (mousedown)="onMousedown(railref, $event, false)">
+          <rect class="rail" id="s0" x="0" y="-10" [attr.width]="pos_" height="20" />
+          <rect class="rail" id="s1" [attr.x]="pos_" y="-10" [attr.width]="rail_length_ - pos_" height="20" />
+          <rect class="rail" id="full" x="0" y="-10" [attr.width]="rail_length_" height="20" />
         </g>
 
         <!-- runner group -->
 
-        <g  id="runner" [attr.transform]="trans_pos_"
+        <g  id="runner-group" [attr.transform]="trans_pos_"
                         (mousedown)="onMousedown(railref, $event, true)" >
 
-          <g *ngIf="runner_style_is_circle_" id="circle">
-            <circle cx="0" cy="0" r="20" />
+          <g *ngIf="runner_style_is_circle_" >
+            <circle class="runner" id="circle" cx="0" cy="0" r="20" />
           </g>
 
           <g  *ngIf="runner_style_is_label_" id="label">
-            <path id="panel" d="M 0 0 L 10 -10 L 30 -10 L 30 -35 L -30 -35 L -30 -10 L -10 -10 z"
+            <path class="runner" id="panel" d="M 0 0 L 10 -10 L 30 -10 L 30 -35 L -30 -35 L -30 -10 L -10 -10 z"
                 style="color:black;fill:black" />
-            <text id="text" x="-17" y="-17" font-family="Verdana" font-size="15" fill="white">{{ value_ | number:'1.1-1' }}</text>
+            <text text-anchor="middle" class="runner" id="text" x="0" y="-17"
+                  font-family="Verdana" font-size="15" fill="white">{{ value_ | number:'1.1-1' }}</text>
           </g>
         </g>
       </svg>
     </div>
   `,
+  styleUrls: ['./app/slider/slider.css'],
   directives: [FORM_DIRECTIVES]
 })
 export class SvgSliderCmp implements OnInit, AfterViewInit, OnChanges {

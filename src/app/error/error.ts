@@ -27,7 +27,8 @@ import {Component, Directive, ViewChild,
         Injectable,
         OnChanges, Input, SimpleChange, Output, EventEmitter, OnInit, Inject, forwardRef,
         View} from 'angular2/core';
-import {NgFor, DecimalPipe, NgIf, NgModel, FormBuilder, NgClass,
+import {NgFor, DecimalPipe, NgIf, NgModel, FormBuilder, NgClass, CORE_DIRECTIVES,
+        NgSwitch, NgSwitchWhen, NgSwitchDefault,
         NgControl, NgForm, Control, ControlGroup, FORM_DIRECTIVES } from  'angular2/common';
 import {RouteConfig, RouteDefinition, Router, Route, RouteParams, Location, LocationStrategy,
         ROUTER_PROVIDERS, OnActivate, CanReuse, OnDeactivate, ComponentInstruction,
@@ -53,94 +54,57 @@ import {CustomHttp} from '../http';
 @Component({
   selector: 'gg-error',
   template: `
-  <div *ngIf="is_error_">
-    Error,<br>
-    The requested url: {{error_url_}} does not exists.<br>
-  </div>
-  <div *ngIf="!is_error_">
-    This is the site error page.<br>
-    You've done a reload of this page, haven't you?<br>
-    Or you've typed/pasted the url in the browser url bar.<br>
-  </div>
+  <div [ngSwitch]="error_state_">
+    <div *ngSwitchWhen="'forbidden'">
+      Error,<br>
+      The previous request from server did not trigger a 404 response.<br>
+      You're running a test or you've hit the 'back' button of your browser.<br>
+    </div>
+    <div *ngSwitchWhen="'reloaded'">
+      Error,<br>
+      You've done a reload of this page, haven't you?<br>
+      Either through a manual reload or a livereload or <br>
+      you've typed/pasted the /error url in the browser url bar.<br>
+    </div>
+    <div *ngSwitchWhen="'normal'">
+      Error,<br>
+      The requested url: {{error_url_}} does not exists.<br>
+    </div>
+    <div *ngSwitchDefault>
+      Internal Error<br>
+      The internal state value is incorrect (state value is {{error_state_}}).
+       The requested url: {{error_url_}} does not exists.<br>
+    </div>
+  </div>  
+  <br>
+  <br>
   You can get back to the home page now!<br>
   <a [routerLink]="['HomeCmp']"><i class="fa fa-home w3-large"></i></a>
   `,
   styles: [`
   `],
-  directives: [RouterLink, NgIf]
+  directives: [RouterLink, NgSwitch, NgSwitchWhen, NgSwitchDefault]
 })
 
 export class ErrorCmp {
-  private error_url_: any;
-  private is_error_ = false;
+  private error_url_: string;
+  private error_state_ = 'forbidden';
 
 
   constructor(private http_: CustomHttp, private location_: Location) {
 
-    http_.get_error_url('api/public/v1/errorurl');
+    let obs = http_.get_error_url();
 
-    http_.subscribe({
-      next: (data: any) => {
-        this.error_url_ = data.url;
-        this.is_error_ = data.flag;
-      }
-    });
-
-    /*
-    .subscribe(
+    obs.subscribe(
       (response: any) => {
+        // console.log('[TRACE obs.subscribe response = ', response);
         this.error_url_ = response.text();
-        this.is_error_ = (this.error_url_ !== '/error');
+        this.error_state_ = (this.error_url_ === '/error') ? 'reloaded' : 'normal';
       },
       (error: any) => {
-        this.is_error_ = false;
-        console.log('ERR =', error.text());
+        this.error_state_ = 'forbidden';
+        // console.log('ERR =', error.text());
       }
     );
-    */
   }
-
-
-/*
-  ngOnInit() {
-    console.log('OnInit:     http is', this.http_);
-    console.log('OnInit:     router state', this.location_);
-    this.http_.get('').subscribe(
-      () => { console.log('On Next'); },
-      () => { console.log('On Error'); },
-      () => { console.log('On Completed'); }
-    );
-  }
-*/
-
-/*
-  routerCanReuse(next: ComponentInstruction, prev: ComponentInstruction) {
-    console.log('OnReuse:    http is', this.http_);
-    console.log('OnReuse:    navigating from ', prev);
-    console.log('OnReuse:    navigating to ', next);
-    console.log('OnReuse:    router state', this.location_);
-
-    return  true;
-  }
-*/
-
-/*
-  routerOnActivate(next: ComponentInstruction, prev: ComponentInstruction) {
-    console.log('Activate:   navigating from ', prev);
-    console.log('            navigating to ', next);
-    console.log('            router state', this.location_);
-    //console.log('            router url() ', this.location_.normalize());
-    console.log('1            http ', this.http_);
-    //console.log('2            http ', this.http_.BaseRequestOptions);
-    //console.log('3            http ', this.http_.XHRBackend);
-    //console.log('4            http ', this.http_.headers);
-    console.log('5            http ', this.http_.get(''));
-    if (prev === null) {
-      //console.log('[DEBUG] Navigating to ', next);
-      //console.log('[DEBUG] Location is ', this.location_);
-      //console.log('[DEBUG] Hum! navigation to ', window.location.pathname, ' without navigate() or routerLink');
-      // need to notify the side navigation panel that we are on page 1
-    }
-  }
-*/
 }

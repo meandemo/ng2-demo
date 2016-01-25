@@ -3,6 +3,7 @@ import {Component, Directive, ViewChild,
         OnChanges, Input, SimpleChange, Output, EventEmitter, OnInit,
         View} from 'angular2/core';
 import {NgFor, DecimalPipe, NgIf, NgModel, FormBuilder, NgClass,
+        CORE_DIRECTIVES,
         NgControl, NgForm, Control, ControlGroup, FORM_DIRECTIVES } from  'angular2/common';
 import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
         ROUTER_PROVIDERS,
@@ -12,29 +13,6 @@ import {Util}                      from '../../common/util';
 import {Runner,
         RunnerEvtData}             from './runner';
 
-///////////////////////////////////////////////////////////////////////////////
-//
-// Nested SVG: not working at the present time
-// See: https://github.com/angular/angular/issues/1632
-///////////////////////////////////////////////////////////////////////////////
-
-@Component({
-  selector: 'g[rgb-pie]',
-  template: `
-    <g id="circle" [attr.transform]=" 'rotate(' + (-110 + (idx * 40)) + ')' " >
-      <path id="pie" d="M 0 0 h 20 A 20,20 0 0,1 14.321 12.855 Z" ></path>
-      <g transform="rotate(120)">
-        <path id="pie" d="M 0 0 h 20 A 20,20 0 0,1 14.321 12.855 Z" ></path>
-        <g transform="rotate(120)">
-          <path id="pie" d="M 0 0 h 20 A 20,20 0 0,1 14.321 12.855 Z"></path>
-        </g>
-      </g>
-    </g>
-    `
-})
-class SvgRunnerRgbCmp {
-  @Input() idx: number;
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -109,11 +87,10 @@ class SvgRunnerRgbCmp {
 
           <rect #railref  x="0" y="0" width="1" height="1" style="fill:none;stroke:none"  />
 
-          <g *ngIf="!hide_rail_" id="rail" (mousedown)="onMousedown(railref, $event, false)">
-            <path *ngIf="!is_special_" [attr.d]="'M -5,0 h 10 v' + (rl_) + ' h -10 z'"
+          <g *ngIf="!hide_rail_" class="rgb-rail" id="rail" (mousedown)="onMousedown(railref, $event, false)">
+            <path *ngIf="!is_special_"  [attr.d]="'M -5,0 h 10 v' + (rl_) + ' h -10 z'"
                 style="stroke-width:2px;stroke:black;fill:violet" />
-            <path *ngIf="is_special_" [attr.d]="'M -0,0 v' + (rl_)"
-                style="stroke-width:2px;stroke:white" />
+            <path *ngIf="is_special_" [attr.d]="'M -0,0 v' + (rl_)" />
           </g>
 
           <g *ngIf="!hide_runners_">
@@ -136,7 +113,7 @@ class SvgRunnerRgbCmp {
                 </g>
               </g>
             </g>
-          </g>    
+          </g>
         </svg>
       </div>
     </div>
@@ -166,8 +143,18 @@ class SvgRunnerRgbCmp {
     g.rgb-runner :hover {
       stroke-width: 2px;
     }
+
+    g.rgb-rail {
+      stroke-width: 1px;
+      stroke: white;
+    }
+
+    g.rgb-rail :hover {
+      stroke-width: 3px;
+    }
+
   `],
-  directives: [FORM_DIRECTIVES, NgIf, NgFor]
+  directives: [CORE_DIRECTIVES]
 })
 export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
   static cnt_ = 0;
@@ -196,6 +183,7 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
 
   @Output('values') emit_values_: EventEmitter<RunnerEvtData[]> = new EventEmitter<RunnerEvtData[]>();
 
+  private id_number_: number;
   private min_: number;
   private max_: number;
   private rl_: number;          // rail length
@@ -219,6 +207,7 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
   constructor() {
     SvgSliderRgbCmp.cnt_++;
     // console.log("SLIDER RGB Constructor: ", SvgSliderRgbCmp.cnt_);
+    this.id_number_ = SvgSliderRgbCmp.cnt_;
 
     const colors  = ['red', 'green', 'blue'];
     this.min_ = 0;
@@ -229,12 +218,16 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
     this.max_rl_ = 4096;
     this.r2name_ = new Map<Runner, [string, number]>();
 
-    for (let i = 0; i < this.nb_runners_; ++i) {
-      let runner = new Runner(50 + (50 * i), this.min_, this.max_, this.rl_);
+    let initial_values = Util.create_values(this.nb_runners_, this.min_, this.max_);
+    // console.log("[DEBUG] initial values = ", initial_values);
+
+    initial_values.forEach((val: number, i: number) => {
+      let runner = new Runner(val, this.min_, this.max_, this.rl_);
       this.runners_.push(runner);
       this.r2name_.set(runner, [colors[i], i]);
-    }
+    });
   }
+
 
   get_pos(v: number) {
     let pos = (this.rl_ * (v - this.min_)) / (this.max_ - this.min_);
@@ -242,6 +235,23 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
       pos = this.rl_ - pos;
     }
     return Util.clip3(pos, 0, this.rl_);
+  }
+
+  get_values(): number[] {
+    let res: number[] = [];
+    this.runners_.forEach((runner: Runner, i: number) => {
+      res.push(runner.get_value(true));
+    });
+    return res;
+  }
+
+  set_values(vals: number[]) {
+    this.runners_.forEach((runner: Runner, i: number) => {
+      // console.log('[TRACE] Rgb set values* ID = ', this.id_number_, " value = "   , vals[i]);
+      runner.update_value(vals[i]);
+      this.emit_runner_value(runner);
+    });
+    this.emit_full();
   }
 
   emit_full() {
@@ -261,7 +271,7 @@ export class SvgSliderRgbCmp implements OnInit, AfterViewInit, OnChanges {
   }
 
   get_color(runner: Runner) {
-    //console.log("[TRACE] get_color: ", (this.r2name_.get(runner))[0]);
+    // console.log("[TRACE] get_color: ", (this.r2name_.get(runner))[0]);
     return (this.r2name_.get(runner))[0];
   }
 

@@ -10,28 +10,30 @@ import {RouteConfig, RouteDefinition, Router, Route, RouteParams,
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// A Service Class associated with the Dyynamic Slider 
+// A Service Class associated with the slider to add/modify value 
 // 
 ///////////////////////////////////////////////////////////////////////////////
 
 import {Runner}                    from './runner';
 
-export interface DynSliderEvtData {
-  add?:     boolean;  // if true: a new slider must be added, all other data is ignored
-  del?:     boolean;  // if true: slider[idx] must be removed
-  hideRail?: boolean;  // if true: slider must be hidden 
+export interface SliderEvtData {
+  add?:     boolean;      // if true: a new slider must be added, all other data is ignored
+  del?:     boolean;      // if true: slider[idx] must be removed
+  hideRail?: boolean;     // if true: slider must be hidden 
   hideRunners?: boolean;  // if true: runners must be hidden 
-  runner?: Runner;    // Runner to operate on
-  val?:    number;    // otherwise slider[idx] value must be updated with val 
+  runner?: Runner;        // Runner to operate on
+  val?:    number;        // otherwise slider[idx] value must be updated with val 
 }
 
 
-export class DynSliderService extends EventEmitter<DynSliderEvtData> {
+export class SliderService extends EventEmitter<SliderEvtData> {
   private idx_: number;
   private instance_count_: number;
 
   constructor() {
-    super();
+    // The 'false' argument passed to the super function 
+    // allows a synchronous event emitter.
+    super(false);
     this.idx_ = 1;
     this.instance_count_ = 0;
   }
