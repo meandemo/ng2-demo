@@ -18,7 +18,7 @@ import {HTTP_PROVIDERS,
 
 import {CustomHttp} from './http';
 import {MainCmp} from './main';
-import {NavBarService, MainRouteService} from './main_services';
+//import {NavBarService, MainRouteService} from './main_services';
 import {SliderDemoService}               from './sliderdemo/sliderdemo_service';
 import {SliderService}                   from './slider/slider_service';
 
@@ -31,7 +31,7 @@ bootstrap(MainCmp, [ROUTER_PROVIDERS, FormBuilder,
                       useFactory: (http: Http) => {
                         return new CustomHttp(http); },
                       deps: [Http]}),
-                    NavBarService, MainRouteService,
+//                    NavBarService, MainRouteService,
                     SliderDemoService, SliderService])
   .catch((err) => {
     console.error(err);
